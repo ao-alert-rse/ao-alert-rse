@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+  ignore = "exit 0"   # ne jamais lancer de build Node
+
+[[redirects]]
+  from = "/"
+  to   = "/app.html"
+  status = 301
