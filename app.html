@@ -96,7 +96,10 @@
     }
     header img { height: 30px; }
     header .app-title { font-family: 'Outfit', sans-serif; color: white; font-size: 16px; font-weight: 600; flex: 1; }
-    header .user-lbl { color: rgba(255,255,255,.6); font-size: 12px; }
+    header .user-lbl { color: rgba(255,255,255,.6); font-size: 12px; cursor: pointer; border-bottom: 1px dashed rgba(255,255,255,.3); }
+    header .user-lbl:hover { color: white; border-bottom-color: white; }
+    header .user-edit { display: none; font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,.5); background: rgba(255,255,255,.1); color: white; outline: none; width: 120px; }
+    header .user-edit:focus { border-color: white; background: rgba(255,255,255,.2); }
     .btn-logout {
       background: none;
       border: 1px solid rgba(255,255,255,.3);
@@ -473,7 +476,8 @@
   <header>
     <img src="assets/logo-nk.png" alt="nam & kouji" />
     <span class="app-title">Veille AOs RSE</span>
-    <span class="user-lbl" id="user-lbl"></span>
+    <span class="user-lbl" id="user-lbl" title="Cliquer pour modifier"></span>
+    <input class="user-edit" id="user-edit" type="text" maxlength="30" />
     <button class="btn-logout" id="btn-logout">Déconnexion</button>
   </header>
 
@@ -634,17 +638,22 @@ let currentUser = null; // { id, email, display_name }
 
 // ── Auth ─────────────────────────────────────────────────
 function nameFromEmail(email) {
-  // "benjamin.baroni@nam-kouji.fr" → "Benjamin"
-  // "b.baroni@nam-kouji.fr" → "B. Baroni"
   const parts = (email.split('@')[0] || '').split('.');
   return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+}
+
+function setDisplayName(name) {
+  currentUser.display_name = name;
+  document.getElementById('user-lbl').textContent = name;
+  localStorage.setItem('nk_name_' + currentUser.email, name);
 }
 
 sb.auth.onAuthStateChange((_, session) => {
   if (session) {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app-screen').classList.add('on');
-    const displayName = nameFromEmail(session.user.email);
+    const saved = localStorage.getItem('nk_name_' + session.user.email);
+    const displayName = saved || nameFromEmail(session.user.email);
     currentUser = { id: session.user.id, email: session.user.email, display_name: displayName };
     document.getElementById('user-lbl').textContent = displayName;
     loadAOs();
@@ -652,6 +661,35 @@ sb.auth.onAuthStateChange((_, session) => {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app-screen').classList.remove('on');
     currentUser = null;
+  }
+});
+
+// Clic sur le nom → édition inline
+document.getElementById('user-lbl').addEventListener('click', () => {
+  const lbl  = document.getElementById('user-lbl');
+  const edit = document.getElementById('user-edit');
+  edit.value = currentUser.display_name;
+  lbl.style.display  = 'none';
+  edit.style.display = 'inline-block';
+  edit.focus();
+  edit.select();
+});
+
+function commitNameEdit() {
+  const lbl  = document.getElementById('user-lbl');
+  const edit = document.getElementById('user-edit');
+  const name = edit.value.trim();
+  if (name) setDisplayName(name);
+  edit.style.display = 'none';
+  lbl.style.display  = '';
+}
+
+document.getElementById('user-edit').addEventListener('blur', commitNameEdit);
+document.getElementById('user-edit').addEventListener('keydown', e => {
+  if (e.key === 'Enter') commitNameEdit();
+  if (e.key === 'Escape') {
+    document.getElementById('user-edit').style.display = 'none';
+    document.getElementById('user-lbl').style.display  = '';
   }
 });
 
