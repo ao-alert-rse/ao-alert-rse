@@ -277,29 +277,37 @@
       font-weight: 700;
       white-space: nowrap;
     }
-    .dec-badge.go   { background: #d1fae5; color: #065f46; }
-    .dec-badge.nogo { background: #fee2e2; color: #991b1b; }
+    .dec-badge.go       { background: #d1fae5; color: #065f46; }
+    .dec-badge.no_go    { background: #fee2e2; color: #991b1b; }
+    .dec-badge.en_cours { background: #dbeafe; color: #1e40af; }
+    .dec-badge.repondu  { background: #ede9fe; color: #5b21b6; }
+    .dec-badge.remporte { background: #fef3c7; color: #92400e; }
+    .dec-badge.perdu    { background: #f3f4f6; color: #374151; }
 
     /* Décisions panel */
     .decision-section { margin-top: 4px; }
     .decision-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .04em; margin-bottom: 12px; }
-    .decision-btns { display: flex; gap: 10px; margin-bottom: 14px; }
+    .decision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .btn-dec {
-      flex: 1;
-      padding: 10px;
+      padding: 10px 8px;
       border-radius: var(--radius);
       border: 2px solid var(--border);
       background: white;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       font-family: 'Outfit', sans-serif;
       cursor: pointer;
       transition: all .15s;
       color: var(--muted);
+      text-align: center;
     }
     .btn-dec:hover { border-color: var(--vert); color: var(--vert); }
-    .btn-dec.go.active  { background: #d1fae5; border-color: #065f46; color: #065f46; }
-    .btn-dec.nogo.active { background: #fee2e2; border-color: #991b1b; color: #991b1b; }
+    .btn-dec.go.active       { background: #d1fae5; border-color: #065f46; color: #065f46; }
+    .btn-dec.no_go.active    { background: #fee2e2; border-color: #991b1b; color: #991b1b; }
+    .btn-dec.en_cours.active { background: #dbeafe; border-color: #1e40af; color: #1e40af; }
+    .btn-dec.repondu.active  { background: #ede9fe; border-color: #5b21b6; color: #5b21b6; }
+    .btn-dec.remporte.active { background: #fef3c7; border-color: #92400e; color: #92400e; }
+    .btn-dec.perdu.active    { background: #f3f4f6; border-color: #374151; color: #374151; }
     .comment-area {
       width: 100%;
       padding: 10px 12px;
@@ -362,7 +370,10 @@
       padding: 0 24px;
       background: var(--white);
       border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .tabs::-webkit-scrollbar { display: none; }
     .tab-btn {
       padding: 12px 20px;
       border: none;
@@ -458,8 +469,12 @@
 
   <div class="tabs">
     <button class="tab-btn on" data-view="pending">À décider <span class="count" id="count-pending">—</span></button>
-    <button class="tab-btn" data-view="go">En cours <span class="count" id="count-go">—</span></button>
-    <button class="tab-btn" data-view="nogo">Refusées <span class="count" id="count-nogo">—</span></button>
+    <button class="tab-btn" data-view="go">GO <span class="count" id="count-go">—</span></button>
+    <button class="tab-btn" data-view="en_cours">En cours <span class="count" id="count-en_cours">—</span></button>
+    <button class="tab-btn" data-view="repondu">Répondus <span class="count" id="count-repondu">—</span></button>
+    <button class="tab-btn" data-view="remporte">Remportés <span class="count" id="count-remporte">—</span></button>
+    <button class="tab-btn" data-view="perdu">Perdus <span class="count" id="count-perdu">—</span></button>
+    <button class="tab-btn" data-view="no_go">NO GO <span class="count" id="count-no_go">—</span></button>
   </div>
 
   <div class="table-wrap">
@@ -502,10 +517,14 @@
     <div class="desc" id="p-desc"></div>
     <div class="sep"></div>
     <div class="decision-section">
-      <div class="decision-title">Décision équipe</div>
-      <div class="decision-btns">
-        <button id="p-btn-go"   class="btn-dec go">✓ GO</button>
-        <button id="p-btn-nogo" class="btn-dec nogo">✗ NO GO</button>
+      <div class="decision-title">Statut</div>
+      <div class="decision-grid">
+        <button class="btn-dec go"       data-statut="go">✓ GO</button>
+        <button class="btn-dec no_go"    data-statut="no_go">✗ NO GO</button>
+        <button class="btn-dec en_cours" data-statut="en_cours">🔄 En cours</button>
+        <button class="btn-dec repondu"  data-statut="repondu">📤 Répondu</button>
+        <button class="btn-dec remporte" data-statut="remporte">🏆 Remporté</button>
+        <button class="btn-dec perdu"    data-statut="perdu">✗ Perdu</button>
       </div>
       <textarea id="p-comment" class="comment-area" placeholder="Commentaire optionnel…" rows="3"></textarea>
       <button id="p-btn-save" class="btn-save-dec">Enregistrer la décision</button>
@@ -678,8 +697,7 @@ function filtered() {
   return aos.filter(a => {
     const statut = decisions[a.id]?.statut || null;
     if (activeView === 'pending' && statut !== null) return false;
-    if (activeView === 'go'      && statut !== 'go') return false;
-    if (activeView === 'nogo'    && statut !== 'no_go') return false;
+    if (activeView !== 'pending' && statut !== activeView) return false;
     if (a.score < scoreMin) return false;
     if (search && !a.titre.toLowerCase().includes(search) && !(a.source||'').toLowerCase().includes(search)) return false;
     if (activeTags.size && !(a.tags||[]).some(t => activeTags.has(t))) return false;
@@ -688,9 +706,19 @@ function filtered() {
 }
 
 function updateTabCounts() {
-  document.getElementById('count-pending').textContent = aos.filter(a => !decisions[a.id]).length;
-  document.getElementById('count-go').textContent      = aos.filter(a => decisions[a.id]?.statut === 'go').length;
-  document.getElementById('count-nogo').textContent    = aos.filter(a => decisions[a.id]?.statut === 'no_go').length;
+  const counts = { pending: 0, go: 0, no_go: 0, en_cours: 0, repondu: 0, remporte: 0, perdu: 0 };
+  aos.forEach(a => {
+    const s = decisions[a.id]?.statut;
+    if (!s) counts.pending++;
+    else if (counts[s] !== undefined) counts[s]++;
+  });
+  document.getElementById('count-pending').textContent  = counts.pending;
+  document.getElementById('count-go').textContent       = counts.go;
+  document.getElementById('count-no_go').textContent    = counts.no_go;
+  document.getElementById('count-en_cours').textContent = counts.en_cours;
+  document.getElementById('count-repondu').textContent  = counts.repondu;
+  document.getElementById('count-remporte').textContent = counts.remporte;
+  document.getElementById('count-perdu').textContent    = counts.perdu;
 }
 
 // ── Rendu tableau ─────────────────────────────────────────
@@ -700,12 +728,18 @@ function badge(s) {
   return `<span class="badge ok">${s}</span>`;
 }
 
+const DEC_LABELS = {
+  go:       '✓ GO',
+  no_go:    '✗ NO GO',
+  en_cours: '🔄 En cours',
+  repondu:  '📤 Répondu',
+  remporte: '🏆 Remporté',
+  perdu:    '✗ Perdu',
+};
 function decBadge(aoId) {
   const d = decisions[aoId];
-  if (!d) return '';
-  if (d.statut === 'go')    return '<span class="dec-badge go">✓ GO</span>';
-  if (d.statut === 'no_go') return '<span class="dec-badge nogo">✗ NO GO</span>';
-  return '';
+  if (!d || !DEC_LABELS[d.statut]) return '';
+  return `<span class="dec-badge ${d.statut}">${DEC_LABELS[d.statut]}</span>`;
 }
 
 function fmtD(d) {
@@ -800,17 +834,16 @@ function openPanel(ao) {
 }
 
 function updateDecBtns() {
-  document.getElementById('p-btn-go').classList.toggle('active',   panelStatut === 'go');
-  document.getElementById('p-btn-nogo').classList.toggle('active', panelStatut === 'no_go');
+  document.querySelectorAll('.decision-grid .btn-dec').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.statut === panelStatut);
+  });
 }
 
-// ── Sauvegarde décision ───────────────────────────────────
-document.getElementById('p-btn-go').addEventListener('click', () => {
-  panelStatut = panelStatut === 'go' ? null : 'go';
-  updateDecBtns();
-});
-document.getElementById('p-btn-nogo').addEventListener('click', () => {
-  panelStatut = panelStatut === 'no_go' ? null : 'no_go';
+// ── Boutons statut panel ──────────────────────────────────
+document.querySelector('.decision-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-dec');
+  if (!btn) return;
+  panelStatut = panelStatut === btn.dataset.statut ? null : btn.dataset.statut;
   updateDecBtns();
 });
 
