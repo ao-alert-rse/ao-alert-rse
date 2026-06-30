@@ -432,6 +432,8 @@
     <div class="stat"><div class="val" id="s-total">—</div><div class="lbl">AOs actives</div></div>
     <div class="stat"><div class="val" id="s-new">—</div><div class="lbl">Nouvelles ce scan</div></div>
     <div class="stat"><div class="val" id="s-hot">—</div><div class="lbl">Score ≥ 50</div></div>
+    <div class="stat"><div class="val" id="s-go">—</div><div class="lbl">GO en cours</div></div>
+    <div class="stat" id="s-deadline-stat"><div class="val" id="s-deadline">—</div><div class="lbl">Clôtures ≤ 14j</div></div>
   </div>
 
   <div class="filters">
@@ -586,6 +588,23 @@ function buildStats() {
   document.getElementById('s-total').textContent = aos.length;
   document.getElementById('s-new').textContent   = aos.filter(a => a.is_new).length;
   document.getElementById('s-hot').textContent   = aos.filter(a => a.score >= 50).length;
+
+  // GO en cours
+  const nbGo = aos.filter(a => decisions[a.id]?.statut === 'go').length;
+  document.getElementById('s-go').textContent = nbGo;
+
+  // Clôtures ≤ 14 jours (AOs non NO GO avec date_cloture renseignée)
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const in14  = new Date(today); in14.setDate(in14.getDate() + 14);
+  const nbDeadline = aos.filter(a => {
+    if (decisions[a.id]?.statut === 'no_go') return false;
+    if (!a.date_cloture) return false;
+    const d = new Date(a.date_cloture);
+    return d >= today && d <= in14;
+  }).length;
+  document.getElementById('s-deadline').textContent = nbDeadline;
+  document.getElementById('s-deadline-stat').style.background =
+    nbDeadline > 0 ? 'rgba(237,175,14,.35)' : 'rgba(255,255,255,.12)';
 }
 
 function buildTagChips() {
@@ -774,6 +793,7 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
     decisions[currentAO.id] = { statut: panelStatut, commentaire: document.getElementById('p-comment').value.trim() };
     msg.className = 'save-msg ok';
     msg.textContent = '✓ Décision enregistrée';
+    buildStats();
     updateTabCounts();
     render();
   }
