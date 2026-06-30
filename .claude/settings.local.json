@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem \"$env:APPDATA\\\\npm\" -ErrorAction SilentlyContinue | Select-Object -First 5 Name; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name)",
+      "PowerShell(& \"C:\\\\Program Files\\\\nodejs\\\\npm.cmd\" install nodemailer --save --prefix \"C:\\\\Users\\\\BenjaminBARONI\\\\OneDrive - Felps Group\\\\Documents\\\\projet-ao-alert\")",
+      "WebFetch(domain:www.ocapiat.fr)",
+      "WebFetch(domain:www.opcoep.fr)",
+      "WebFetch(domain:www.opco-atlas.fr)",
+      "WebFetch(domain:www.opco2i.fr)",
+      "Bash(curl -s -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://www.ademe.fr/fr/les-appels-a-projets\")",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://www.akto.fr/appels-d-offres/\")",
+      "mcp__Claude_in_Chrome__navigate",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://www.uniformation.fr/partenaire-prestataire/appels-doffre\")",
+      "Bash(curl -s -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://www.opco-commerce.fr/appels-doffres\")",
+      "Bash(curl -s -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://www.constructys.fr/appels-doffres\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -L -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\" \"https://www.opco-commerce.fr\")",
+      "Bash(curl -s -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://agirpourlatransition.ademe.fr/entreprises/aides-financieres\")",
+      "Bash(curl -s -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://agirpourlatransition.ademe.fr/entreprises/aides-financieres\" > /tmp/agir_aides.html && wc -l /tmp/agir_aides.html)",
+      "Bash(curl -s -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\" \"https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue\" 2>&1 > /tmp/agir_catalogue_full.html && wc -l /tmp/agir_catalogue_full.html)",
+      "Bash(curl -s \"https://www.constructys.fr/appels-doffres\")",
+      "Bash(curl -s -L \"https://www.opco-commerce.fr/appels-doffres\")",
+      "Bash(curl -s \"https://www.marches-publics.info/avis/index.cfm?IDS=5173\")",
+      "Bash(curl -s \"https://www.opco-commerce.fr/\")"
+    ]
+  }
+}

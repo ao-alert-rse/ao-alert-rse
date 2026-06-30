@@ -1,0 +1,41 @@
+name: AO Alert — Scan hebdomadaire RSE/TEE
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'   # lundi 08h00 CET (hiver) / 09h00 CEST (été)
+  workflow_dispatch:        # déclenchement manuel depuis GitHub UI
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # pour commiter ao-history.json après le scan
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run scan
+        run: node index.js
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+
+      - name: Commit ao-history.json
+        run: |
+          git config user.name  "ao-alert[bot]"
+          git config user.email "ao-alert@users.noreply.github.com"
+          git add data/ao-history.json rapport.html
+          git diff --cached --quiet || git commit -m "scan $(date -u +%Y-%m-%d)"
+          git push

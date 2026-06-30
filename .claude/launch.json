@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "AO Scan",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["index.js"],
+      "port": null
+    },
+    {
+      "name": "Rapport HTML (serveur statique)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "--no-clipboard", "--listen", "3000"],
+      "port": 3000
+    }
+  ]
+}
