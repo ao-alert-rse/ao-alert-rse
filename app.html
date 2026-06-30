@@ -432,6 +432,7 @@
       .table-wrap { padding: 12px; }
       #panel { width: 100vw; }
       .t-tags { display: none; }
+      .t-montant { display: none; }
     }
   </style>
 </head>
@@ -529,6 +530,7 @@
           <th class="sortable" data-col="source">Source <span class="sort-ico"></span></th>
           <th class="sortable" data-col="score">Score <span class="sort-ico">↓</span></th>
           <th class="sortable" data-col="date_cloture">Clôture <span class="sort-ico"></span></th>
+          <th class="sortable t-montant" data-col="prix">Montant <span class="sort-ico"></span></th>
           <th class="t-tags">Tags</th>
           <th class="t-dec">Statut</th>
         </tr>
@@ -898,6 +900,7 @@ function render() {
       <td>${esc(a.source||'—')}</td>
       <td>${badge(a.score||0)}</td>
       <td>${fmtD(a.date_cloture)}</td>
+      <td class="t-montant">${a.prix ? fmtEuro(a.prix) : '—'}</td>
       <td class="t-tags">${(a.tags||[]).map(t=>`<span class="tag-pill">${esc(t)}</span>`).join('')}</td>
       <td class="t-dec">${decBadge(a.id)}</td>
     </tr>`).join('');
