@@ -394,6 +394,13 @@
     }
     .tab-btn.on .count { background: var(--vert); color: white; }
 
+    /* Tri colonnes */
+    thead th.sortable { cursor: pointer; user-select: none; }
+    thead th.sortable:hover { background: #e0d9c8; }
+    thead th.sortable.active { color: var(--vert); }
+    .sort-ico { font-style: normal; margin-left: 3px; opacity: .5; font-size: 11px; }
+    thead th.sortable.active .sort-ico { opacity: 1; }
+
     @media (max-width: 768px) {
       .stats-bar { display: none; }
       .filters { padding: 10px 12px; }
@@ -460,10 +467,10 @@
     <table id="tbl" style="display:none">
       <thead>
         <tr>
-          <th>Titre</th>
-          <th>Source</th>
-          <th>Score</th>
-          <th>Clôture</th>
+          <th class="sortable" data-col="titre">Titre <span class="sort-ico"></span></th>
+          <th class="sortable" data-col="source">Source <span class="sort-ico"></span></th>
+          <th class="sortable" data-col="score">Score <span class="sort-ico">↓</span></th>
+          <th class="sortable" data-col="date_cloture">Clôture <span class="sort-ico"></span></th>
           <th class="t-tags">Tags</th>
           <th>Décision</th>
         </tr>
@@ -530,6 +537,7 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ── State
 let aos = [], decisions = {}, scoreMin = 0, activeTags = new Set(), search = '';
 let currentAO = null, panelStatut = null, activeView = 'pending';
+let sortCol = 'score', sortDir = 'desc';
 
 // ── Auth ─────────────────────────────────────────────────
 sb.auth.onAuthStateChange((_, session) => {
@@ -630,6 +638,20 @@ function buildTagChips() {
   });
 }
 
+// ── Tri colonnes ─────────────────────────────────────────
+document.querySelector('thead').addEventListener('click', e => {
+  const th = e.target.closest('th.sortable');
+  if (!th) return;
+  const col = th.dataset.col;
+  if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCol = col; sortDir = col === 'score' ? 'desc' : 'asc'; }
+  document.querySelectorAll('thead th.sortable').forEach(h => {
+    h.classList.toggle('active', h.dataset.col === sortCol);
+    h.querySelector('.sort-ico').textContent = h.dataset.col === sortCol ? (sortDir === 'asc' ? '↑' : '↓') : '';
+  });
+  render();
+});
+
 // ── Onglets ───────────────────────────────────────────────
 document.querySelector('.tabs').addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn');
@@ -696,8 +718,24 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function sorted(list) {
+  return [...list].sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (sortCol === 'date_cloture') {
+      va = va || '9999-99-99'; vb = vb || '9999-99-99';
+    } else if (sortCol === 'score') {
+      va = va || 0; vb = vb || 0;
+    } else {
+      va = (va || '').toLowerCase(); vb = (vb || '').toLowerCase();
+    }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+}
+
 function render() {
-  const list = filtered();
+  const list = sorted(filtered());
   const tbody = document.getElementById('tbody');
   const tbl   = document.getElementById('tbl');
   const empty = document.getElementById('empty');
