@@ -654,7 +654,7 @@ async function loadAOs() {
   document.getElementById('tbl').style.display = 'table';
 }
 
-const fmt€ = v => v > 0
+const fmtEuro = v => v > 0
   ? new Intl.NumberFormat('fr-FR', {style:'currency', currency:'EUR', maximumFractionDigits:0}).format(v)
   : null;
 
@@ -664,14 +664,14 @@ function buildKPIs() {
   // Montant pipeline (go + en_cours + repondu)
   const pipeline = aos.filter(a => ['go','en_cours','repondu'].includes(decisions[a.id]?.statut));
   const montant  = pipeline.reduce((s, a) => s + (a.prix || 0), 0);
-  document.getElementById('kpi-montant').textContent     = fmt€(montant) || '—';
+  document.getElementById('kpi-montant').textContent     = fmtEuro(montant) || '—';
   document.getElementById('kpi-montant-sub').textContent = `${pipeline.length} AO${pipeline.length > 1 ? 's' : ''} en pipeline`;
 
   // Remportés
   const remportes       = aos.filter(a => decisions[a.id]?.statut === 'remporte');
   const montantRemporte = remportes.reduce((s, a) => s + (a.prix || 0), 0);
   document.getElementById('kpi-remporte').textContent     = remportes.length;
-  document.getElementById('kpi-remporte-sub').textContent = fmt€(montantRemporte) || 'montants non renseignés';
+  document.getElementById('kpi-remporte-sub').textContent = fmtEuro(montantRemporte) || 'montants non renseignés';
 
   // Urgents ≤ 10j
   const today = new Date(); today.setHours(0,0,0,0);
