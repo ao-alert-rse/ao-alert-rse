@@ -113,7 +113,7 @@ function scoreRSETEE(titre, description) {
 
   if (!hasTheme) return 0;
 
-  return score;
+  return Math.min(score, 100);
 }
 
 /**
@@ -143,6 +143,8 @@ function scoreRSETEEDetailed(titre, description) {
   score += bonus;
 
   if (!hasTheme) score = 0;
+
+  score = Math.min(score, 100);
 
   const ptsTheme = matched.filter(m => m.cat.startsWith('theme')).reduce((s, m) => s + m.pts, 0);
   const ptsVerbe = matched.filter(m => m.cat === 'verbe').reduce((s, m) => s + m.pts, 0);
