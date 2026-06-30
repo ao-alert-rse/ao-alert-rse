@@ -414,6 +414,9 @@
     }
     .tab-btn.on .count { background: var(--vert); color: white; }
 
+    /* Masquer colonne statut en vue "À décider" */
+    table.hide-dec .t-dec { display: none; }
+
     /* Tri colonnes */
     thead th.sortable { cursor: pointer; user-select: none; }
     thead th.sortable:hover { background: #e0d9c8; }
@@ -527,7 +530,7 @@
           <th class="sortable" data-col="score">Score <span class="sort-ico">↓</span></th>
           <th class="sortable" data-col="date_cloture">Clôture <span class="sort-ico"></span></th>
           <th class="t-tags">Tags</th>
-          <th>Décision</th>
+          <th class="t-dec">Statut</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -874,6 +877,7 @@ function render() {
   const tbl   = document.getElementById('tbl');
   const empty = document.getElementById('empty');
 
+  tbl.classList.toggle('hide-dec', activeView === 'pending');
   if (!list.length) { tbl.style.display = 'none'; empty.style.display = 'block'; return; }
   tbl.style.display = 'table';
   empty.style.display = 'none';
@@ -885,7 +889,7 @@ function render() {
       <td>${badge(a.score||0)}</td>
       <td>${fmtD(a.date_cloture)}</td>
       <td class="t-tags">${(a.tags||[]).map(t=>`<span class="tag-pill">${esc(t)}</span>`).join('')}</td>
-      <td>${decBadge(a.id)}</td>
+      <td class="t-dec">${decBadge(a.id)}</td>
     </tr>`).join('');
 
   tbody.querySelectorAll('tr').forEach(tr =>

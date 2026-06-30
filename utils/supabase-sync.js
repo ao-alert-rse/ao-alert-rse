@@ -32,7 +32,7 @@ async function syncAOsToSupabase(aos) {
       description: ao.description || null,
       url: ao.url || null,
       date_cloture: ao.dateClôture && ao.dateClôture.length === 10 ? ao.dateClôture : null,
-      prix: ao.prix || null,
+      ...(ao.prix > 0 ? { prix: ao.prix } : {}),
       tags: tags || [],
       date_vue: ao.dateVue || new Date().toISOString(),
       is_new: ao.nouveau || false
