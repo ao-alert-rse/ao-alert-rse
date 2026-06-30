@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  ignore = "exit 0"   # ne jamais lancer de build Node
+  command = ""
 
 [[redirects]]
   from = "/"
