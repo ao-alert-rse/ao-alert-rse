@@ -332,6 +332,29 @@
     .save-msg.ok  { color: #065f46; }
     .save-msg.err { color: #991b1b; }
 
+    /* Documents */
+    .docs-section { margin-top: 4px; }
+    .docs-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .04em; margin-bottom: 12px; }
+    .docs-list { margin-bottom: 10px; }
+    .doc-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; background: var(--bg); margin-bottom: 6px; }
+    .doc-name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-link { color: var(--vert); font-size: 12px; text-decoration: none; white-space: nowrap; font-weight: 600; }
+    .doc-link:hover { text-decoration: underline; }
+    .btn-del-doc { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 6px; border-radius: 4px; }
+    .btn-del-doc:hover { color: #991b1b; background: #fee2e2; }
+    .doc-empty { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+    .btn-upload-label {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 10px;
+      border: 1.5px dashed var(--border); border-radius: var(--radius);
+      cursor: pointer; font-size: 13px; color: var(--muted);
+      transition: all .15s;
+    }
+    .btn-upload-label:hover { border-color: var(--vert); color: var(--vert); }
+    .upload-msg { margin-top: 8px; font-size: 12px; text-align: center; min-height: 16px; }
+    .upload-msg.ok  { color: #065f46; }
+    .upload-msg.err { color: #991b1b; }
+
     /* Onglets */
     .tabs {
       display: flex;
@@ -475,6 +498,16 @@
       <textarea id="p-comment" class="comment-area" placeholder="Commentaire optionnel…" rows="3"></textarea>
       <button id="p-btn-save" class="btn-save-dec">Enregistrer la décision</button>
       <div id="p-save-msg" class="save-msg"></div>
+    </div>
+    <div class="sep"></div>
+    <div class="docs-section">
+      <div class="docs-title">Documents DCE</div>
+      <div id="p-docs-list" class="docs-list"></div>
+      <label class="btn-upload-label" id="p-upload-label">
+        ＋ Ajouter un document
+        <input type="file" id="p-file-input" accept=".pdf,.doc,.docx,.zip,.xls,.xlsx,.ppt,.pptx" />
+      </label>
+      <div id="p-upload-msg" class="upload-msg"></div>
     </div>
   </div>
 </div>
@@ -702,6 +735,7 @@ function openPanel(ao) {
 
   document.getElementById('overlay').classList.add('on');
   document.getElementById('panel').classList.add('on');
+  loadDocuments(ao.id);
 }
 
 function updateDecBtns() {
@@ -747,6 +781,84 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
     render();
   }
 });
+
+// ── Documents ─────────────────────────────────────────────
+async function loadDocuments(aoId) {
+  const list = document.getElementById('p-docs-list');
+  list.innerHTML = '<div class="doc-empty">Chargement…</div>';
+
+  const { data, error } = await sb.from('documents').select('*')
+    .eq('ao_id', aoId).order('created_at', { ascending: false });
+
+  if (error || !data || data.length === 0) {
+    list.innerHTML = '<div class="doc-empty">Aucun document ajouté.</div>';
+    return;
+  }
+
+  const items = await Promise.all(data.map(async doc => {
+    if (!doc.storage_key) return { doc, url: null };
+    const { data: signed } = await sb.storage.from('dce').createSignedUrl(doc.storage_key, 3600);
+    return { doc, url: signed?.signedUrl || null };
+  }));
+
+  list.innerHTML = items.map(({ doc, url }) => `
+    <div class="doc-item">
+      <span class="doc-name" title="${esc(doc.nom)}">${esc(doc.nom)}</span>
+      ${url ? `<a class="doc-link" href="${esc(url)}" target="_blank" rel="noopener">⬇ Télécharger</a>` : ''}
+      <button class="btn-del-doc" data-doc-id="${esc(doc.id)}" data-storage-key="${esc(doc.storage_key||'')}" data-ao-id="${esc(aoId)}" title="Supprimer">✕</button>
+    </div>`).join('');
+
+  list.querySelectorAll('.btn-del-doc').forEach(btn =>
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      deleteDocument(btn.dataset.docId, btn.dataset.storageKey, btn.dataset.aoId);
+    })
+  );
+}
+
+document.getElementById('p-file-input').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file || !currentAO) return;
+  const msg   = document.getElementById('p-upload-msg');
+  const label = document.getElementById('p-upload-label');
+  label.style.opacity = '0.5';
+  msg.className = 'upload-msg';
+  msg.textContent = 'Envoi en cours…';
+
+  const path = `${currentAO.id}/${Date.now()}-${file.name}`;
+  const { error: upErr } = await sb.storage.from('dce').upload(path, file);
+
+  if (upErr) {
+    msg.className = 'upload-msg err';
+    msg.textContent = 'Erreur : ' + upErr.message;
+    label.style.opacity = '1';
+    e.target.value = '';
+    return;
+  }
+
+  const { error: dbErr } = await sb.from('documents').insert({
+    ao_id: currentAO.id, nom: file.name, storage_key: path, taille_bytes: file.size
+  });
+
+  label.style.opacity = '1';
+  e.target.value = '';
+
+  if (dbErr) {
+    msg.className = 'upload-msg err';
+    msg.textContent = 'Fichier envoyé mais erreur DB : ' + dbErr.message;
+  } else {
+    msg.className = 'upload-msg ok';
+    msg.textContent = '✓ Document ajouté';
+    loadDocuments(currentAO.id);
+  }
+});
+
+async function deleteDocument(docId, storageKey, aoId) {
+  if (!confirm('Supprimer ce document ?')) return;
+  if (storageKey) await sb.storage.from('dce').remove([storageKey]);
+  await sb.from('documents').delete().eq('id', docId);
+  loadDocuments(aoId);
+}
 
 function closePanel() {
   document.getElementById('overlay').classList.remove('on');
