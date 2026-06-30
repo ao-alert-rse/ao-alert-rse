@@ -676,15 +676,17 @@ function buildKPIs() {
   document.getElementById('kpi-remporte').textContent     = remportes.length;
   document.getElementById('kpi-remporte-sub').textContent = fmtEuro(montantRemporte) || 'montants non renseignés';
 
-  // Urgents ≤ 10j
-  const today = new Date(); today.setHours(0,0,0,0);
-  const in10  = new Date(today); in10.setDate(in10.getDate() + 10);
-  const hors  = ['no_go','perdu','remporte'];
-  const urgents = aos.filter(a => {
+  // Urgents ≤ 10j (comparaison string YYYY-MM-DD, pas de conversion Date → pas de décalage TZ)
+  const now      = new Date();
+  const pad      = n => String(n).padStart(2,'0');
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const in10d    = new Date(now); in10d.setDate(in10d.getDate() + 10);
+  const in10Str  = `${in10d.getFullYear()}-${pad(in10d.getMonth()+1)}-${pad(in10d.getDate())}`;
+  const hors     = ['no_go','perdu','remporte'];
+  const urgents  = aos.filter(a => {
     if (hors.includes(decisions[a.id]?.statut)) return false;
     if (!a.date_cloture) return false;
-    const d = new Date(a.date_cloture);
-    return d >= today && d <= in10;
+    return a.date_cloture >= todayStr && a.date_cloture <= in10Str;
   });
   const urgentVal  = document.getElementById('kpi-urgent');
   const urgentCard = document.getElementById('kpi-urgent-card');

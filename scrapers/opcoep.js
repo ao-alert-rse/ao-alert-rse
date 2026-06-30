@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 // OPCO EP publie ses AOs sur marches-publics.info — page dédiée IDS=6499
 const URL_OPCOEP = 'https://www.marches-publics.info/avis/index.cfm?IDS=6499';
@@ -64,7 +65,7 @@ async function scrapeOPCOEP() {
       description: '',
       dateClôture,
       url,
-      statut: dateClôture ? (new Date(dateClôture) >= new Date() ? 'Ouvert' : 'Fermé') : 'Ouvert',
+      statut: dateClôture ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé') : 'Ouvert',
       source: 'OPCO EP',
       score,
       prix: null,

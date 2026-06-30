@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 // Constructys publie ses AOs sur marches-publics.info (IDS=5173)
 const URL = 'https://www.marches-publics.info/avis/index.cfm?IDS=5173';
@@ -59,7 +60,7 @@ async function scrapeConstructys() {
       description: '',
       dateClôture,
       url,
-      statut: dateClôture ? (new Date(dateClôture) >= new Date() ? 'Ouvert' : 'Fermé') : 'Ouvert',
+      statut: dateClôture ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé') : 'Ouvert',
       source: 'Constructys',
       score,
       prix: null,

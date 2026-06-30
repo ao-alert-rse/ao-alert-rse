@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 // API OpenDataSoft de la DILA — données publiques, pas d'auth requise
 const API_BASE = 'https://boamp-datadila.opendatasoft.com/api/records/1.0/search/';
@@ -85,7 +86,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
  */
 async function queryBOAMP(nomacheteur, source) {
   // Filtre : seulement les AOs dont la date limite est aujourd'hui ou dans le futur
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localToday();
   const params = new URLSearchParams({
     dataset: 'boamp',
     q: `nomacheteur:"${nomacheteur}" AND datelimitereponse>=${today}`,
@@ -156,7 +157,7 @@ function normalizeRecord(rec, sourceOverride) {
     ? f.datelimitereponse.slice(0, 10)
     : (f.datefindiffusion || '');
   const statut = dateClôture
-    ? (new Date(dateClôture) >= new Date() ? 'Ouvert' : 'Fermé')
+    ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
     : 'Ouvert';
   const titre = f.objet || '';
   const description = '';
@@ -181,7 +182,7 @@ function normalizeRecord(rec, sourceOverride) {
  * Pagine jusqu'à maxPages * 100 résultats.
  */
 async function queryBOAMPKeywords(maxPages = 3) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localToday();
   const kwQuery = KEYWORDS_BOAMP.map(k => `objet:"${k}"`).join(' OR ');
   const q = `(${kwQuery}) AND datelimitereponse>=${today}`;
 

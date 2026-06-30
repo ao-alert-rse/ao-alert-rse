@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 const API = 'https://api.ted.europa.eu/v3/notices/search';
 
@@ -194,7 +195,7 @@ function normalizeNotice(n) {
     '';
   const dateClôture = rawDate ? rawDate.slice(0, 10) : '';
   const statut = dateClôture
-    ? (new Date(dateClôture) >= new Date() ? 'Ouvert' : 'Fermé')
+    ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
     : 'Ouvert';
 
   const url = `https://ted.europa.eu/fr/notice/-/detail/${pubNum}`;

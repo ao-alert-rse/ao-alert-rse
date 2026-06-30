@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 const URL_ATLAS = 'https://www.opco-atlas.fr/appels-offres.html';
 
@@ -73,7 +74,7 @@ function parseStatut(raw, dateClôture) {
   if (r.includes('fermé') || r.includes('clôturé') || r.includes('terminé')) return 'Fermé';
   if (r.includes('cours')) return 'En cours';
   if (r.includes('ouvert')) return 'Ouvert';
-  if (dateClôture) return new Date(dateClôture) >= new Date() ? 'Ouvert' : 'Fermé';
+  if (dateClôture) return dateClôture >= localToday() ? 'Ouvert' : 'Fermé';
   return 'Ouvert';
 }
 

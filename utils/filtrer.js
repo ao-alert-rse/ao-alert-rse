@@ -1,3 +1,5 @@
+const { localToday } = require('./date');
+
 const HORS_ZONE = [
   'martinique', 'guadeloupe', 'reunion', 'guyane', 'mayotte',
   'polynesie', 'caledonie', 'saint-pierre', 'saint-martin',
@@ -21,7 +23,7 @@ function normTitre(t) {
 }
 
 function filtrerAOs(aos) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localToday();
   return aos.filter(ao => {
     if (ao.statut === 'Fermé') return false;
     if (ao.dateClôture && ao.dateClôture < today) return false;
