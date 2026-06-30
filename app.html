@@ -432,7 +432,8 @@
     <div class="stat"><div class="val" id="s-total">—</div><div class="lbl">AOs actives</div></div>
     <div class="stat"><div class="val" id="s-new">—</div><div class="lbl">Nouvelles ce scan</div></div>
     <div class="stat"><div class="val" id="s-hot">—</div><div class="lbl">Score ≥ 50</div></div>
-    <div class="stat"><div class="val" id="s-go">—</div><div class="lbl">GO en cours</div></div>
+    <div class="stat" id="s-go-stat"><div class="val" id="s-go">—</div><div class="lbl">GO</div></div>
+    <div class="stat" id="s-nogo-stat"><div class="val" id="s-nogo">—</div><div class="lbl">NO GO</div></div>
     <div class="stat" id="s-deadline-stat"><div class="val" id="s-deadline">—</div><div class="lbl">Clôtures ≤ 14j</div></div>
   </div>
 
@@ -589,9 +590,13 @@ function buildStats() {
   document.getElementById('s-new').textContent   = aos.filter(a => a.is_new).length;
   document.getElementById('s-hot').textContent   = aos.filter(a => a.score >= 50).length;
 
-  // GO en cours
-  const nbGo = aos.filter(a => decisions[a.id]?.statut === 'go').length;
-  document.getElementById('s-go').textContent = nbGo;
+  // GO / NO GO
+  const nbGo   = aos.filter(a => decisions[a.id]?.statut === 'go').length;
+  const nbNoGo = aos.filter(a => decisions[a.id]?.statut === 'no_go').length;
+  document.getElementById('s-go').textContent   = nbGo;
+  document.getElementById('s-nogo').textContent = nbNoGo;
+  document.getElementById('s-go-stat').style.background   = nbGo   > 0 ? 'rgba(16,185,129,.25)' : 'rgba(255,255,255,.12)';
+  document.getElementById('s-nogo-stat').style.background = nbNoGo > 0 ? 'rgba(239,68,68,.2)'   : 'rgba(255,255,255,.12)';
 
   // Clôtures ≤ 14 jours (AOs non NO GO avec date_cloture renseignée)
   const today = new Date(); today.setHours(0, 0, 0, 0);
