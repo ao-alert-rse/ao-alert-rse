@@ -372,6 +372,20 @@
     .upload-msg.ok  { color: #065f46; }
     .upload-msg.err { color: #991b1b; }
 
+    /* Checklist */
+    .checklist-section { margin-top: 4px; }
+    .checklist-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .04em; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .checklist-progress { font-size: 11px; color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .progress-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 14px; }
+    .progress-bar { height: 4px; background: var(--vert); border-radius: 2px; transition: width .3s; }
+    .checklist-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; background: var(--bg); cursor: pointer; transition: background .15s; }
+    .checklist-item:hover { background: #ede8da; }
+    .checklist-item.done { background: #ecfdf5; }
+    .checklist-item input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--vert); cursor: pointer; flex-shrink: 0; }
+    .checklist-item .step-label { flex: 1; font-size: 13px; transition: color .15s; }
+    .checklist-item.done .step-label { color: var(--muted); text-decoration: line-through; }
+    .checklist-item .step-meta { font-size: 10px; color: var(--muted); white-space: nowrap; }
+
     /* Onglets */
     .tabs {
       display: flex;
@@ -574,6 +588,15 @@
       <textarea id="p-comment" class="comment-area" placeholder="Commentaire optionnel…" rows="3"></textarea>
       <button id="p-btn-save" class="btn-save-dec">Enregistrer la décision</button>
       <div id="p-save-msg" class="save-msg"></div>
+    </div>
+    <div class="sep" id="checklist-sep" style="display:none"></div>
+    <div class="checklist-section" id="checklist-section" style="display:none">
+      <div class="checklist-title">
+        Procédure de réponse
+        <span class="checklist-progress" id="checklist-progress"></span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="checklist-bar" style="width:0%"></div></div>
+      <div id="checklist-items"></div>
     </div>
     <div class="sep"></div>
     <div class="docs-section">
@@ -948,6 +971,9 @@ function openPanel(ao) {
   document.getElementById('overlay').classList.add('on');
   document.getElementById('panel').classList.add('on');
   loadDocuments(ao.id);
+  const statut = dec?.statut || null;
+  toggleChecklistVisibility(statut);
+  if (SHOW_CHECKLIST.includes(statut)) loadChecklist(ao.id);
 }
 
 function updateDecBtns() {
@@ -988,6 +1014,8 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
     decisions[currentAO.id] = { statut: panelStatut, commentaire: document.getElementById('p-comment').value.trim() };
     msg.className = 'save-msg ok';
     msg.textContent = '✓ Décision enregistrée';
+    toggleChecklistVisibility(panelStatut);
+    if (SHOW_CHECKLIST.includes(panelStatut)) loadChecklist(currentAO.id);
     buildKPIs();
     buildCharts();
     updateTabCounts();
@@ -1071,6 +1099,69 @@ async function deleteDocument(docId, storageKey, aoId) {
   if (storageKey) await sb.storage.from('dce').remove([storageKey]);
   await sb.from('documents').delete().eq('id', docId);
   loadDocuments(aoId);
+}
+
+// ── Checklist ─────────────────────────────────────────────
+const CHECKLIST_STEPS = [
+  'Brief interne rédigé',
+  'Questions à l\'acheteur envoyées',
+  'Offre technique rédigée',
+  'Offre financière rédigée',
+  'Dossier soumis sur la plateforme',
+];
+
+const SHOW_CHECKLIST = ['en_cours', 'repondu', 'remporte', 'perdu'];
+
+function toggleChecklistVisibility(statut) {
+  const show = SHOW_CHECKLIST.includes(statut);
+  document.getElementById('checklist-section').style.display = show ? 'block' : 'none';
+  document.getElementById('checklist-sep').style.display    = show ? 'block' : 'none';
+}
+
+async function loadChecklist(aoId) {
+  const { data } = await sb.from('checklist').select('*')
+    .eq('ao_id', aoId).order('ordre');
+
+  if (!data || data.length === 0) {
+    // Créer les étapes par défaut
+    const rows = CHECKLIST_STEPS.map((step, i) => ({
+      ao_id: aoId, step, ordre: i + 1, done: false
+    }));
+    const { data: created } = await sb.from('checklist').insert(rows).select();
+    renderChecklist(created || rows.map((r, i) => ({ ...r, id: i })));
+  } else {
+    renderChecklist(data);
+  }
+}
+
+function renderChecklist(items) {
+  const done  = items.filter(i => i.done).length;
+  const total = items.length;
+  const pct   = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById('checklist-progress').textContent = `${done}/${total}`;
+  document.getElementById('checklist-bar').style.width = pct + '%';
+
+  document.getElementById('checklist-items').innerHTML = items.map(item => `
+    <div class="checklist-item ${item.done ? 'done' : ''}" data-id="${esc(item.id)}">
+      <input type="checkbox" ${item.done ? 'checked' : ''} />
+      <span class="step-label">${esc(item.step)}</span>
+      ${item.done && item.done_by ? `<span class="step-meta">${esc(item.done_by).split('@')[0]}</span>` : ''}
+    </div>`).join('');
+
+  document.querySelectorAll('#checklist-items .checklist-item').forEach(el =>
+    el.addEventListener('click', async () => {
+      const id   = el.dataset.id;
+      const done = !el.classList.contains('done');
+      const auteur = document.getElementById('user-lbl').textContent;
+      await sb.from('checklist').update({
+        done,
+        done_at: done ? new Date().toISOString() : null,
+        done_by: done ? auteur : null,
+      }).eq('id', id);
+      loadChecklist(currentAO.id);
+    })
+  );
 }
 
 function closePanel() {
