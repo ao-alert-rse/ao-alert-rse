@@ -451,7 +451,8 @@
 
   <div class="tabs">
     <button class="tab-btn on" data-view="pending">À décider <span class="count" id="count-pending">—</span></button>
-    <button class="tab-btn" data-view="decided">Décidées <span class="count" id="count-decided">—</span></button>
+    <button class="tab-btn" data-view="go">En cours <span class="count" id="count-go">—</span></button>
+    <button class="tab-btn" data-view="nogo">Refusées <span class="count" id="count-nogo">—</span></button>
   </div>
 
   <div class="table-wrap">
@@ -653,9 +654,10 @@ document.getElementById('score-chips').addEventListener('click', e => {
 
 function filtered() {
   return aos.filter(a => {
-    const hasDecision = !!decisions[a.id];
-    if (activeView === 'pending' && hasDecision) return false;
-    if (activeView === 'decided' && !hasDecision) return false;
+    const statut = decisions[a.id]?.statut || null;
+    if (activeView === 'pending' && statut !== null) return false;
+    if (activeView === 'go'      && statut !== 'go') return false;
+    if (activeView === 'nogo'    && statut !== 'no_go') return false;
     if (a.score < scoreMin) return false;
     if (search && !a.titre.toLowerCase().includes(search) && !(a.source||'').toLowerCase().includes(search)) return false;
     if (activeTags.size && !(a.tags||[]).some(t => activeTags.has(t))) return false;
@@ -664,9 +666,9 @@ function filtered() {
 }
 
 function updateTabCounts() {
-  const decided = aos.filter(a => !!decisions[a.id]).length;
-  document.getElementById('count-pending').textContent = aos.length - decided;
-  document.getElementById('count-decided').textContent = decided;
+  document.getElementById('count-pending').textContent = aos.filter(a => !decisions[a.id]).length;
+  document.getElementById('count-go').textContent      = aos.filter(a => decisions[a.id]?.statut === 'go').length;
+  document.getElementById('count-nogo').textContent    = aos.filter(a => decisions[a.id]?.statut === 'no_go').length;
 }
 
 // ── Rendu tableau ─────────────────────────────────────────
