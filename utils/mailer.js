@@ -106,8 +106,44 @@ function buildHtml(nouvelles, enCours) {
 </html>`;
 }
 
+function getTransporter() {
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPassword = process.env.GMAIL_APP_PASSWORD;
+  if (!gmailUser || !gmailPassword) return null;
+  return nodemailer.createTransport({
+    host: 'smtp.gmail.com', port: 465, secure: true,
+    auth: { user: gmailUser, pass: gmailPassword },
+  });
+}
+
+function getDestinataires() {
+  const emailsPath = path.join(__dirname, '..', 'data', 'emails.json');
+  const { destinataires } = JSON.parse(fs.readFileSync(emailsPath, 'utf8'));
+  return destinataires || [];
+}
+
+async function sendEmailAnomalie() {
+  const transporter = getTransporter();
+  if (!transporter) { console.warn('⚠️  Email ignoré : credentials manquants.'); return; }
+  const destinataires = getDestinataires();
+  if (!destinataires.length) return;
+
+  await transporter.sendMail({
+    from: `"AO Alert RSE/TEE" <${process.env.GMAIL_USER}>`,
+    to: destinataires.join(', '),
+    subject: '[AO Alert] ⚠️ Scan — 0 AO retournée (anomalie ?)',
+    html: `<p>Le scan hebdomadaire n'a retourné <strong>aucune AO</strong> toutes sources confondues.</p>
+           <p>Vérifier : timeout réseau, changement de structure des sites, ou coupure BOAMP/TED.</p>`,
+  });
+  console.log('⚠️  Email anomalie envoyé (0 AO).');
+}
+
 async function sendEmailRecap(nouvelles, enCours = []) {
-  if (nouvelles.length === 0) return;
+  const nouvellesEmail = nouvelles.filter(ao => ao.score >= 35);
+  if (nouvellesEmail.length === 0) {
+    if (nouvelles.length > 0) console.log(`📧 Email ignoré : ${nouvelles.length} nouvelle(s) AO mais aucune ≥ 35.`);
+    return;
+  }
 
   const gmailUser = process.env.GMAIL_USER;
   const gmailPassword = process.env.GMAIL_APP_PASSWORD;
@@ -132,16 +168,16 @@ async function sendEmailRecap(nouvelles, enCours = []) {
     auth: { user: gmailUser, pass: gmailPassword },
   });
 
-  const subject = `[AO Alert] ${nouvelles.length} nouvelle${nouvelles.length > 1 ? 's' : ''} AO RSE/TEE`;
+  const subject = `[AO Alert] ${nouvellesEmail.length} nouvelle${nouvellesEmail.length > 1 ? 's' : ''} AO RSE/TEE (score ≥ 35)`;
 
   await transporter.sendMail({
     from: `"AO Alert RSE/TEE" <${gmailUser}>`,
     to: destinataires.join(', '),
     subject,
-    html: buildHtml(nouvelles, enCours),
+    html: buildHtml(nouvellesEmail, enCours),
   });
 
-  console.log(`📧 Email envoyé à : ${destinataires.join(', ')}`);
+  console.log(`📧 Email envoyé à : ${destinataires.join(', ')} (${nouvellesEmail.length}/${nouvelles.length} nouvelles ≥ 35)`);
 }
 
-module.exports = { sendEmailRecap };
+module.exports = { sendEmailRecap, sendEmailAnomalie };

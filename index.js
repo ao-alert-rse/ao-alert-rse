@@ -11,7 +11,7 @@ const { scrapeConstructys } = require('./scrapers/constructys');
 const { scrapeOpcoMobilites } = require('./scrapers/opcomobilites');
 const { scrapeMaximilien } = require('./scrapers/maximilien');
 const { detectNewAOs } = require('./utils/detector');
-const { sendEmailRecap } = require('./utils/mailer');
+const { sendEmailRecap, sendEmailAnomalie } = require('./utils/mailer');
 const { filtrerAOs, dedupCrossSource } = require('./utils/filtrer');
 const { generateHTMLReport } = require('./utils/reporter');
 
@@ -159,7 +159,12 @@ async function main() {
 
   afficherNouvellesAOs(nouvelles);
   generateHTMLReport(toutesAOs, nouvelles);
-  await sendEmailRecap(nouvelles, enCours);
+
+  if (toutesAOs.length === 0) {
+    await sendEmailAnomalie();
+  } else {
+    await sendEmailRecap(nouvelles, enCours);
+  }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log('\n' + '═'.repeat(59));
