@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { scoreRSETEEDetailed } = require('./scorer');
+const { scoreRSETEEDetailed, getThemeTags } = require('./scorer');
 
 const REPORT_PATH = path.join(__dirname, '..', 'rapport.html');
 const LOGO_PATH = path.join(__dirname, '..', 'assets', 'logo-nk.png');
@@ -122,6 +122,18 @@ td.dtc.urg{color:var(--urgent);font-weight:700}td.dtc.soon{color:var(--warn);fon
 .bkd-kw.desc{opacity:.7;font-style:italic}
 .bkd-pts{margin-left:auto;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .bkd-pts.pos{color:var(--brand)}.bkd-pts.neg{color:var(--fire)}.bkd-pts.bon{color:var(--star)}
+.ttag{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.04em;border:1px solid;margin-right:3px;margin-top:4px;cursor:pointer;transition:opacity .1s;white-space:nowrap}
+.ttag:hover{opacity:.75}
+.ttag[data-t="RSE"]      {background:rgba(0,83,65,.09);color:#005341;border-color:rgba(0,83,65,.28)}
+.ttag[data-t="Carbone"]  {background:rgba(2,119,189,.09);color:#0277BD;border-color:rgba(2,119,189,.28)}
+.ttag[data-t="CSRD"]     {background:rgba(13,71,161,.09);color:#0D47A1;border-color:rgba(13,71,161,.28)}
+.ttag[data-t="QVCT"]     {background:rgba(106,27,154,.09);color:#6A1B9A;border-color:rgba(106,27,154,.28)}
+.ttag[data-t="Formation"]{background:rgba(189,91,0,.09);color:#A85200;border-color:rgba(189,91,0,.28)}
+.ttag[data-t="Achats"]   {background:rgba(191,54,12,.09);color:#BF360C;border-color:rgba(191,54,12,.28)}
+.ttag[data-t="Éco-conc."]{background:rgba(0,105,92,.09);color:#00695C;border-color:rgba(0,105,92,.28)}
+.ttag.active{opacity:1!important;filter:brightness(.92);outline:2px solid currentColor;outline-offset:1px}
+.tag-bar{display:flex;align-items:center;gap:6px;padding:8px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.tag-bar-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-s);flex-shrink:0}
 </style>
 </head>
 <body>
@@ -158,6 +170,7 @@ td.dtc.urg{color:var(--urgent);font-weight:700}td.dtc.soon{color:var(--warn);fon
   <span class="fcnt" id="fcnt"></span>
 </div>
 
+<div class="tag-bar" id="tagBar" style="display:none"><span class="tag-bar-label">Thème</span></div>
 <div class="sbar" id="sbar"></div>
 
 <div class="twrap">
@@ -198,7 +211,7 @@ function tierLabel(s){return s>=80?'🔥 Prioritaire':s>=50?'⭐ Pertinent':'Sui
 function tierColor(s){return s>=80?'var(--fire)':s>=50?'var(--star)':'var(--brand)'}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-let sortCol='score',sortAsc=false,minScore=0,newOnly=false,query='',srcFilter='',activeIdx=-1;
+let sortCol='score',sortAsc=false,minScore=0,newOnly=false,query='',srcFilter='',activeTag='',activeIdx=-1;
 const aos=AO_DATA.aos;
 const meta=AO_DATA.meta;
 
@@ -208,6 +221,23 @@ document.getElementById('scanDate').textContent=sd.toLocaleDateString('fr-FR',{d
 const sources=[...new Set(aos.map(a=>a.source))].sort();
 const sel=document.getElementById('srcFilter');
 sources.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o)});
+
+const TAG_ORDER=['RSE','Carbone','CSRD','QVCT','Formation','Achats','Éco-conc.'];
+const allTags=[...new Set(aos.flatMap(a=>a.tags||[]))].sort((a,b)=>TAG_ORDER.indexOf(a)-TAG_ORDER.indexOf(b));
+const tagBar=document.getElementById('tagBar');
+if(allTags.length){
+  tagBar.style.display='';
+  allTags.forEach(t=>{
+    const btn=document.createElement('span');
+    btn.className='ttag';btn.dataset.t=t;btn.textContent=t;
+    btn.addEventListener('click',()=>{
+      activeTag=activeTag===t?'':t;
+      tagBar.querySelectorAll('.ttag').forEach(el=>el.classList.toggle('active',el.dataset.t===activeTag));
+      render();
+    });
+    tagBar.appendChild(btn);
+  });
+}
 
 function renderStats(list){
   const avecPrix=list.filter(a=>a.prix).length;
@@ -224,6 +254,7 @@ function filtered(){
     if(newOnly&&!a.nouveau)return false;
     if(srcFilter&&a.source!==srcFilter)return false;
     if(q&&!a.titre.toLowerCase().includes(q)&&!a.source.toLowerCase().includes(q)&&!(a.description||'').toLowerCase().includes(q))return false;
+    if(activeTag&&!(a.tags||[]).includes(activeTag))return false;
     return true;
   }).sort((a,b)=>{
     let va=a[sortCol],vb=b[sortCol];
@@ -241,7 +272,8 @@ function makeRow(ao){
   const newTag=ao.nouveau?'<span class="nbadge">NOUVEAU</span>':'';
   const dateStr=ao.cloture?fmtDate(ao.cloture):'<span title="Date non communiquée" style="color:var(--text-s);font-size:11px">N/C</span>';
   const realIdx=aos.indexOf(ao);
-  return '<tr data-idx="'+realIdx+'" class="'+(realIdx===activeIdx?'active':'')+'"><td class="sc"><span class="sbadge '+t+'">'+(t==='fire'?'🔥 ':t==='star'?'⭐ ':'')+ao.score+'</span><div class="sbrk"><div class="sbrk-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div></td><td class="tc"><div class="ao-t">'+highlight(ao.titre,query)+newTag+'</div>'+(ao.description?'<div class="ao-d">'+esc((ao.description||'').slice(0,120))+'</div>':'')+'</td><td class="srcc">'+highlight(ao.source,query)+'</td><td class="prc'+(prixStr?'':' none')+'">'+(prixStr||'—')+'</td><td class="dtc '+(urg==='urg'?'urg':urg==='soon'?'soon':urg==='na'?'na':'')+'">'+dateStr+(urg==='urg'?' ⚠':'')+'</td></tr>';
+  const tagsHtml=(ao.tags||[]).map(tg=>'<span class="ttag'+(tg===activeTag?' active':'')+'" data-t="'+esc(tg)+'">'+esc(tg)+'</span>').join('');
+  return '<tr data-idx="'+realIdx+'" class="'+(realIdx===activeIdx?'active':'')+'"><td class="sc"><span class="sbadge '+t+'">'+(t==='fire'?'🔥 ':t==='star'?'⭐ ':'')+ao.score+'</span><div class="sbrk"><div class="sbrk-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div></td><td class="tc"><div class="ao-t">'+highlight(ao.titre,query)+newTag+'</div>'+(ao.description?'<div class="ao-d">'+esc((ao.description||'').slice(0,120))+'</div>':'')+(tagsHtml?'<div style="margin-top:4px">'+tagsHtml+'</div>':'')+'</td><td class="srcc">'+highlight(ao.source,query)+'</td><td class="prc'+(prixStr?'':' none')+'">'+(prixStr||'—')+'</td><td class="dtc '+(urg==='urg'?'urg':urg==='soon'?'soon':urg==='na'?'na':'')+'">'+dateStr+(urg==='urg'?' ⚠':'')+'</td></tr>';
 }
 function makeSep(label,count,isNew){
   return '<tr class="sep-row"><td colspan="5"><div class="sep-inner'+(isNew?' new':'')+'"><span class="sep-dot"></span>'+label+'<span class="sep-cnt">'+count+' AO'+(count>1?'s':'')+'</span></div></td></tr>';
@@ -343,6 +375,7 @@ function generateHTMLReport(toutesAOs, nouvelles) {
 
   const aos = toutesAOs.map(ao => {
     const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
+    const tags = getThemeTags(breakdown);
     return {
       titre: ao.titre,
       description: ao.description || '',
@@ -353,6 +386,7 @@ function generateHTMLReport(toutesAOs, nouvelles) {
       url: ao.url,
       nouveau: newKeys.has(`${ao.source}||${ao.titre}`),
       breakdown,
+      tags,
     };
   });
 

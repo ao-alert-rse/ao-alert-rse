@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2026-06-30T08:31:49.754Z",
+    "totalRecus": 392,
+    "totalValides": 21,
+    "nouvelles": 3,
+    "nouvellesTitres": [
+      {
+        "titre": "Évaluation des services écosystémiques de quatre aires marines protégées en Afrique du Sud et en France.",
+        "score": 48,
+        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
+      },
+      {
+        "titre": "Accompagnement et suivi des entreprises - Opération collective achats durables",
+        "score": 75,
+        "source": "Chambres de Commerce et d'Industrie (CCI)"
+      },
+      {
+        "titre": "[AFD] - Etude de faisabilité du financement de l’AFD en faveur du secteur agricole en 2027 - Projet d’appui à la transition",
+        "score": 41,
+        "source": "Ministère de l'Europe et des Affaires étrangères"
+      }
+    ],
+    "enCours": 19
+  }
+]

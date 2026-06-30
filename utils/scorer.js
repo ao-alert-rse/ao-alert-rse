@@ -196,4 +196,24 @@ function scoreRSETEEDetailed(titre, description) {
   return { score, breakdown: { matched, bonus, penalites, ptsTheme, ptsVerbe } };
 }
 
-module.exports = { scoreRSETEE, scoreRSETEEDetailed };
+const TAG_MAP = [
+  { label: 'RSE',       kws: ['accompagnement rse','conseil rse','diagnostic rse','stratégie rse','démarche rse','plan rse','audit rse','rapport rse','politique rse','label rse','iso 26000','double matérialité','matérialité','gouvernance durable','feuille de route rse','certification rse','entreprise à mission','raison d\'être','responsabilité sociétale','rse','esg','notation esg','ecovadis','b corp','sapin ii','droits humains','alerte éthique','plan de vigilance','communication responsable','communication à impact','engagement parties prenantes'] },
+  { label: 'Carbone',   kws: ['bilan carbone','bilan ges','bilan d\'émissions','empreinte carbone','feuille de route carbone','plan de transition','plan climat','neutralité carbone','net zero','sbti','ghg protocol','scope 1','scope 2','scope 3','carbone','ges','décarbonation','transition écologique','transition énergétique'] },
+  { label: 'CSRD',      kws: ['csrd','esrs','vsme','dpef','rapport de durabilité','reporting esg','reporting extra-financier','extra-financier','taxonomie européenne'] },
+  { label: 'QVCT',      kws: ['accompagnement qvt','démarche qvt','diagnostic qvt','accompagnement qvct','démarche qvct','accord qvct','diagnostic qvct','risques psychosociaux','égalité professionnelle','index égalité','accord diversité','qvt','qvct','qualité de vie au travail','diversité','inclusion'] },
+  { label: 'Formation', kws: ['formation rse','formation climat','formation esg','formation csrd','fresque du climat','parcours pédagogique','sensibilisation','acculturation','montée en compétences','e-learning','atelier participatif'] },
+  { label: 'Achats',    kws: ['achats responsables','achats durables','due diligence','devoir de vigilance','fournisseurs responsables','cartographie fournisseurs','supply chain responsable'] },
+  { label: 'Éco-conc.', kws: ['économie circulaire','analyse du cycle de vie','écoconception','acv','réemploi','biodiversité','numérique responsable','green it','it for green','sobriété numérique','sobriété','développement durable','durabilité'] },
+];
+
+function getThemeTags(breakdown) {
+  if (!breakdown || !breakdown.matched) return [];
+  const matchedSet = new Set(breakdown.matched.map(m => norm(m.kw)));
+  const tags = [];
+  for (const { label, kws } of TAG_MAP) {
+    if (kws.some(k => matchedSet.has(norm(k)))) tags.push(label);
+  }
+  return tags;
+}
+
+module.exports = { scoreRSETEE, scoreRSETEEDetailed, getThemeTags };
