@@ -411,9 +411,10 @@
   <div class="auth-card">
     <img src="assets/logo-nk.png" alt="nam & kouji" />
     <h1>Veille AOs RSE</h1>
-    <p>Entrez votre email pour recevoir un lien de connexion sécurisé</p>
+    <p>Connectez-vous avec votre email et mot de passe</p>
     <input class="auth-input" type="email" id="auth-email" placeholder="prenom.nom@nam-kouji.fr" autocomplete="email" />
-    <button class="btn-primary" id="auth-btn">Envoyer le lien de connexion</button>
+    <input class="auth-input" type="password" id="auth-password" placeholder="Mot de passe" autocomplete="current-password" />
+    <button class="btn-primary" id="auth-btn">Se connecter</button>
     <div id="auth-msg" class="auth-msg"></div>
   </div>
 </div>
@@ -544,21 +545,17 @@ document.getElementById('auth-btn').addEventListener('click', async () => {
   const msg = document.getElementById('auth-msg');
   const btn = document.getElementById('auth-btn');
   if (!email) return;
+  const password = document.getElementById('auth-password').value;
+  if (!password) return;
   btn.disabled = true;
-  btn.textContent = 'Envoi en cours…';
-  const { error } = await sb.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: window.location.href }
-  });
+  btn.textContent = 'Connexion…';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   btn.disabled = false;
-  btn.textContent = 'Envoyer le lien de connexion';
-  msg.style.display = 'block';
+  btn.textContent = 'Se connecter';
   if (error) {
+    msg.style.display = 'block';
     msg.className = 'auth-msg err';
-    msg.textContent = 'Erreur : ' + error.message;
-  } else {
-    msg.className = 'auth-msg ok';
-    msg.textContent = '✓ Lien envoyé ! Vérifiez votre boîte email et cliquez le lien.';
+    msg.textContent = 'Identifiants incorrects.';
   }
 });
 
