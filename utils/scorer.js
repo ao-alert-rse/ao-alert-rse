@@ -65,42 +65,6 @@ const VERBES_POSITIFS = [
   'montée en compétences', 'e-learning', 'fresque', 'atelier participatif',
 ];
 
-// Signaux négatifs — clairement hors périmètre conseil RSE
-const SIGNAUX_NEGATIFS = [
-  // Travaux / opérations physiques
-  'travaux', 'nettoyage', 'gardiennage', 'sécurité incendie',
-  // Fournitures / matériel
-  'fournitures de bureau', 'matériel', 'véhicule', 'mobilier', 'impression', 'routage',
-  // Services généraux
-  'assurance', 'banque', 'audit comptable', 'restauration', 'traiteur',
-  'hébergement', 'location', 'transport', 'reprographie', 'téléphonie',
-  // Espaces / logistique
-  'espaces verts', 'voirie', 'collecte de déchets',
-  // Services divers
-  "prestation d'insertion", "prestations d'insertion",
-  'kiosque', 'factotum',
-  // Urbanisme / aménagement concerté (≠ conseil RSE entreprise)
-  'zac', 'aménagement concerté', "opération d'aménagement", 'orcod',
-  'séquano', 'grand paris aménagement',
-  // Alimentation
-  'circuits courts', 'restauration scolaire', 'produits alimentaires',
-  // Petite enfance
-  'berceaux', 'crèche',
-  // IT opérationnel (≠ numérique responsable)
-  'solution de suivi', 'maintenance développement', 'maintenance informatique',
-  // Audit hors RSE
-  'audit qualité produit',
-  // Entités foncières / aménagement
-  'établissement public foncier',
-  // Accessibilité handicap/RGAA (≠ numérique responsable RSE)
-  'mise en accessibilité',
-  // Santé / soins hospitaliers
-  'psychiatrie', 'aide-soignant',
-  // Alimentation froide
-  'liaison froide',
-  // Catalogues d'avantages salariaux (type AGOSPAP)
-  'avantages salariés', 'action sociale des agents', 'produits locatifs',
-];
 
 function norm(s) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -147,11 +111,6 @@ function scoreRSETEE(titre, description) {
 
   if (hasTheme && hasVerb) score += 15;
 
-  for (const kw of SIGNAUX_NEGATIFS) {
-    if (matches(titre, kw) || matches(description, kw)) score -= 40;
-  }
-
-  // Sans aucun thème RSE/ESG/TEE, l'AO n'est pas une mission conseil pertinente
   if (!hasTheme) return 0;
 
   return score;
@@ -183,17 +142,12 @@ function scoreRSETEEDetailed(titre, description) {
   const bonus = (hasTheme && hasVerb) ? 15 : 0;
   score += bonus;
 
-  const penalites = [];
-  for (const kw of SIGNAUX_NEGATIFS) {
-    if (matches(titre, kw) || matches(description, kw)) { score -= 40; penalites.push(kw); }
-  }
-
   if (!hasTheme) score = 0;
 
   const ptsTheme = matched.filter(m => m.cat.startsWith('theme')).reduce((s, m) => s + m.pts, 0);
   const ptsVerbe = matched.filter(m => m.cat === 'verbe').reduce((s, m) => s + m.pts, 0);
 
-  return { score, breakdown: { matched, bonus, penalites, ptsTheme, ptsVerbe } };
+  return { score, breakdown: { matched, bonus, penalites: [], ptsTheme, ptsVerbe } };
 }
 
 const TAG_MAP = [

@@ -22,5 +22,21 @@
       }
     ],
     "enCours": 19
+  },
+  {
+    "date": "2026-06-30T08:42:00.296Z",
+    "totalRecus": 392,
+    "totalValides": 21,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 19
+  },
+  {
+    "date": "2026-06-30T10:17:13.387Z",
+    "totalRecus": 394,
+    "totalValides": 21,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 19
   }
 ]
