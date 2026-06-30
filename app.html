@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <style>
     :root {
       --vert:    #085440;
@@ -108,22 +109,30 @@
     }
     .btn-logout:hover { background: rgba(255,255,255,.1); }
 
-    /* Stats */
-    .stats-bar {
-      background: var(--vert);
-      padding: 0 24px 16px;
+    /* KPI Cards */
+    .kpi-section { background: var(--white); padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
       display: flex;
-      gap: 12px;
+      flex-direction: column;
+      gap: 4px;
     }
-    .stat {
-      background: rgba(255,255,255,.12);
-      border-radius: 8px;
-      padding: 10px 18px;
-      color: white;
-      min-width: 110px;
-    }
-    .stat .val { font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 700; }
-    .stat .lbl { font-size: 11px; opacity: .7; margin-top: 1px; }
+    .kpi-card.urgent { border-color: #fca5a5; background: #fff5f5; }
+    .kpi-icon { font-size: 18px; margin-bottom: 6px; }
+    .kpi-val { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .kpi-val.red { color: #dc2626; }
+    .kpi-lbl { font-size: 12px; font-weight: 600; color: var(--text); }
+    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Charts */
+    .charts-section { background: var(--white); padding: 0 24px 20px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .chart-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+    .chart-wrap { position: relative; height: 160px; }
 
     /* Filters */
     .filters {
@@ -413,7 +422,8 @@
     thead th.sortable.active .sort-ico { opacity: 1; }
 
     @media (max-width: 768px) {
-      .stats-bar { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .charts-section { grid-template-columns: 1fr; }
       .filters { padding: 10px 12px; }
       .tabs { padding: 0 12px; }
       .table-wrap { padding: 12px; }
@@ -446,13 +456,43 @@
     <button class="btn-logout" id="btn-logout">Déconnexion</button>
   </header>
 
-  <div class="stats-bar">
-    <div class="stat"><div class="val" id="s-total">—</div><div class="lbl">AOs actives</div></div>
-    <div class="stat"><div class="val" id="s-new">—</div><div class="lbl">Nouvelles ce scan</div></div>
-    <div class="stat"><div class="val" id="s-hot">—</div><div class="lbl">Score ≥ 50</div></div>
-    <div class="stat" id="s-go-stat"><div class="val" id="s-go">—</div><div class="lbl">GO</div></div>
-    <div class="stat" id="s-nogo-stat"><div class="val" id="s-nogo">—</div><div class="lbl">NO GO</div></div>
-    <div class="stat" id="s-deadline-stat"><div class="val" id="s-deadline">—</div><div class="lbl">Clôtures ≤ 14j</div></div>
+  <div class="kpi-section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-val" id="kpi-montant">—</div>
+        <div class="kpi-lbl">Montant pipeline actif</div>
+        <div class="kpi-sub" id="kpi-montant-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-val" id="kpi-remporte">—</div>
+        <div class="kpi-lbl">Remportés</div>
+        <div class="kpi-sub" id="kpi-remporte-sub"></div>
+      </div>
+      <div class="kpi-card" id="kpi-urgent-card">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-val" id="kpi-urgent">—</div>
+        <div class="kpi-lbl">AOs urgents ≤ 10j</div>
+        <div class="kpi-sub" id="kpi-urgent-sub"></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-val" id="kpi-taux">—</div>
+        <div class="kpi-lbl">Taux de succès</div>
+        <div class="kpi-sub">Remportés / (remportés + perdus)</div>
+      </div>
+    </div>
+  </div>
+  <div class="charts-section">
+    <div class="chart-card">
+      <div class="chart-title">AOs détectés par mois</div>
+      <div class="chart-wrap"><canvas id="chart-monthly"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Répartition par statut</div>
+      <div class="chart-wrap"><canvas id="chart-statut"></canvas></div>
+    </div>
   </div>
 
   <div class="filters">
@@ -606,38 +646,98 @@ async function loadAOs() {
   (decsRes.data || []).forEach(d => {
     if (!decisions[d.ao_id]) decisions[d.ao_id] = d;
   });
-  buildStats();
+  buildKPIs();
+  buildCharts();
   buildTagChips();
   updateTabCounts();
   render();
   document.getElementById('tbl').style.display = 'table';
 }
 
-function buildStats() {
-  document.getElementById('s-total').textContent = aos.length;
-  document.getElementById('s-new').textContent   = aos.filter(a => a.is_new).length;
-  document.getElementById('s-hot').textContent   = aos.filter(a => a.score >= 50).length;
+const fmt€ = v => v > 0
+  ? new Intl.NumberFormat('fr-FR', {style:'currency', currency:'EUR', maximumFractionDigits:0}).format(v)
+  : null;
 
-  // GO / NO GO
-  const nbGo   = aos.filter(a => decisions[a.id]?.statut === 'go').length;
-  const nbNoGo = aos.filter(a => decisions[a.id]?.statut === 'no_go').length;
-  document.getElementById('s-go').textContent   = nbGo;
-  document.getElementById('s-nogo').textContent = nbNoGo;
-  document.getElementById('s-go-stat').style.background   = nbGo   > 0 ? 'rgba(16,185,129,.25)' : 'rgba(255,255,255,.12)';
-  document.getElementById('s-nogo-stat').style.background = nbNoGo > 0 ? 'rgba(239,68,68,.2)'   : 'rgba(255,255,255,.12)';
+let chartMonthly = null, chartStatut = null;
 
-  // Clôtures ≤ 14 jours (AOs non NO GO avec date_cloture renseignée)
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const in14  = new Date(today); in14.setDate(in14.getDate() + 14);
-  const nbDeadline = aos.filter(a => {
-    if (decisions[a.id]?.statut === 'no_go') return false;
+function buildKPIs() {
+  // Montant pipeline (go + en_cours + repondu)
+  const pipeline = aos.filter(a => ['go','en_cours','repondu'].includes(decisions[a.id]?.statut));
+  const montant  = pipeline.reduce((s, a) => s + (a.prix || 0), 0);
+  document.getElementById('kpi-montant').textContent     = fmt€(montant) || '—';
+  document.getElementById('kpi-montant-sub').textContent = `${pipeline.length} AO${pipeline.length > 1 ? 's' : ''} en pipeline`;
+
+  // Remportés
+  const remportes       = aos.filter(a => decisions[a.id]?.statut === 'remporte');
+  const montantRemporte = remportes.reduce((s, a) => s + (a.prix || 0), 0);
+  document.getElementById('kpi-remporte').textContent     = remportes.length;
+  document.getElementById('kpi-remporte-sub').textContent = fmt€(montantRemporte) || 'montants non renseignés';
+
+  // Urgents ≤ 10j
+  const today = new Date(); today.setHours(0,0,0,0);
+  const in10  = new Date(today); in10.setDate(in10.getDate() + 10);
+  const hors  = ['no_go','perdu','remporte'];
+  const urgents = aos.filter(a => {
+    if (hors.includes(decisions[a.id]?.statut)) return false;
     if (!a.date_cloture) return false;
     const d = new Date(a.date_cloture);
-    return d >= today && d <= in14;
-  }).length;
-  document.getElementById('s-deadline').textContent = nbDeadline;
-  document.getElementById('s-deadline-stat').style.background =
-    nbDeadline > 0 ? 'rgba(237,175,14,.35)' : 'rgba(255,255,255,.12)';
+    return d >= today && d <= in10;
+  });
+  const urgentVal  = document.getElementById('kpi-urgent');
+  const urgentCard = document.getElementById('kpi-urgent-card');
+  urgentVal.textContent  = urgents.length;
+  urgentVal.className    = 'kpi-val' + (urgents.length > 0 ? ' red' : '');
+  urgentCard.className   = 'kpi-card' + (urgents.length > 0 ? ' urgent' : '');
+  document.getElementById('kpi-urgent-sub').textContent = urgents.length > 0
+    ? 'Prochaine : ' + urgents.map(a => a.date_cloture).sort()[0]
+    : 'Aucune deadline imminente';
+
+  // Taux de succès
+  const nbRemporte = remportes.length;
+  const nbPerdu    = aos.filter(a => decisions[a.id]?.statut === 'perdu').length;
+  const nbDecided  = nbRemporte + nbPerdu;
+  document.getElementById('kpi-taux').textContent = nbDecided > 0
+    ? Math.round(nbRemporte / nbDecided * 100) + ' %'
+    : '—';
+}
+
+function buildCharts() {
+  // ── Bar chart : AOs par mois (6 derniers mois) ─────────
+  const now = new Date();
+  const mLabels = [], mData = [];
+  for (let i = 5; i >= 0; i--) {
+    const d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    mLabels.push(d.toLocaleDateString('fr-FR', {month:'short', year:'2-digit'}));
+    mData.push(aos.filter(a => (a.date_vue || a.created_at || '').startsWith(key)).length);
+  }
+  if (chartMonthly) chartMonthly.destroy();
+  chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+    type: 'bar',
+    data: { labels: mLabels, datasets: [{ label: 'AOs', data: mData,
+      backgroundColor: '#085440', borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } } } }
+  });
+
+  // ── Doughnut : répartition par statut ──────────────────
+  const STATUTS = ['pending','go','en_cours','repondu','remporte','perdu','no_go'];
+  const SLABELS = ['À décider','GO','En cours','Répondus','Remportés','Perdus','NO GO'];
+  const COLORS  = ['#d1d5db','#6ee7b7','#93c5fd','#c4b5fd','#fcd34d','#9ca3af','#fca5a5'];
+  const sData   = STATUTS.map(s =>
+    s === 'pending' ? aos.filter(a => !decisions[a.id]).length
+                    : aos.filter(a => decisions[a.id]?.statut === s).length
+  );
+  if (chartStatut) chartStatut.destroy();
+  chartStatut = new Chart(document.getElementById('chart-statut'), {
+    type: 'doughnut',
+    data: { labels: SLABELS, datasets: [{ data: sData,
+      backgroundColor: COLORS, borderWidth: 2, borderColor: '#fff' }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right',
+        labels: { font: { size: 11 }, boxWidth: 12, padding: 10 } } } }
+  });
 }
 
 function buildTagChips() {
@@ -871,7 +971,8 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
     decisions[currentAO.id] = { statut: panelStatut, commentaire: document.getElementById('p-comment').value.trim() };
     msg.className = 'save-msg ok';
     msg.textContent = '✓ Décision enregistrée';
-    buildStats();
+    buildKPIs();
+    buildCharts();
     updateTabCounts();
     render();
   }
