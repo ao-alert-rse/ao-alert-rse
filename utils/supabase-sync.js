@@ -21,7 +21,7 @@ async function syncAOsToSupabase(aos) {
     return;
   }
 
-  const rows = aos.map(ao => {
+  const rows = aos.filter(ao => (ao.score || 0) >= 20).map(ao => {
     const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
     const tags = getThemeTags(breakdown);
     return {
