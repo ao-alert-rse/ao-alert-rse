@@ -157,4 +157,43 @@ function scoreRSETEE(titre, description) {
   return score;
 }
 
-module.exports = { scoreRSETEE };
+/**
+ * Même logique que scoreRSETEE, mais retourne aussi le détail des mots-clés matchés.
+ * Utilisé uniquement par reporter.js pour l'affichage dans le panel.
+ */
+function scoreRSETEEDetailed(titre, description) {
+  let score = 0;
+  let hasTheme = false;
+  let hasVerb = false;
+  const matched = [];
+
+  for (const kw of THEMES_FORTS) {
+    if (matches(titre, kw))            { score += 35; hasTheme = true; matched.push({ kw, cat: 'theme_fort',  pts: 35, inTitre: true }); }
+    else if (matches(description, kw)) { score += 18; hasTheme = true; matched.push({ kw, cat: 'theme_fort',  pts: 18, inTitre: false }); }
+  }
+  for (const kw of THEMES_FAIBLES) {
+    if (matches(titre, kw))            { score += 20; hasTheme = true; matched.push({ kw, cat: 'theme_faible', pts: 20, inTitre: true }); }
+    else if (matches(description, kw)) { score += 10; hasTheme = true; matched.push({ kw, cat: 'theme_faible', pts: 10, inTitre: false }); }
+  }
+  for (const kw of VERBES_POSITIFS) {
+    if (matches(titre, kw))            { score += 15; hasVerb = true; matched.push({ kw, cat: 'verbe', pts: 15, inTitre: true }); }
+    else if (matches(description, kw)) { score +=  8; hasVerb = true; matched.push({ kw, cat: 'verbe', pts:  8, inTitre: false }); }
+  }
+
+  const bonus = (hasTheme && hasVerb) ? 15 : 0;
+  score += bonus;
+
+  const penalites = [];
+  for (const kw of SIGNAUX_NEGATIFS) {
+    if (matches(titre, kw) || matches(description, kw)) { score -= 40; penalites.push(kw); }
+  }
+
+  if (!hasTheme) score = 0;
+
+  const ptsTheme = matched.filter(m => m.cat.startsWith('theme')).reduce((s, m) => s + m.pts, 0);
+  const ptsVerbe = matched.filter(m => m.cat === 'verbe').reduce((s, m) => s + m.pts, 0);
+
+  return { score, breakdown: { matched, bonus, penalites, ptsTheme, ptsVerbe } };
+}
+
+module.exports = { scoreRSETEE, scoreRSETEEDetailed };

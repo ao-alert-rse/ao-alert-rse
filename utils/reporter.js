@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { scoreRSETEEDetailed } = require('./scorer');
 
 const REPORT_PATH = path.join(__dirname, '..', 'rapport.html');
 const LOGO_PATH = path.join(__dirname, '..', 'assets', 'logo-nk.png');
@@ -104,6 +105,23 @@ td.dtc.urg{color:var(--urgent);font-weight:700}td.dtc.soon{color:var(--warn);fon
 .btn-s{padding:10px 14px;background:transparent;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--r);font-size:13px;font-weight:600;transition:all .12s;white-space:nowrap;font-family:inherit}
 .btn-s:hover{background:var(--brand-bg)}
 .copied{color:#2E6B3A!important;border-color:#2E6B3A!important;background:var(--sage-bg)!important}
+.sep-row td{padding:8px 20px;background:var(--surface-2);border-bottom:2px solid var(--border);border-top:2px solid var(--border)}
+.sep-inner{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-m)}
+.sep-inner.new{color:var(--brand)}.sep-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sep-cnt{font-size:10px;font-weight:600;opacity:.7;margin-left:4px}
+.bkd{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;font-size:12px}
+.bkd-row{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border-lt)}
+.bkd-row:last-child{border-bottom:none}
+.bkd-cat{width:88px;flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.6}
+.bkd-kws{flex:1;display:flex;flex-wrap:wrap;gap:4px}
+.bkd-kw{padding:2px 7px;border-radius:3px;font-size:11px;font-weight:500;background:var(--bg);border:1px solid var(--border)}
+.bkd-kw.tf{background:rgba(0,83,65,.07);border-color:rgba(0,83,65,.2);color:var(--brand)}
+.bkd-kw.tv{background:rgba(0,83,65,.04);border-color:rgba(0,83,65,.13);color:var(--brand)}
+.bkd-kw.vb{background:rgba(26,115,232,.06);border-color:rgba(26,115,232,.2);color:#1a5fb4}
+.bkd-kw.ng{background:var(--fire-bg);border-color:rgba(196,82,0,.2);color:var(--fire)}
+.bkd-kw.desc{opacity:.7;font-style:italic}
+.bkd-pts{margin-left:auto;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bkd-pts.pos{color:var(--brand)}.bkd-pts.neg{color:var(--fire)}.bkd-pts.bon{color:var(--star)}
 </style>
 </head>
 <body>
@@ -218,6 +236,16 @@ function filtered(){
   });
 }
 
+function makeRow(ao){
+  const t=tier(ao.score);const urg=urgency(ao.cloture);const prixStr=fmtPrix(ao.prix);
+  const newTag=ao.nouveau?'<span class="nbadge">NOUVEAU</span>':'';
+  const dateStr=ao.cloture?fmtDate(ao.cloture):'<span title="Date non communiquée" style="color:var(--text-s);font-size:11px">N/C</span>';
+  const realIdx=aos.indexOf(ao);
+  return '<tr data-idx="'+realIdx+'" class="'+(realIdx===activeIdx?'active':'')+'"><td class="sc"><span class="sbadge '+t+'">'+(t==='fire'?'🔥 ':t==='star'?'⭐ ':'')+ao.score+'</span><div class="sbrk"><div class="sbrk-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div></td><td class="tc"><div class="ao-t">'+highlight(ao.titre,query)+newTag+'</div>'+(ao.description?'<div class="ao-d">'+esc((ao.description||'').slice(0,120))+'</div>':'')+'</td><td class="srcc">'+highlight(ao.source,query)+'</td><td class="prc'+(prixStr?'':' none')+'">'+(prixStr||'—')+'</td><td class="dtc '+(urg==='urg'?'urg':urg==='soon'?'soon':urg==='na'?'na':'')+'">'+dateStr+(urg==='urg'?' ⚠':'')+'</td></tr>';
+}
+function makeSep(label,count,isNew){
+  return '<tr class="sep-row"><td colspan="5"><div class="sep-inner'+(isNew?' new':'')+'"><span class="sep-dot"></span>'+label+'<span class="sep-cnt">'+count+' AO'+(count>1?'s':'')+'</span></div></td></tr>';
+}
 function render(){
   const list=filtered();
   renderStats(list);
@@ -226,20 +254,27 @@ function render(){
   const empty=document.getElementById('empty');
   if(list.length===0){tbody.innerHTML='';empty.style.display='';return}
   empty.style.display='none';
-  tbody.innerHTML=list.map(ao=>{
-    const t=tier(ao.score);const urg=urgency(ao.cloture);const prixStr=fmtPrix(ao.prix);
-    const newTag=ao.nouveau?'<span class="nbadge">NOUVEAU</span>':'';
-    const dateStr=ao.cloture?fmtDate(ao.cloture):'<span title="Date non communiquée" style="color:var(--text-s);font-size:11px">N/C</span>';
-    const realIdx=aos.indexOf(ao);
-    return '<tr data-idx="'+realIdx+'" class="'+(realIdx===activeIdx?'active':'')+'"><td class="sc"><span class="sbadge '+t+'">'+(t==='fire'?'🔥 ':t==='star'?'⭐ ':'')+ao.score+'</span><div class="sbrk"><div class="sbrk-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div></td><td class="tc"><div class="ao-t">'+highlight(ao.titre,query)+newTag+'</div>'+(ao.description?'<div class="ao-d">'+esc((ao.description||'').slice(0,120))+'</div>':'')+'</td><td class="srcc">'+highlight(ao.source,query)+'</td><td class="prc'+(prixStr?'':' none')+'">'+(prixStr||'—')+'</td><td class="dtc '+(urg==='urg'?'urg':urg==='soon'?'soon':urg==='na'?'na':'')+'">'+dateStr+(urg==='urg'?' ⚠':'')+'</td></tr>';
-  }).join('');
-  tbody.querySelectorAll('tr').forEach(tr=>{tr.addEventListener('click',()=>openPanel(parseInt(tr.dataset.idx)))});
+  const nouvelles=list.filter(a=>a.nouveau);
+  const enCours=list.filter(a=>!a.nouveau);
+  let html='';
+  if(nouvelles.length){html+=makeSep('CETTE SEMAINE',nouvelles.length,true);html+=nouvelles.map(makeRow).join('');}
+  if(enCours.length){
+    if(nouvelles.length)html+=makeSep('EN COURS',enCours.length,false);
+    html+=enCours.map(makeRow).join('');
+  }
+  tbody.innerHTML=html;
+  tbody.querySelectorAll('tr[data-idx]').forEach(tr=>{tr.addEventListener('click',()=>openPanel(parseInt(tr.dataset.idx)))});
 }
 
 function openPanel(idx){
   activeIdx=idx;render();const ao=aos[idx];const t=tier(ao.score);const urg=urgency(ao.cloture);
   document.getElementById('phBadge').innerHTML='<span class="sbadge '+t+'" style="font-size:11px">'+tierLabel(ao.score)+'</span>'+(ao.nouveau?'<span class="nbadge">NOUVEAU</span>':'');
-  document.getElementById('pb').innerHTML='<div class="pt">'+esc(ao.titre)+'</div><div class="ps"><div class="pl">Score RSE/TEE</div><div class="score-vis"><div class="score-num" style="color:'+tierColor(ao.score)+'">'+ao.score+'</div><div class="score-right"><div class="score-tier" style="color:'+tierColor(ao.score)+'">'+tierLabel(ao.score)+'</div><div class="score-gbar"><div class="score-gbar-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div><div class="score-sub">sur 100 points</div></div></div></div>'+(ao.description?'<div class="ps"><div class="pl">Description</div><div class="pv">'+esc(ao.description)+'</div></div>':'')+'<div class="ps"><div class="pl">Acheteur</div><div class="pv">'+esc(ao.source)+'</div></div><div class="ps" style="display:flex;gap:28px"><div><div class="pl">Budget estimatif</div><div class="pv" style="color:'+(ao.prix?'var(--brand)':'var(--text-m)')+';font-weight:'+(ao.prix?700:400)+'">'+(fmtPrix(ao.prix)||'Non communiqué')+'</div></div><div><div class="pl">Clôture</div><div class="pv">'+(ao.cloture?'<span style="color:'+(urg==='urg'?'var(--urgent)':urg==='soon'?'var(--warn)':'inherit')+'">'+fmtDate(ao.cloture)+(urg==='urg'?' ⚠':'')+'</span>':'<span style="color:var(--text-s)">Non communiquée</span>')+'</div></div></div>';
+  const bkd=ao.breakdown||{matched:[],bonus:0,penalites:[],ptsTheme:0,ptsVerbe:0};
+  function bkdRows(cat,cls,label){const items=bkd.matched.filter(m=>m.cat===cat);if(!items.length)return'';const pts=items.reduce((s,m)=>s+m.pts,0);return'<div class="bkd-row"><span class="bkd-cat">'+label+'</span><span class="bkd-kws">'+items.map(m=>'<span class="bkd-kw '+cls+(m.inTitre?'':' desc')+'" title="'+(m.inTitre?'dans le titre':'dans la description')+'">'+esc(m.kw)+'</span>').join('')+'</span><span class="bkd-pts pos">+'+pts+'</span></div>';}
+  const bonusRow=bkd.bonus?'<div class="bkd-row"><span class="bkd-cat">Bonus</span><span class="bkd-kws" style="color:var(--star);font-size:11px;font-weight:500">thème + verbe présents</span><span class="bkd-pts bon">+'+bkd.bonus+'</span></div>':'';
+  const penRow=bkd.penalites.length?'<div class="bkd-row"><span class="bkd-cat">Pénalités</span><span class="bkd-kws">'+bkd.penalites.map(k=>'<span class="bkd-kw ng">'+esc(k)+'</span>').join('')+'</span><span class="bkd-pts neg">−'+(bkd.penalites.length*40)+'</span></div>':'';
+  const breakdownHtml='<div class="ps"><div class="pl">Analyse du score</div><div class="score-vis" style="margin-bottom:10px"><div class="score-num" style="color:'+tierColor(ao.score)+'">'+ao.score+'</div><div class="score-right"><div class="score-tier" style="color:'+tierColor(ao.score)+'">'+tierLabel(ao.score)+'</div><div class="score-gbar"><div class="score-gbar-f" style="width:'+Math.min(100,ao.score)+'%;background:'+tierColor(ao.score)+'"></div></div><div class="score-sub">Thème +'+bkd.ptsTheme+' · Verbe +'+bkd.ptsVerbe+(bkd.bonus?' · Bonus +'+bkd.bonus:'')+(bkd.penalites.length?' · Pén. −'+(bkd.penalites.length*40):'')+' pts</div></div></div><div class="bkd">'+bkdRows('theme_fort','tf','Thème fort')+bkdRows('theme_faible','tv','Thème')+bkdRows('verbe','vb','Verbe')+bonusRow+penRow+'</div></div>';
+  document.getElementById('pb').innerHTML='<div class="pt">'+esc(ao.titre)+'</div>'+breakdownHtml+(ao.description?'<div class="ps"><div class="pl">Description</div><div class="pv">'+esc(ao.description)+'</div></div>':'')+'<div class="ps"><div class="pl">Acheteur</div><div class="pv">'+esc(ao.source)+'</div></div><div class="ps" style="display:flex;gap:28px"><div><div class="pl">Budget estimatif</div><div class="pv" style="color:'+(ao.prix?'var(--brand)':'var(--text-m)')+';font-weight:'+(ao.prix?700:400)+'">'+(fmtPrix(ao.prix)||'Non communiqué')+'</div></div><div><div class="pl">Clôture</div><div class="pv">'+(ao.cloture?'<span style="color:'+(urg==='urg'?'var(--urgent)':urg==='soon'?'var(--warn)':'inherit')+'">'+fmtDate(ao.cloture)+(urg==='urg'?' ⚠':'')+'</span>':'<span style="color:var(--text-s)">Non communiquée</span>')+'</div></div></div>';
   document.getElementById('pfoot').innerHTML='<a href="'+esc(ao.url)+'" target="_blank" rel="noopener" class="btn-p">Accéder →</a><button class="btn-s" id="pCopyBtn">Copier le lien</button>';document.getElementById('pCopyBtn').onclick=function(){copyUrl(ao.url,this)};
   document.getElementById('ov').classList.add('open');document.getElementById('panel').classList.add('open');
 }
@@ -306,16 +341,20 @@ function generateHTMLReport(toutesAOs, nouvelles) {
 
   const newKeys = new Set(nouvelles.map(a => `${a.source}||${a.titre}`));
 
-  const aos = toutesAOs.map(ao => ({
-    titre: ao.titre,
-    description: ao.description || '',
-    source: ao.source,
-    prix: ao.prix || null,
-    score: ao.score,
-    cloture: ao.dateClôture || null,
-    url: ao.url,
-    nouveau: newKeys.has(`${ao.source}||${ao.titre}`),
-  }));
+  const aos = toutesAOs.map(ao => {
+    const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
+    return {
+      titre: ao.titre,
+      description: ao.description || '',
+      source: ao.source,
+      prix: ao.prix || null,
+      score: ao.score,
+      cloture: ao.dateClôture || null,
+      url: ao.url,
+      nouveau: newKeys.has(`${ao.source}||${ao.titre}`),
+      breakdown,
+    };
+  });
 
   const meta = {
     generatedAt: new Date().toISOString(),
