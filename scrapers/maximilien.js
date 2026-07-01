@@ -71,7 +71,7 @@ async function searchKeyword(kw) {
 
     // Lien direct consultation
     const lien = $el.find('a[href*="consultation"][href*="orgAcronyme"]').last().attr('href') || '';
-    const url_ao = lien.startsWith('http') ? lien : (lien ? `${BASE}${lien}` : BASE);
+    const url_ao = lien ? (lien.startsWith('http') ? lien : `${BASE}${lien}`) : null;
 
     items.push({ titre: titre.trim(), description: (desc || '').trim(), source, dateClôture, url: url_ao });
   });

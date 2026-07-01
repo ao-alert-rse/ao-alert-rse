@@ -40,7 +40,8 @@ async function scrapeOpcoMobilites() {
     });
 
     const score = scoreRSETEE(titre, '');
-    aos.push({ titre, lien, dateClôture, score, source: 'OPCO Mobilités', prix: null });
+    const url = lien || URL;
+    aos.push({ titre, url, dateClôture, score, source: 'OPCO Mobilités', prix: null });
   });
 
   return aos;

@@ -124,7 +124,7 @@ async function scrapeATLAS() {
         const description = el$.find('p, .description, .resume').first().text().trim() || descParsed;
 
         const href = el$.find('a').first().attr('href') || '';
-        const url = href.startsWith('http') ? href : `https://www.opco-atlas.fr${href}`;
+        const url = href ? (href.startsWith('http') ? href : `https://www.opco-atlas.fr${href}`) : URL_ATLAS;
         const statutRaw = el$.find('.statut, .status, .badge').text();
         const statut = parseStatut(statutRaw, dateClôture);
         const score = scoreRSETEE(titre, description);
