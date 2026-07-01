@@ -526,6 +526,7 @@
     </div>
     <div class="vr"></div>
     <div class="chips" id="tag-chips"></div>
+    <button id="btn-export" style="margin-left:auto;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:12px;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.borderColor='var(--vert)';this.style.color='var(--vert)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">⬇ Exporter CSV</button>
   </div>
 
   <div class="tabs">
@@ -1191,6 +1192,38 @@ function renderChecklist(items) {
     })
   );
 }
+
+// ── Export CSV ────────────────────────────────────────────
+document.getElementById('btn-export').addEventListener('click', () => {
+  const list = sorted(filtered());
+  const DEC_LABELS_FR = { go:'GO', no_go:'NO GO', en_cours:'En cours', repondu:'Répondu', remporte:'Remporté', perdu:'Perdu' };
+  const csvEsc = v => `"${String(v||'').replace(/"/g,'""')}"`;
+  const rows = [
+    ['Titre','Source','Score','Date clôture','Montant (€)','Statut','Tags','Commentaire','Décidé par'],
+    ...list.map(a => {
+      const dec = decisions[a.id];
+      return [
+        a.titre,
+        a.source || '',
+        a.score || 0,
+        a.date_cloture || '',
+        a.prix || '',
+        dec ? (DEC_LABELS_FR[dec.statut] || dec.statut) : 'À décider',
+        (a.tags || []).join(', '),
+        dec?.commentaire || '',
+        dec?.auteur || '',
+      ];
+    })
+  ];
+  const csv = rows.map(r => r.map(csvEsc).join(';')).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ao-export-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 function closePanel() {
   document.getElementById('overlay').classList.remove('on');
