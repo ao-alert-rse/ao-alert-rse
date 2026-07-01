@@ -1302,6 +1302,37 @@ document.querySelector('.decision-grid').addEventListener('click', e => {
   updateDecBtns();
 });
 
+// Enregistre une décision pour l'AO courante. Retourne { error }.
+// Réutilisé par le bouton "Enregistrer la décision" et par la génération de documents
+// (qui bascule automatiquement l'AO en "En cours" si elle n'est pas déjà plus avancée).
+async function saveDecision(statut, commentaire) {
+  const now = new Date().toISOString();
+  const auteur = currentUser?.display_name || '';
+  const { error } = await sb.from('decisions').insert({
+    ao_id: currentAO.id, statut, commentaire: commentaire || null, auteur,
+  });
+  if (error) return { error };
+
+  panelStatut = statut;
+  decisions[currentAO.id] = { statut, commentaire, auteur, created_at: now };
+  const d = new Date(now).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const metaEl = document.getElementById('p-dec-meta');
+  if (auteur) {
+    metaEl.innerHTML = `${avatarHtml(auteur)}<span>${esc(auteur)} · ${d}</span>`;
+    metaEl.style.display = 'flex';
+  } else {
+    metaEl.style.display = 'none';
+  }
+  updateDecBtns();
+  toggleChecklistVisibility(panelStatut);
+  if (SHOW_CHECKLIST.includes(panelStatut)) loadChecklist(currentAO.id);
+  buildKPIs();
+  buildCharts();
+  updateTabCounts();
+  render();
+  return { error: null };
+}
+
 document.getElementById('p-btn-save').addEventListener('click', async () => {
   if (!currentAO || !panelStatut) return;
   const btn = document.getElementById('p-btn-save');
@@ -1309,14 +1340,8 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'Enregistrement…';
 
-  const now = new Date().toISOString();
-  const auteur = currentUser?.display_name || '';
-  const { error } = await sb.from('decisions').insert({
-    ao_id:       currentAO.id,
-    statut:      panelStatut,
-    commentaire: document.getElementById('p-comment').value.trim() || null,
-    auteur,
-  });
+  const commentaire = document.getElementById('p-comment').value.trim();
+  const { error } = await saveDecision(panelStatut, commentaire);
 
   btn.disabled = false;
   btn.textContent = 'Enregistrer la décision';
@@ -1325,23 +1350,8 @@ document.getElementById('p-btn-save').addEventListener('click', async () => {
     msg.className = 'save-msg err';
     msg.textContent = 'Erreur : ' + error.message;
   } else {
-    decisions[currentAO.id] = { statut: panelStatut, commentaire: document.getElementById('p-comment').value.trim(), auteur, created_at: now };
     msg.className = 'save-msg ok';
     msg.textContent = '✓ Décision enregistrée';
-    const d = new Date(now).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-    const metaEl = document.getElementById('p-dec-meta');
-    if (auteur) {
-      metaEl.innerHTML = `${avatarHtml(auteur)}<span>${esc(auteur)} · ${d}</span>`;
-      metaEl.style.display = 'flex';
-    } else {
-      metaEl.style.display = 'none';
-    }
-    toggleChecklistVisibility(panelStatut);
-    if (SHOW_CHECKLIST.includes(panelStatut)) loadChecklist(currentAO.id);
-    buildKPIs();
-    buildCharts();
-    updateTabCounts();
-    render();
   }
 });
 
@@ -1581,6 +1591,12 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
     });
 
     await markChecklistStepsDone(currentAO.id, ['Offre technique rédigée', 'Offre financière rédigée']);
+
+    // Générer les documents signifie qu'on répond activement à l'AO : passe en
+    // "En cours" si elle n'a pas encore de décision ou n'était encore qu'en GO.
+    if (panelStatut === null || panelStatut === 'go') {
+      await saveDecision('en_cours', 'Passage automatique en cours (documents générés)');
+    }
   }
 
   if (errMsgs.length === 0) {
