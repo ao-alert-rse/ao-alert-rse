@@ -1526,18 +1526,15 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
 
   const titrePourNom = (currentAO.titre || 'AO').slice(0, 60);
   let okCount = 0, errMsgs = [];
+  // Un seul .zip plutôt que N téléchargements séparés : les navigateurs
+  // bloquent silencieusement les téléchargements multiples déclenchés en boucle.
+  const bundle = new PizZip();
 
   for (const tpl of selected) {
     try {
       const blob = await generateDocx(tpl.file, data);
       const nom = `${tpl.label} - ${titrePourNom}.docx`;
-
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = nom;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      bundle.file(nom, await blob.arrayBuffer());
 
       const { error } = await uploadDocToAO(blob, currentAO.id, nom);
       if (error) errMsgs.push(`${tpl.label} : ${error.message}`);
@@ -1549,9 +1546,19 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
 
   btn.disabled = false;
 
+  if (okCount > 0) {
+    const zipBlob = bundle.generate({ type: 'blob', mimeType: 'application/zip' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = `Documents - ${titrePourNom}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   if (errMsgs.length === 0) {
     msg.className = 'ok';
-    msg.textContent = `✓ ${okCount} document(s) généré(s) et téléchargé(s)`;
+    msg.textContent = `✓ ${okCount} document(s) généré(s) et téléchargé(s) (fichier .zip)`;
     loadDocuments(currentAO.id);
     setTimeout(closeGendocsModal, 1200);
   } else {
