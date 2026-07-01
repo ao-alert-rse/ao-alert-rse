@@ -684,7 +684,6 @@ async function loadAOs() {
   document.getElementById('loading').style.display = 'none';
   if (aosRes.error || !aosRes.data) { document.getElementById('empty').style.display = 'block'; return; }
   aos = aosRes.data;
-  // Garder uniquement la décision la plus récente par AO
   decisions = {};
   (decsRes.data || []).forEach(d => {
     if (!decisions[d.ao_id]) decisions[d.ao_id] = d;
@@ -695,6 +694,33 @@ async function loadAOs() {
   updateTabCounts();
   render();
   document.getElementById('tbl').style.display = 'table';
+  setupRealtime();
+}
+
+async function silentRefresh() {
+  const [aosRes, decsRes] = await Promise.all([
+    sb.from('aos').select('*').order('score', { ascending: false }),
+    sb.from('decisions').select('*').order('created_at', { ascending: false })
+  ]);
+  if (aosRes.error || !aosRes.data) return;
+  aos = aosRes.data;
+  decisions = {};
+  (decsRes.data || []).forEach(d => {
+    if (!decisions[d.ao_id]) decisions[d.ao_id] = d;
+  });
+  buildKPIs();
+  buildCharts();
+  updateTabCounts();
+  render();
+}
+
+let _realtimeChannel = null;
+function setupRealtime() {
+  if (_realtimeChannel) return;
+  _realtimeChannel = sb.channel('ao-alert-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'aos' }, silentRefresh)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'decisions' }, silentRefresh)
+    .subscribe();
 }
 
 const fmtEuro = v => v > 0

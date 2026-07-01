@@ -117,27 +117,18 @@ function frArray(obj) {
   return Array.isArray(first) ? first.map(String) : [String(first)];
 }
 
-// Pour un marché multi-lots : affiche uniquement les lots RSE + compte les autres
+// Pour un marché multi-lots : affiche le meilleur lot RSE + "[+N autres lots]"
 function buildTitreMultiLot(titreLots, descLots) {
   if (titreLots.length <= 1) return titreLots[0] || '';
 
   const scored = titreLots.map((titre, i) => ({
     titre,
     score: scoreRSETEE(titre, descLots[i] || ''),
-  }));
+  })).sort((a, b) => b.score - a.score);
 
-  const rseLots = scored.filter(l => l.score > 0);
-  const autresCount = titreLots.length - rseLots.length;
-
-  if (rseLots.length === 0) {
-    // Aucun lot individuellement RSE — affiche le premier lot + total
-    const premier = titreLots[0].length > 80 ? titreLots[0].slice(0, 77) + '…' : titreLots[0];
-    return `${premier} [+${titreLots.length - 1} autres lots]`;
-  }
-
-  const rseTextes = rseLots.map(l => l.titre.length > 80 ? l.titre.slice(0, 77) + '…' : l.titre);
-  const suffix = autresCount > 0 ? ` [+${autresCount} autres lots]` : '';
-  return rseTextes.join(' | ') + suffix;
+  const best = scored[0].score > 0 ? scored[0] : { titre: titreLots[0] };
+  const titre = best.titre.length > 100 ? best.titre.slice(0, 97) + '…' : best.titre;
+  return `${titre} [+${titreLots.length - 1} autres lots]`;
 }
 
 // Score = meilleur lot individuel (pas dilué par les lots hors-sujet)
