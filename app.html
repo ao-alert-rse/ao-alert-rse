@@ -8,6 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script type="module">
+    import PizZip from 'https://cdn.jsdelivr.net/npm/pizzip@3/+esm';
+    import Docxtemplater from 'https://cdn.jsdelivr.net/npm/docxtemplater@3/+esm';
+    window.PizZip = PizZip;
+    window.Docxtemplater = Docxtemplater;
+  </script>
   <style>
     :root {
       --vert:    #085440;
@@ -373,6 +379,41 @@
     .btn-upload-label:hover { border-color: var(--vert); color: var(--vert); }
     .upload-msg { margin-top: 8px; font-size: 12px; text-align: center; min-height: 16px; }
     .upload-msg.ok  { color: #065f46; }
+    .btn-gen-docs {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 10px; margin-bottom: 8px;
+      border: none; border-radius: var(--radius);
+      background: var(--vert); color: white;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: background .15s;
+    }
+    .btn-gen-docs:hover { background: var(--vert-h); }
+
+    /* Modale génération documents */
+    #gendocs-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; }
+    #gendocs-overlay.on { display: flex; align-items: center; justify-content: center; }
+    #gendocs-modal {
+      background: var(--white); border-radius: var(--radius);
+      width: 480px; max-width: 92vw; max-height: 88vh; overflow-y: auto;
+      padding: 24px; box-shadow: 0 12px 40px rgba(0,0,0,.2);
+    }
+    #gendocs-modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--vert); }
+    #gendocs-modal .gendocs-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .gendocs-check-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; }
+    .gendocs-field { margin-bottom: 12px; }
+    .gendocs-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .04em; margin-bottom: 4px; }
+    .gendocs-field input, .gendocs-field textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 13px; font-family: inherit;
+    }
+    .gendocs-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .gendocs-actions button { flex: 1; padding: 10px; border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; }
+    #gendocs-cancel { background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+    #gendocs-submit { background: var(--vert); border: none; color: white; }
+    #gendocs-submit:hover { background: var(--vert-h); }
+    #gendocs-msg { margin-top: 10px; font-size: 12px; text-align: center; min-height: 16px; }
+    #gendocs-msg.ok  { color: #065f46; }
+    #gendocs-msg.err { color: #991b1b; }
     .upload-msg.err { color: #991b1b; }
 
     /* Checklist */
@@ -784,12 +825,40 @@
     <div class="docs-section">
       <div class="docs-title">Documents DCE</div>
       <div id="p-docs-list" class="docs-list"></div>
+      <button type="button" class="btn-gen-docs" id="p-btn-gendocs">📄 Générer les documents</button>
       <label class="btn-upload-label" id="p-upload-label">
         ＋ Ajouter un document
         <input type="file" id="p-file-input" accept=".pdf,.doc,.docx,.zip,.xls,.xlsx,.ppt,.pptx" />
       </label>
       <div id="p-upload-msg" class="upload-msg"></div>
     </div>
+  </div>
+</div>
+
+<!-- ═══ MODALE GÉNÉRATION DOCUMENTS ═════════════════════ -->
+<div id="gendocs-overlay">
+  <div id="gendocs-modal">
+    <h3>Générer les documents de candidature</h3>
+    <div class="gendocs-sub">Les champs fixes (identité, CA, effectifs) sont pré-remplis. Complétez les champs propres à cette consultation.</div>
+
+    <div class="gendocs-check-row"><input type="checkbox" id="gd-dc1" checked /><label for="gd-dc1">DC1 — Lettre de candidature</label></div>
+    <div class="gendocs-check-row"><input type="checkbox" id="gd-dc2" checked /><label for="gd-dc2">DC2 — Déclaration du candidat</label></div>
+    <div class="gendocs-check-row"><input type="checkbox" id="gd-attri1" checked /><label for="gd-attri1">ATTRI1 — Acte d’engagement (ex-DC3)</label></div>
+
+    <div class="gendocs-field"><label>Objet du marché</label><textarea id="gd-objet" rows="2"></textarea></div>
+    <div class="gendocs-field"><label>Référence de la consultation</label><input type="text" id="gd-reference" /></div>
+    <div class="gendocs-field"><label>Acheteur</label><input type="text" id="gd-acheteur" /></div>
+    <div class="gendocs-field"><label>Montant de l'offre HT (€)</label><input type="text" id="gd-montant-ht" /></div>
+    <div class="gendocs-field"><label>Montant de l'offre TTC (€)</label><input type="text" id="gd-montant-ttc" /></div>
+    <div class="gendocs-field"><label>Délai d'exécution</label><input type="text" id="gd-delai" /></div>
+    <div class="gendocs-field"><label>Lieu de signature</label><input type="text" id="gd-lieu" value="Paris" /></div>
+    <div class="gendocs-field"><label>Date de signature</label><input type="text" id="gd-date" /></div>
+
+    <div class="gendocs-actions">
+      <button type="button" id="gendocs-cancel">Annuler</button>
+      <button type="button" id="gendocs-submit">Générer</button>
+    </div>
+    <div id="gendocs-msg"></div>
   </div>
 </div>
 
@@ -1309,6 +1378,27 @@ async function loadDocuments(aoId) {
   );
 }
 
+// Supabase Storage rejette les clés avec accents/espaces/caractères spéciaux :
+// on slugifie pour la clé de stockage, tout en gardant le nom d'origine en DB.
+function slugifyForStorage(name) {
+  return name
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z0-9._-]+/g, '_');
+}
+
+// Upload d'un fichier (File ou Blob) vers le bucket dce + insertion dans `documents`.
+// Réutilisé par l'upload manuel et par la génération de documents.
+async function uploadDocToAO(file, aoId, nom) {
+  const path = `${aoId}/${Date.now()}-${slugifyForStorage(nom)}`;
+  const { error: upErr } = await sb.storage.from('dce').upload(path, file);
+  if (upErr) return { error: upErr };
+
+  const { error: dbErr } = await sb.from('documents').insert({
+    ao_id: aoId, nom, storage_key: path, taille_bytes: file.size
+  });
+  return { error: dbErr };
+}
+
 document.getElementById('p-file-input').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file || !currentAO) return;
@@ -1318,27 +1408,14 @@ document.getElementById('p-file-input').addEventListener('change', async e => {
   msg.className = 'upload-msg';
   msg.textContent = 'Envoi en cours…';
 
-  const path = `${currentAO.id}/${Date.now()}-${file.name}`;
-  const { error: upErr } = await sb.storage.from('dce').upload(path, file);
-
-  if (upErr) {
-    msg.className = 'upload-msg err';
-    msg.textContent = 'Erreur : ' + upErr.message;
-    label.style.opacity = '1';
-    e.target.value = '';
-    return;
-  }
-
-  const { error: dbErr } = await sb.from('documents').insert({
-    ao_id: currentAO.id, nom: file.name, storage_key: path, taille_bytes: file.size
-  });
+  const { error } = await uploadDocToAO(file, currentAO.id, file.name);
 
   label.style.opacity = '1';
   e.target.value = '';
 
-  if (dbErr) {
+  if (error) {
     msg.className = 'upload-msg err';
-    msg.textContent = 'Fichier envoyé mais erreur DB : ' + dbErr.message;
+    msg.textContent = 'Erreur : ' + error.message;
   } else {
     msg.className = 'upload-msg ok';
     msg.textContent = '✓ Document ajouté';
@@ -1352,6 +1429,135 @@ async function deleteDocument(docId, storageKey, aoId) {
   await sb.from('documents').delete().eq('id', docId);
   loadDocuments(aoId);
 }
+
+// ── Génération des documents de candidature (DC1/DC2/ATTRI1) ──────────────
+const COMPANY = {
+  raison_sociale: 'NAM & KOUJI',
+  forme_juridique_capital: 'SAS au Capital de 1.000€',
+  adresse_siege: '121 AVENUE DE MALAKOFF, 75016 PARIS',
+  siret: '95373180900018',
+  representant_nom: 'Samir EZZAKI',
+  effectif: '4',
+  ca_n2_label: 'N-2 (clos le 30/06/2024)', ca_n2: '41 000 €',
+  ca_n1_label: 'N-1 (clos le 30/06/2025)', ca_n1: '79 000 €',
+  ca_n_label:  'N (atterrissage au 30/06/2026, non définitif)', ca_n: '230 000 €',
+  assureur_nom: 'HISCOX SA (contrat souscrit via Add Value Assurances)',
+  assureur_contrat: 'HRCP300336 (police groupe FELPS GROUP, couvrant NAM&KOUJI — SIRET 953 731 809 00018)',
+  assureur_garantie: 'RC Professionnelle : 1 500 000 € / année — RC Exploitation : 10 000 000 € / sinistre (période en cours : 28/01/2026 au 31/12/2026)',
+};
+
+const REFERENCES = [
+  { client: 'Puissance 5', mission: 'BEGES scopes 1/2/3, stratégie climat SBTi, gouvernance RSE', resultats: 'Objectifs de réduction 2030, plan d’actions achats et flotte' },
+  { client: 'Episens (Groupe InVivo)', mission: 'Diagnostic RSE, analyse de matérialité, stratégie RSE groupe', resultats: 'Hiérarchisation des enjeux, stratégie RSE pilotable groupe' },
+  { client: 'Mobiwire', mission: 'BEGES, reporting ESG, accompagnement EcoVadis', resultats: 'Consolidation des données ESG, renforcement du pilotage' },
+];
+
+const GENDOCS_TEMPLATES = [
+  { key: 'dc1',    file: 'assets/templates/DC1.docx',    checkboxId: 'gd-dc1',    label: 'DC1' },
+  { key: 'dc2',    file: 'assets/templates/DC2.docx',    checkboxId: 'gd-dc2',    label: 'DC2' },
+  { key: 'attri1', file: 'assets/templates/ATTRI1.docx', checkboxId: 'gd-attri1', label: 'ATTRI1' },
+];
+
+async function generateDocx(templateFile, data) {
+  const res = await fetch(templateFile);
+  if (!res.ok) throw new Error(`Template introuvable : ${templateFile}`);
+  const arrayBuffer = await res.arrayBuffer();
+  const zip = new PizZip(arrayBuffer);
+  const doc = new window.Docxtemplater(zip, { linebreaks: true, paragraphLoop: true });
+  doc.render(data);
+  return doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+
+function openGendocsModal() {
+  if (!currentAO) return;
+  document.getElementById('gd-objet').value = currentAO.titre || '';
+  document.getElementById('gd-reference').value = '';
+  document.getElementById('gd-acheteur').value = '';
+  document.getElementById('gd-montant-ht').value = '';
+  document.getElementById('gd-montant-ttc').value = '';
+  document.getElementById('gd-delai').value = '';
+  document.getElementById('gd-lieu').value = 'Paris';
+  document.getElementById('gd-date').value = new Date().toLocaleDateString('fr-FR');
+  document.getElementById('gendocs-msg').textContent = '';
+  document.getElementById('gendocs-msg').className = '';
+  document.getElementById('gendocs-overlay').classList.add('on');
+}
+
+function closeGendocsModal() {
+  document.getElementById('gendocs-overlay').classList.remove('on');
+}
+
+document.getElementById('p-btn-gendocs').addEventListener('click', openGendocsModal);
+document.getElementById('gendocs-cancel').addEventListener('click', closeGendocsModal);
+document.getElementById('gendocs-overlay').addEventListener('click', e => {
+  if (e.target.id === 'gendocs-overlay') closeGendocsModal();
+});
+
+document.getElementById('gendocs-submit').addEventListener('click', async () => {
+  if (!currentAO) return;
+  const selected = GENDOCS_TEMPLATES.filter(t => document.getElementById(t.checkboxId).checked);
+  const msg = document.getElementById('gendocs-msg');
+
+  if (selected.length === 0) {
+    msg.className = 'err';
+    msg.textContent = 'Sélectionnez au moins un document.';
+    return;
+  }
+
+  const btn = document.getElementById('gendocs-submit');
+  btn.disabled = true;
+  msg.className = '';
+  msg.textContent = 'Génération en cours…';
+
+  const data = {
+    ...COMPANY,
+    objet_marche: document.getElementById('gd-objet').value,
+    reference_marche: document.getElementById('gd-reference').value,
+    acheteur: document.getElementById('gd-acheteur').value,
+    montant_offre_ht: document.getElementById('gd-montant-ht').value,
+    montant_offre_ttc: document.getElementById('gd-montant-ttc').value,
+    delai_execution: document.getElementById('gd-delai').value,
+    lieu_signature: document.getElementById('gd-lieu').value,
+    date_signature: document.getElementById('gd-date').value,
+    references: REFERENCES,
+  };
+
+  const titrePourNom = (currentAO.titre || 'AO').slice(0, 60);
+  let okCount = 0, errMsgs = [];
+
+  for (const tpl of selected) {
+    try {
+      const blob = await generateDocx(tpl.file, data);
+      const nom = `${tpl.label} - ${titrePourNom}.docx`;
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nom;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      const { error } = await uploadDocToAO(blob, currentAO.id, nom);
+      if (error) errMsgs.push(`${tpl.label} : ${error.message}`);
+      else okCount++;
+    } catch (err) {
+      errMsgs.push(`${tpl.label} : ${err.message}`);
+    }
+  }
+
+  btn.disabled = false;
+
+  if (errMsgs.length === 0) {
+    msg.className = 'ok';
+    msg.textContent = `✓ ${okCount} document(s) généré(s) et téléchargé(s)`;
+    loadDocuments(currentAO.id);
+    setTimeout(closeGendocsModal, 1200);
+  } else {
+    msg.className = 'err';
+    msg.textContent = `${okCount} OK, erreurs : ${errMsgs.join(' · ')}`;
+    if (okCount > 0) loadDocuments(currentAO.id);
+  }
+});
 
 // ── Checklist ─────────────────────────────────────────────
 const CHECKLIST_STEPS = [
