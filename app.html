@@ -1470,11 +1470,11 @@ async function generateDocx(templateFile, data) {
   return doc.getZip().generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 }
 
-function openGendocsModal() {
+async function openGendocsModal() {
   if (!currentAO) return;
   document.getElementById('gd-objet').value = currentAO.titre || '';
   document.getElementById('gd-reference').value = '';
-  document.getElementById('gd-acheteur').value = '';
+  document.getElementById('gd-acheteur').value = currentAO.source || '';
   document.getElementById('gd-montant-ht').value = '';
   document.getElementById('gd-montant-ttc').value = '';
   document.getElementById('gd-delai').value = '';
@@ -1483,6 +1483,18 @@ function openGendocsModal() {
   document.getElementById('gendocs-msg').textContent = '';
   document.getElementById('gendocs-msg').className = '';
   document.getElementById('gendocs-overlay').classList.add('on');
+
+  // Reprend les champs saisis la dernière fois pour cette AO, si disponibles.
+  const { data: draft } = await sb.from('gendocs_drafts').select('*').eq('ao_id', currentAO.id).maybeSingle();
+  if (draft) {
+    if (draft.objet_marche)      document.getElementById('gd-objet').value = draft.objet_marche;
+    if (draft.reference_marche)  document.getElementById('gd-reference').value = draft.reference_marche;
+    if (draft.acheteur)          document.getElementById('gd-acheteur').value = draft.acheteur;
+    if (draft.montant_offre_ht)  document.getElementById('gd-montant-ht').value = draft.montant_offre_ht;
+    if (draft.montant_offre_ttc) document.getElementById('gd-montant-ttc').value = draft.montant_offre_ttc;
+    if (draft.delai_execution)   document.getElementById('gd-delai').value = draft.delai_execution;
+    if (draft.lieu_signature)    document.getElementById('gd-lieu').value = draft.lieu_signature;
+  }
 }
 
 function closeGendocsModal() {
@@ -1554,6 +1566,21 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
     document.body.appendChild(a);
     a.click();
     a.remove();
+
+    // Garde les champs saisis pour la prochaine génération sur cette AO.
+    await sb.from('gendocs_drafts').upsert({
+      ao_id: currentAO.id,
+      objet_marche: data.objet_marche,
+      reference_marche: data.reference_marche,
+      acheteur: data.acheteur,
+      montant_offre_ht: data.montant_offre_ht,
+      montant_offre_ttc: data.montant_offre_ttc,
+      delai_execution: data.delai_execution,
+      lieu_signature: data.lieu_signature,
+      updated_at: new Date().toISOString(),
+    });
+
+    await markChecklistStepsDone(currentAO.id, ['Offre technique rédigée', 'Offre financière rédigée']);
   }
 
   if (errMsgs.length === 0) {
@@ -1585,20 +1612,29 @@ function toggleChecklistVisibility(statut) {
   document.getElementById('checklist-sep').style.display    = show ? 'block' : 'none';
 }
 
-async function loadChecklist(aoId) {
-  const { data } = await sb.from('checklist').select('*')
-    .eq('ao_id', aoId).order('ordre');
+async function ensureChecklistRows(aoId) {
+  const { data } = await sb.from('checklist').select('*').eq('ao_id', aoId).order('ordre');
+  if (data && data.length > 0) return data;
+  const rows = CHECKLIST_STEPS.map((step, i) => ({ ao_id: aoId, step, ordre: i + 1, done: false }));
+  const { data: created } = await sb.from('checklist').insert(rows).select();
+  return created || rows.map((r, i) => ({ ...r, id: i }));
+}
 
-  if (!data || data.length === 0) {
-    // Créer les étapes par défaut
-    const rows = CHECKLIST_STEPS.map((step, i) => ({
-      ao_id: aoId, step, ordre: i + 1, done: false
-    }));
-    const { data: created } = await sb.from('checklist').insert(rows).select();
-    renderChecklist(created || rows.map((r, i) => ({ ...r, id: i })));
-  } else {
-    renderChecklist(data);
-  }
+async function loadChecklist(aoId) {
+  renderChecklist(await ensureChecklistRows(aoId));
+}
+
+// Coche automatiquement des étapes de la checklist (ex. après génération des documents),
+// sans écraser une étape déjà cochée par quelqu'un d'autre.
+async function markChecklistStepsDone(aoId, stepNames) {
+  const rows = await ensureChecklistRows(aoId);
+  const toMark = rows.filter(r => stepNames.includes(r.step) && !r.done);
+  if (toMark.length === 0) return;
+  const auteur = currentUser?.display_name || '';
+  await Promise.all(toMark.map(r => sb.from('checklist').update({
+    done: true, done_at: new Date().toISOString(), done_by: auteur,
+  }).eq('id', r.id)));
+  if (SHOW_CHECKLIST.includes(panelStatut) && currentAO?.id === aoId) loadChecklist(aoId);
 }
 
 function renderChecklist(items) {
