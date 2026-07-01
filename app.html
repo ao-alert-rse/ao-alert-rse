@@ -844,6 +844,7 @@
     <div class="gendocs-check-row"><input type="checkbox" id="gd-dc1" checked /><label for="gd-dc1">DC1 — Lettre de candidature</label></div>
     <div class="gendocs-check-row"><input type="checkbox" id="gd-dc2" checked /><label for="gd-dc2">DC2 — Déclaration du candidat</label></div>
     <div class="gendocs-check-row"><input type="checkbox" id="gd-attri1" checked /><label for="gd-attri1">ATTRI1 — Acte d’engagement (ex-DC3)</label></div>
+    <div class="gendocs-check-row"><input type="checkbox" id="gd-memoire" checked /><label for="gd-memoire">Mémoire technique — présentation candidat &amp; équipe</label></div>
 
     <div class="gendocs-field"><label>Objet du marché</label><textarea id="gd-objet" rows="2"></textarea></div>
     <div class="gendocs-field"><label>Référence de la consultation</label><input type="text" id="gd-reference" /></div>
@@ -1455,7 +1456,8 @@ const REFERENCES = [
 const GENDOCS_TEMPLATES = [
   { key: 'dc1',    file: 'assets/templates/DC1.docx',    checkboxId: 'gd-dc1',    label: 'DC1' },
   { key: 'dc2',    file: 'assets/templates/DC2.docx',    checkboxId: 'gd-dc2',    label: 'DC2' },
-  { key: 'attri1', file: 'assets/templates/ATTRI1.docx', checkboxId: 'gd-attri1', label: 'ATTRI1' },
+  { key: 'attri1',  file: 'assets/templates/ATTRI1.docx',  checkboxId: 'gd-attri1',  label: 'ATTRI1' },
+  { key: 'memoire', file: 'assets/templates/MEMOIRE.docx', checkboxId: 'gd-memoire', label: 'Memoire technique' },
 ];
 
 async function generateDocx(templateFile, data) {
