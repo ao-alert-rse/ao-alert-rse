@@ -453,5 +453,40 @@
     "scoreRSETEE": 86,
     "dateVue": "2026-06-30T13:55:27.627Z",
     "dateClôture": "2026-09-01"
+  },
+  "Etablissement Public Foncier Ile-de-France-15b61344": {
+    "titre": "Formation professionnelle interentreprises à destination des agents de l'Etablissement Public Fon… [+6 autres lots]",
+    "source": "Etablissement Public Foncier Ile-de-France",
+    "scoreRSETEE": 70,
+    "dateVue": "2026-07-02T12:33:49.793Z",
+    "dateClôture": ""
+  },
+  "OPCO ATLAS-39dc2c9c": {
+    "titre": "Lot 1 - Formation et certification - Ambassadeur de la transition écologique en entreprise - Mixt… [+2 autres lots]",
+    "source": "OPCO ATLAS",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-07-02T12:33:49.793Z",
+    "dateClôture": ""
+  },
+  "REGION NORMANDIE-40c3329f": {
+    "titre": "Mise en oeuvre et accompagnement des projets de transition écologique [+4 autres lots]",
+    "source": "REGION NORMANDIE",
+    "scoreRSETEE": 65,
+    "dateVue": "2026-07-02T12:33:49.793Z",
+    "dateClôture": "2026-07-15"
+  },
+  "TUNNEL EURALPIN LYON TURIN SAS-12e69655": {
+    "titre": "Prestations de conseil et d'assistance juridique en matière de conformité (compliance), d’éthique… [+2 autres lots]",
+    "source": "TUNNEL EURALPIN LYON TURIN SAS",
+    "scoreRSETEE": 93,
+    "dateVue": "2026-07-02T12:33:49.793Z",
+    "dateClôture": ""
+  },
+  "Inria - Service achats marchés-e7ee63a6": {
+    "titre": "Prestations de formation relatives à la prévention des violences sexistes et sexuelles (VSS) et à la promotion de l'égalité professionnelle entre les femmes et les hommes à destination des agents Inria",
+    "source": "Inria - Service achats marchés",
+    "scoreRSETEE": 65,
+    "dateVue": "2026-07-02T12:33:49.793Z",
+    "dateClôture": "2026-07-08"
   }
 }
