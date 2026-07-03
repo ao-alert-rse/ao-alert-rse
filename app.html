@@ -851,6 +851,7 @@
     <div class="gendocs-field"><label>Acheteur</label><input type="text" id="gd-acheteur" /></div>
     <div class="gendocs-field"><label>Montant de l'offre HT (€)</label><input type="text" id="gd-montant-ht" /></div>
     <div class="gendocs-field"><label>Montant de l'offre TTC (€)</label><input type="text" id="gd-montant-ttc" /></div>
+    <div class="gendocs-field"><label>Date de début d'exécution</label><input type="text" id="gd-date-debut" /></div>
     <div class="gendocs-field"><label>Délai d'exécution</label><input type="text" id="gd-delai" /></div>
     <div class="gendocs-field"><label>Lieu de signature</label><input type="text" id="gd-lieu" value="Paris" /></div>
     <div class="gendocs-field"><label>Date de signature</label><input type="text" id="gd-date" /></div>
@@ -1455,6 +1456,9 @@ const COMPANY = {
   assureur_nom: 'HISCOX SA (contrat souscrit via Add Value Assurances)',
   assureur_contrat: 'HRCP300336 (police groupe FELPS GROUP, couvrant NAM&KOUJI — SIRET 953 731 809 00018)',
   assureur_garantie: 'RC Professionnelle : 1 500 000 € / année — RC Exploitation : 10 000 000 € / sinistre (période en cours : 28/01/2026 au 31/12/2026)',
+  banque_nom: 'Cf. RIB joint',
+  iban: 'Cf. RIB joint',
+  bic: 'Cf. RIB joint',
 };
 
 const REFERENCES = [
@@ -1487,6 +1491,7 @@ async function openGendocsModal() {
   document.getElementById('gd-acheteur').value = currentAO.source || '';
   document.getElementById('gd-montant-ht').value = '';
   document.getElementById('gd-montant-ttc').value = '';
+  document.getElementById('gd-date-debut').value = '';
   document.getElementById('gd-delai').value = '';
   document.getElementById('gd-lieu').value = 'Paris';
   document.getElementById('gd-date').value = new Date().toLocaleDateString('fr-FR');
@@ -1501,8 +1506,9 @@ async function openGendocsModal() {
     if (draft.reference_marche)  document.getElementById('gd-reference').value = draft.reference_marche;
     if (draft.acheteur)          document.getElementById('gd-acheteur').value = draft.acheteur;
     if (draft.montant_offre_ht)  document.getElementById('gd-montant-ht').value = draft.montant_offre_ht;
-    if (draft.montant_offre_ttc) document.getElementById('gd-montant-ttc').value = draft.montant_offre_ttc;
-    if (draft.delai_execution)   document.getElementById('gd-delai').value = draft.delai_execution;
+    if (draft.montant_offre_ttc)    document.getElementById('gd-montant-ttc').value = draft.montant_offre_ttc;
+    if (draft.date_debut_execution) document.getElementById('gd-date-debut').value = draft.date_debut_execution;
+    if (draft.delai_execution)      document.getElementById('gd-delai').value = draft.delai_execution;
     if (draft.lieu_signature)    document.getElementById('gd-lieu').value = draft.lieu_signature;
   }
 }
@@ -1540,6 +1546,7 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
     acheteur: document.getElementById('gd-acheteur').value,
     montant_offre_ht: document.getElementById('gd-montant-ht').value,
     montant_offre_ttc: document.getElementById('gd-montant-ttc').value,
+    date_debut_execution: document.getElementById('gd-date-debut').value,
     delai_execution: document.getElementById('gd-delai').value,
     lieu_signature: document.getElementById('gd-lieu').value,
     date_signature: document.getElementById('gd-date').value,
@@ -1585,6 +1592,7 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
       acheteur: data.acheteur,
       montant_offre_ht: data.montant_offre_ht,
       montant_offre_ttc: data.montant_offre_ttc,
+      date_debut_execution: data.date_debut_execution,
       delai_execution: data.delai_execution,
       lieu_signature: data.lieu_signature,
       updated_at: new Date().toISOString(),
@@ -1595,7 +1603,8 @@ document.getElementById('gendocs-submit').addEventListener('click', async () => 
     // Générer les documents signifie qu'on répond activement à l'AO : passe en
     // "En cours" si elle n'a pas encore de décision ou n'était encore qu'en GO.
     if (panelStatut === null || panelStatut === 'go') {
-      await saveDecision('en_cours', 'Passage automatique en cours (documents générés)');
+      const { error: decErr } = await saveDecision('en_cours', 'Passage automatique en cours (documents générés)');
+      if (decErr) errMsgs.push(`Statut "En cours" : ${decErr.message}`);
     }
   }
 

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS aos (
 CREATE TABLE IF NOT EXISTS decisions (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   ao_id       UUID REFERENCES aos(id) ON DELETE CASCADE,
-  statut      TEXT CHECK (statut IN ('go', 'no_go', 'en_attente')) DEFAULT 'en_attente',
+  statut      TEXT CHECK (statut IN ('go', 'no_go', 'en_attente', 'en_cours', 'repondu', 'remporte', 'perdu')) DEFAULT 'en_attente',
   commentaire TEXT,
   auteur      TEXT,
   created_at  TIMESTAMPTZ DEFAULT NOW()
