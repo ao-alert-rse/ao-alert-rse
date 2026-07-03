@@ -488,5 +488,40 @@
     "scoreRSETEE": 65,
     "dateVue": "2026-07-02T12:33:49.793Z",
     "dateClôture": "2026-07-08"
+  },
+  "Région PACA-7367c9c0": {
+    "titre": "Formation des entreprises et organismes de travaux de Défense des Forêts Contre l'Incendie à la conciliation des enjeux DFCI/Biodiversité/Paysage dans leurs travaux DFCI",
+    "source": "Région PACA",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-07-03T12:31:17.918Z",
+    "dateClôture": "2026-07-17"
+  },
+  "Département de la Haute-Savoie-185dba1c": {
+    "titre": "Formation sur le développement durable dans la commande publique",
+    "source": "Département de la Haute-Savoie",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-07-03T12:31:17.918Z",
+    "dateClôture": "2026-08-05"
+  },
+  "Inria-2637bca1": {
+    "titre": "PRESTATIONS DE FORMATION RELATIVES A LA PREVENTION DES VSS ET A LA PROMOTION DE L’EGALITE PROFESSIONNELLE ENTRE LES FEMMES ET LES HOMMES A DESTINATION DES AGENTS INRIA",
+    "source": "Inria",
+    "scoreRSETEE": 65,
+    "dateVue": "2026-07-03T12:31:17.918Z",
+    "dateClôture": "2026-07-08"
+  },
+  "ETS PUBLIC FONCIER DE HAUTS DE FRANCE-7dd2e49a": {
+    "titre": "Réalisation de travaux de désamiantage et de déconstruction avec prise en compte de l’économie circulaire",
+    "source": "ETS PUBLIC FONCIER DE HAUTS DE FRANCE",
+    "scoreRSETEE": 35,
+    "dateVue": "2026-07-03T12:31:17.918Z",
+    "dateClôture": "2026-07-06"
+  },
+  "SEM Drancy Demain-8b65ac1b": {
+    "titre": "Travaux de déconstruction, désamiantage et économie circulaire du bâtiment B - cité Gaston ROULAUD à Drancy (93700).",
+    "source": "SEM Drancy Demain",
+    "scoreRSETEE": 35,
+    "dateVue": "2026-07-03T12:31:17.918Z",
+    "dateClôture": "2026-07-06"
   }
 }
