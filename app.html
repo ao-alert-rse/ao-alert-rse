@@ -1137,10 +1137,15 @@ function filtered() {
 }
 
 function updateTabCounts() {
+  const today = isoToday();
   const counts = { pending: 0, go: 0, no_go: 0, en_cours: 0, repondu: 0, remporte: 0, perdu: 0 };
   aos.forEach(a => {
     const s = decisions[a.id]?.statut;
-    if (!s) counts.pending++;
+    if (!s) {
+      // Même règle que filtered() : une AO sans décision et déjà close ne compte pas comme "à décider".
+      if (a.date_cloture && a.date_cloture < today) return;
+      counts.pending++;
+    }
     else if (counts[s] !== undefined) counts[s]++;
   });
   document.getElementById('count-pending').textContent  = counts.pending;
