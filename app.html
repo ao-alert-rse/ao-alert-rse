@@ -1205,7 +1205,7 @@ function sorted(list) {
     let va = a[sortCol], vb = b[sortCol];
     if (sortCol === 'date_cloture') {
       va = va || '9999-99-99'; vb = vb || '9999-99-99';
-    } else if (sortCol === 'score') {
+    } else if (sortCol === 'score' || sortCol === 'prix') {
       va = va || 0; vb = vb || 0;
     } else {
       va = (va || '').toLowerCase(); vb = (vb || '').toLowerCase();
