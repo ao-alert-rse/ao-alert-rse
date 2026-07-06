@@ -657,9 +657,30 @@
       .t-tags { display: none; }
       .t-montant { display: none; }
     }
+
+    /* Bandeau d'erreur globale */
+    #global-error-banner {
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: #991b1b; color: white; padding: 10px 16px;
+      font-size: 13px; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    }
+    #global-error-banner.on { display: flex; }
+    #global-error-banner .geb-msg { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #global-error-banner button {
+      background: rgba(255,255,255,.15); border: none; color: white;
+      padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap;
+    }
+    #global-error-banner button:hover { background: rgba(255,255,255,.28); }
   </style>
 </head>
 <body>
+
+<!-- ═══ BANDEAU D'ERREUR GLOBALE ═════════════════════════ -->
+<div id="global-error-banner">
+  <span class="geb-msg" id="geb-msg"></span>
+  <button id="geb-reload">Recharger la page</button>
+  <button id="geb-dismiss">✕</button>
+</div>
 
 <!-- ═══ ÉCRAN AUTH ═══════════════════════════════════════ -->
 <div id="auth-screen">
@@ -866,6 +887,20 @@
 
 
 <script>
+// ── Bandeau d'erreur globale ─────────────────────────────
+// Les erreurs JS inattendues (ex. accès à une méthode sur une valeur du
+// mauvais type) échouent souvent en silence pour l'utilisateur : le clic
+// ne fait rien, sans indice sur ce qui s'est passé. Ce bandeau les rend visibles.
+function showGlobalError(message) {
+  document.getElementById('geb-msg').textContent = message;
+  document.getElementById('global-error-banner').classList.add('on');
+}
+window.addEventListener('error', e => showGlobalError(e.message || 'Erreur inattendue'));
+window.addEventListener('unhandledrejection', e => showGlobalError(e.reason?.message || String(e.reason)));
+document.getElementById('geb-dismiss').addEventListener('click', () =>
+  document.getElementById('global-error-banner').classList.remove('on'));
+document.getElementById('geb-reload').addEventListener('click', () => window.location.reload());
+
 // ── Config ────────────────────────────────────────────────
 // Remplacer par vos valeurs Supabase (Settings > API Keys)
 const SUPABASE_URL      = 'https://hhzikjttwcblwjseprqw.supabase.co';
