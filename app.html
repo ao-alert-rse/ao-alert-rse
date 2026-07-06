@@ -1130,7 +1130,7 @@ function filtered() {
     // Masquer les AOs expirés sans décision
     if (!statut && a.date_cloture && a.date_cloture < today) return false;
     if (a.score < scoreMin) return false;
-    if (search && !a.titre.toLowerCase().includes(search) && !(a.source||'').toLowerCase().includes(search)) return false;
+    if (search && !(a.titre||'').toLowerCase().includes(search) && !(a.source||'').toLowerCase().includes(search)) return false;
     if (activeTags.size && !(a.tags||[]).some(t => activeTags.has(t))) return false;
     return true;
   });
@@ -1208,7 +1208,7 @@ function sorted(list) {
     } else if (sortCol === 'score' || sortCol === 'prix') {
       va = va || 0; vb = vb || 0;
     } else {
-      va = (va || '').toLowerCase(); vb = (vb || '').toLowerCase();
+      va = String(va || '').toLowerCase(); vb = String(vb || '').toLowerCase();
     }
     if (va < vb) return sortDir === 'asc' ? -1 : 1;
     if (va > vb) return sortDir === 'asc' ?  1 : -1;
@@ -1802,7 +1802,7 @@ function renderCalendar() {
     const dots = aoList.slice(0, 2).map(ao => {
       const days = daysUntil(ao.date_cloture);
       const cls  = calUrgencyClass(days);
-      return `<div class="cal-dot ${cls}">${esc(ao.titre.slice(0, 22))}…</div>`;
+      return `<div class="cal-dot ${cls}">${esc((ao.titre||'').slice(0, 22))}…</div>`;
     }).join('');
     const more = aoList.length > 2
       ? `<div class="cal-dot more">+${aoList.length - 2} autres</div>`
