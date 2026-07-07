@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS aos (
   tags         TEXT[] DEFAULT '{}',
   date_vue     TIMESTAMPTZ,
   is_new       BOOLEAN DEFAULT false,
-  created_at   TIMESTAMPTZ DEFAULT NOW()
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  contract_folder_id TEXT  -- ContractFolderID eForms, identique BOAMP/TED pour un même avis (migration_add_contract_folder_id.sql)
 );
 
 -- Décisions GO / NO GO par AO

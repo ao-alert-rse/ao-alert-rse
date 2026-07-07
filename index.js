@@ -19,6 +19,7 @@ const { filtrerAOs, dedupCrossSource } = require('./utils/filtrer');
 const { generateHTMLReport } = require('./utils/reporter');
 const { syncAOsToSupabase } = require('./utils/supabase-sync');
 const { detecterScrapersEnPanne } = require('./utils/source-health');
+const { reconcilierDoublons } = require('./utils/dedup-reconcile');
 
 function fmt(date) {
   if (!date) return 'N/A';
@@ -183,6 +184,7 @@ async function main() {
   }
 
   await syncAOsToSupabase(toutesAOs);
+  await reconcilierDoublons();
 
   if (toutesAOs.length === 0) {
     await sendEmailAnomalie();

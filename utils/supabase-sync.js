@@ -39,6 +39,7 @@ async function syncAOsToSupabase(aos) {
       url: ao.url || null,
       date_cloture: ao.dateClôture && ao.dateClôture.length === 10 ? ao.dateClôture : null,
       ...(ao.prix > 0 ? { prix: ao.prix } : {}),
+      contract_folder_id: ao.contractFolderId || null,
       tags: tags || [],
       date_vue: ao.dateVue || new Date().toISOString(),
       is_new: ao.nouveau || false
