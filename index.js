@@ -16,6 +16,7 @@ const { sendEmailRecap, sendEmailAnomalie } = require('./utils/mailer');
 const { logScan } = require('./utils/scan-logger');
 const { filtrerAOs, dedupCrossSource } = require('./utils/filtrer');
 const { generateHTMLReport } = require('./utils/reporter');
+const { syncAOsToSupabase } = require('./utils/supabase-sync');
 
 function fmt(date) {
   if (!date) return 'N/A';
@@ -158,6 +159,8 @@ async function main() {
   toutesAOs = dedupCrossSource(toutesAOs);
 
   const { nouvelles, added } = detectNewAOs(toutesAOs);
+  const nouvellesKeys = new Set(nouvelles.map(n => n.key));
+  toutesAOs.forEach(ao => { ao.nouveau = nouvellesKeys.has(`${ao.source}-${hash(ao.titre)}`); });
 
   const enCours = [...toutesAOs].sort((a, b) => (a.dateClôture || '9999').localeCompare(b.dateClôture || '9999'));
 
@@ -165,6 +168,8 @@ async function main() {
   generateHTMLReport(toutesAOs, nouvelles);
 
   logScan({ totalRecus, totalValides, nouvelles, toutesAOs });
+
+  await syncAOsToSupabase(toutesAOs);
 
   if (toutesAOs.length === 0) {
     await sendEmailAnomalie();
