@@ -1223,6 +1223,11 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function truncateTitre(t, max) {
+  const s = String(t || '');
+  return s.length > max ? s.slice(0, max).trim() + '…' : s;
+}
+
 const AVATAR_COLORS = ['#085440','#3b82f6','#8b5cf6','#ef4444','#f59e0b','#06b6d4','#10b981','#ec4899'];
 function avatarColor(name) {
   let h = 0;
@@ -1283,7 +1288,9 @@ function openPanel(ao) {
   if (!ao) return;
   currentAO = ao;
 
-  document.getElementById('p-titre').textContent = ao.titre;
+  const pTitreEl = document.getElementById('p-titre');
+  pTitreEl.textContent = truncateTitre(ao.titre, 160);
+  pTitreEl.title = ao.titre || '';
   document.getElementById('p-badge').innerHTML   = (ao.is_new ? '<span class="panel-new-badge">Nouveau</span>' : '') + badge(ao.score||0);
   document.getElementById('p-source').textContent  = ao.source || '—';
   document.getElementById('p-cloture').textContent = fmtD(ao.date_cloture);
@@ -1837,7 +1844,7 @@ function renderCalendar() {
     const dots = aoList.slice(0, 2).map(ao => {
       const days = daysUntil(ao.date_cloture);
       const cls  = calUrgencyClass(days);
-      return `<div class="cal-dot ${cls}">${esc((ao.titre||'').slice(0, 22))}…</div>`;
+      return `<div class="cal-dot ${cls}" title="${esc(ao.titre)}">${esc(truncateTitre(ao.titre, 22))}</div>`;
     }).join('');
     const more = aoList.length > 2
       ? `<div class="cal-dot more">+${aoList.length - 2} autres</div>`
@@ -1881,7 +1888,7 @@ function showCalDetail(dateStr, aoList) {
     const cls  = calUrgencyClass(days);
     const urgTxt = days === null ? '' : days < 0 ? 'Clôturé' : days === 0 ? 'Aujourd\'hui !' : `J-${days}`;
     return `<div class="cal-ao-item" data-id="${esc(ao.id)}">
-      <span class="cal-ao-titre">${esc(ao.titre)}</span>
+      <span class="cal-ao-titre" title="${esc(ao.titre)}">${esc(ao.titre)}</span>
       <span class="cal-ao-urgency ${cls}">${urgTxt}</span>
     </div>`;
   }).join('');
