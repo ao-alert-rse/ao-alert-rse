@@ -84,18 +84,25 @@ function extractContractFolderIdFromXml(xml) {
   return m ? m[1] : null;
 }
 
+// Sans retry ici, un simple raté réseau ponctuel (fréquent sur ce endpoint) empêchait
+// l'extraction du ContractFolderID, laissant des doublons cross-source BOAMP/TED non
+// réconciliables (le filet de sécurité dedup-reconcile.js ne peut rien fusionner si le
+// champ n'a jamais été renseigné sur aucune des deux lignes).
 async function fetchTEDXmlDetails(pubNum) {
-  try {
-    const r = await fetch(`https://ted.europa.eu/en/notice/${pubNum}/xml`, {
-      headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
-      timeout: 12000,
-    });
-    if (!r.ok) return { prix: null, contractFolderId: null };
-    const xml = await r.text();
-    return { prix: extractPrixFromXml(xml), contractFolderId: extractContractFolderIdFromXml(xml) };
-  } catch {
-    return { prix: null, contractFolderId: null };
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const r = await fetch(`https://ted.europa.eu/en/notice/${pubNum}/xml`, {
+        headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
+        timeout: 12000,
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const xml = await r.text();
+      return { prix: extractPrixFromXml(xml), contractFolderId: extractContractFolderIdFromXml(xml) };
+    } catch (err) {
+      if (attempt < 2) await sleep(delay);
+    }
   }
+  return { prix: null, contractFolderId: null };
 }
 
 // Extrait le texte français (ou premier disponible) d'un champ multilingue TED
