@@ -523,5 +523,26 @@
     "scoreRSETEE": 35,
     "dateVue": "2026-07-03T12:31:17.918Z",
     "dateClôture": "2026-07-06"
+  },
+  "AEROPORTS DE PARIS-dc45c4ab": {
+    "titre": "Missions d'audits internes, sociaux et environnementaux dans le cadre de la démarche rse d'aéroports de paris",
+    "source": "AEROPORTS DE PARIS",
+    "scoreRSETEE": 55,
+    "dateVue": "2026-07-07T13:57:12.060Z",
+    "dateClôture": "2026-07-13"
+  },
+  "Cté communes Landivisiau-b9011d10": {
+    "titre": "Elaboration du plan climat air energie territorial (pcaet), accompagnement à la mise en oeuvre du programme territoire engagé transition ecologique (tete) de l'ademe et élaboration d'un schéma directeur des énergies (en tranche optionnelle) pour la communauté de communes du pays de landivisiau.",
+    "source": "Cté communes Landivisiau",
+    "scoreRSETEE": 100,
+    "dateVue": "2026-07-07T13:57:12.061Z",
+    "dateClôture": "2026-09-04"
+  },
+  "Conseil Départemental des Landes-b62d681f": {
+    "titre": "Prévention des risques psychosociaux et bien-être au travail.",
+    "source": "Conseil Départemental des Landes",
+    "scoreRSETEE": 35,
+    "dateVue": "2026-07-07T13:57:12.061Z",
+    "dateClôture": "2026-07-24"
   }
 }
