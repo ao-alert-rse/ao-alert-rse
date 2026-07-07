@@ -22,7 +22,13 @@ async function syncAOsToSupabase(aos) {
     return;
   }
 
-  const rows = aos.filter(ao => (ao.score || 0) >= 20).map(ao => {
+  const eligibles = aos.filter(ao => (ao.score || 0) >= 20);
+  const sansLien = eligibles.filter(ao => !ao.url);
+  if (sansLien.length > 0) {
+    console.log(`  🚫 ${sansLien.length} AO(s) rejetée(s) — pas de lien officiel`);
+  }
+
+  const rows = eligibles.filter(ao => ao.url).map(ao => {
     const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
     const tags = getThemeTags(breakdown);
     return {
