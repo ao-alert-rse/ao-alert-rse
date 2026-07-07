@@ -11,6 +11,7 @@ const { scrapeConstructys } = require('./scrapers/constructys');
 const { scrapeOpcoMobilites } = require('./scrapers/opcomobilites');
 const { scrapeMaximilien } = require('./scrapers/maximilien');
 const { scrapePLACE } = require('./scrapers/place');
+const { scrapeEMarchesPublics } = require('./scrapers/emarchespublics');
 const { detectNewAOs } = require('./utils/detector');
 const { sendEmailRecap, sendEmailAnomalie } = require('./utils/mailer');
 const { logScan } = require('./utils/scan-logger');
@@ -64,7 +65,8 @@ async function main() {
 
   // Toutes les sources en parallèle
   const [boampResultats, kwRaw, tedAOs, atlasAOs, deuxiAOs, ocapiatAOs, opcoepAOs,
-         uniformationAOs, aktoAOs, ademeAOs, constructysAOs, opcomobilitesAOs, maximilienAOs, placeAOs] = await Promise.all([
+         uniformationAOs, aktoAOs, ademeAOs, constructysAOs, opcomobilitesAOs, maximilienAOs, placeAOs,
+         emarchespublicsAOs] = await Promise.all([
     scrapeBOAMP(),
     withTimeout(queryBOAMPKeywords(3), 'BOAMP/mots-clés', 60000),
     withTimeout(scrapeTED(), 'TED/FR', 90000),
@@ -79,6 +81,7 @@ async function main() {
     withTimeout(scrapeOpcoMobilites(), 'OPCOMobilités/site', 20000),
     withTimeout(scrapeMaximilien(), 'Maximilien/IDF', 60000),
     withTimeout(scrapePLACE(), 'PLACE/national', 90000),
+    withTimeout(scrapeEMarchesPublics(), 'e-marchespublics/site', 90000),
   ]);
 
   let toutesAOs = [];
@@ -153,6 +156,7 @@ async function main() {
   ajouterSiteDirect(opcomobilitesAOs, 'OPCO Mobilités');
   ajouterSiteDirect(maximilienAOs, 'Maximilien/IDF');
   ajouterSiteDirect(placeAOs, 'PLACE/national');
+  ajouterSiteDirect(emarchespublicsAOs, 'e-marchespublics.com');
 
   console.log(`\n📊 Total : ${totalRecus} AO reçues → ${totalValides} valides RSE/TEE/RH`);
 
