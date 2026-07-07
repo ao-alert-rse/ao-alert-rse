@@ -13,11 +13,12 @@ const { scrapeMaximilien } = require('./scrapers/maximilien');
 const { scrapePLACE } = require('./scrapers/place');
 const { scrapeEMarchesPublics } = require('./scrapers/emarchespublics');
 const { detectNewAOs } = require('./utils/detector');
-const { sendEmailRecap, sendEmailAnomalie } = require('./utils/mailer');
+const { sendEmailRecap, sendEmailAnomalie, sendEmailSourceAnomalie } = require('./utils/mailer');
 const { logScan } = require('./utils/scan-logger');
 const { filtrerAOs, dedupCrossSource } = require('./utils/filtrer');
 const { generateHTMLReport } = require('./utils/reporter');
 const { syncAOsToSupabase } = require('./utils/supabase-sync');
+const { detecterScrapersEnPanne } = require('./utils/source-health');
 
 function fmt(date) {
   if (!date) return 'N/A';
@@ -130,6 +131,7 @@ async function main() {
   // Sites directs — déduplique par idweb ou hash titre+source
   const { hash } = require('./utils/hasher');
   const clésVues = new Set(toutesAOs.map(a => `${a.source}-${hash(a.titre)}`));
+  const sourceCounts = {};
 
   function ajouterSiteDirect(aos, label) {
     const valides = filtrerAOs(aos).filter(a => {
@@ -141,6 +143,7 @@ async function main() {
     totalRecus += aos.length;
     totalValides += valides.length;
     toutesAOs = toutesAOs.concat(valides);
+    sourceCounts[label] = aos.length;
     const icon = valides.length > 0 ? '✅' : '○';
     console.log(`\n${icon} ${label} (site) : ${aos.length} AO → ${valides.length} RSE/TEE/RH`);
   }
@@ -171,7 +174,13 @@ async function main() {
   afficherNouvellesAOs(nouvelles);
   generateHTMLReport(toutesAOs, nouvelles);
 
-  logScan({ totalRecus, totalValides, nouvelles, toutesAOs });
+  const log = logScan({ totalRecus, totalValides, nouvelles, toutesAOs, sourceCounts });
+
+  const sourcesEnPanne = detecterScrapersEnPanne(log, sourceCounts);
+  if (sourcesEnPanne.length > 0) {
+    console.log(`\n⚠️  ${sourcesEnPanne.length} source(s) probablement cassée(s) : ${sourcesEnPanne.map(s => s.source).join(', ')}`);
+    await sendEmailSourceAnomalie(sourcesEnPanne);
+  }
 
   await syncAOsToSupabase(toutesAOs);
 

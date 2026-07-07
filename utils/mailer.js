@@ -138,6 +138,29 @@ async function sendEmailAnomalie() {
   console.log('⚠️  Email anomalie envoyé (0 AO).');
 }
 
+async function sendEmailSourceAnomalie(sourcesEnPanne) {
+  const transporter = getTransporter();
+  if (!transporter) { console.warn('⚠️  Email ignoré : credentials manquants.'); return; }
+  const destinataires = getDestinataires();
+  if (!destinataires.length) return;
+
+  const items = sourcesEnPanne.map(s =>
+    `<li><strong>${s.source}</strong> : 0 AO aujourd'hui, alors que la moyenne des ${s.historique.length} derniers scans était de ${s.moyenneHistorique} (historique : ${s.historique.join(', ')})</li>`
+  ).join('');
+
+  await transporter.sendMail({
+    from: `"AO Alert RSE/TEE" <${process.env.GMAIL_USER}>`,
+    to: destinataires.join(', '),
+    subject: `[AO Alert] ⚠️ ${sourcesEnPanne.length} source(s) probablement cassée(s)`,
+    html: `<p>Ces sources remontaient fiablement des résultats et sont tombées à 0 aujourd'hui —
+           probablement un changement de structure du site plutôt qu'une vraie absence d'AO
+           (voir le cas Uniformation du 07/07/2026 dans l'historique du projet) :</p>
+           <ul>${items}</ul>
+           <p>À vérifier : ouvrir le site source et comparer avec le sélecteur du scraper correspondant.</p>`,
+  });
+  console.log(`⚠️  Email anomalie source(s) envoyé (${sourcesEnPanne.length} source(s) suspecte(s)).`);
+}
+
 async function sendEmailRecap(nouvelles, enCours = []) {
   const nouvellesEmail = nouvelles.filter(ao => ao.score >= 35);
   if (nouvellesEmail.length === 0) {
@@ -180,4 +203,4 @@ async function sendEmailRecap(nouvelles, enCours = []) {
   console.log(`📧 Email envoyé à : ${destinataires.join(', ')} (${nouvellesEmail.length}/${nouvelles.length} nouvelles ≥ 35)`);
 }
 
-module.exports = { sendEmailRecap, sendEmailAnomalie };
+module.exports = { sendEmailRecap, sendEmailAnomalie, sendEmailSourceAnomalie };
