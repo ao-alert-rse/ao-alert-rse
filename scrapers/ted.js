@@ -55,35 +55,46 @@ function extractXmlAmounts(xml, tagPattern) {
   return vals;
 }
 
-async function fetchTEDXmlPrice(pubNum) {
+function extractPrixFromXml(xml) {
+  // 1. Montants par lot (BT-27-Lot) — les plus fiables pour une mission spécifique
+  const lotAmounts = extractXmlAmounts(xml, 'cbc:EstimatedTotalAmount');
+  if (lotAmounts.length > 0) {
+    const best = Math.max(...lotAmounts);
+    return best <= XML_PRICE_CAP ? best : null;
+  }
+
+  // 2. Fallback : montant global du contrat / plafond cadre
+  const globalAmounts = extractXmlAmounts(
+    xml,
+    'cbc:EstimatedOverallContractAmount|efbc:FrameworkMaximumAmount'
+  );
+  if (globalAmounts.length > 0) {
+    const best = Math.max(...globalAmounts);
+    return best <= XML_PRICE_CAP ? best : null;
+  }
+
+  return null;
+}
+
+// ContractFolderID : identifiant du dossier de marché, identique sur TED et sur BOAMP pour un
+// même avis eForms publié au-dessus du seuil UE — sert à dédupliquer les avis cross-source
+// (voir extractContractFolderId dans scrapers/boamp.js) au lieu de comparer des titres.
+function extractContractFolderIdFromXml(xml) {
+  const m = xml.match(/<cbc:ContractFolderID>([^<]+)<\/cbc:ContractFolderID>/);
+  return m ? m[1] : null;
+}
+
+async function fetchTEDXmlDetails(pubNum) {
   try {
     const r = await fetch(`https://ted.europa.eu/en/notice/${pubNum}/xml`, {
       headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
       timeout: 12000,
     });
-    if (!r.ok) return null;
+    if (!r.ok) return { prix: null, contractFolderId: null };
     const xml = await r.text();
-
-    // 1. Montants par lot (BT-27-Lot) — les plus fiables pour une mission spécifique
-    const lotAmounts = extractXmlAmounts(xml, 'cbc:EstimatedTotalAmount');
-    if (lotAmounts.length > 0) {
-      const best = Math.max(...lotAmounts);
-      return best <= XML_PRICE_CAP ? best : null;
-    }
-
-    // 2. Fallback : montant global du contrat / plafond cadre
-    const globalAmounts = extractXmlAmounts(
-      xml,
-      'cbc:EstimatedOverallContractAmount|efbc:FrameworkMaximumAmount'
-    );
-    if (globalAmounts.length > 0) {
-      const best = Math.max(...globalAmounts);
-      return best <= XML_PRICE_CAP ? best : null;
-    }
-
-    return null;
+    return { prix: extractPrixFromXml(xml), contractFolderId: extractContractFolderIdFromXml(xml) };
   } catch {
-    return null;
+    return { prix: null, contractFolderId: null };
   }
 }
 
@@ -208,7 +219,7 @@ function normalizeNotice(n) {
     : null;
   const prix = prixRaw && prixRaw > 0 && prixRaw <= XML_PRICE_CAP ? prixRaw : null;
 
-  return { idweb: pubNum, titre, description, dateClôture, url, statut, source, score, prix };
+  return { idweb: pubNum, contractFolderId: null, titre, description, dateClôture, url, statut, source, score, prix };
 }
 
 /**
@@ -274,14 +285,16 @@ async function scrapeTED() {
 
   const normalized = unique.map(normalizeNotice);
 
-  // Enrichir avec le XML TED pour les notices sans prix (par lots de 5 pour éviter le 429)
-  const sansP = normalized.filter(n => !n.prix);
-  for (let i = 0; i < sansP.length; i += 5) {
-    const batch = sansP.slice(i, i + 5);
+  // Enrichir avec le XML TED (prix manquant + contractFolderId, nécessaire pour tous —
+  // par lots de 5 pour éviter le 429)
+  for (let i = 0; i < normalized.length; i += 5) {
+    const batch = normalized.slice(i, i + 5);
     await Promise.all(batch.map(async ao => {
-      ao.prix = await fetchTEDXmlPrice(ao.idweb);
+      const { prix, contractFolderId } = await fetchTEDXmlDetails(ao.idweb);
+      if (!ao.prix) ao.prix = prix;
+      ao.contractFolderId = contractFolderId;
     }));
-    if (i + 5 < sansP.length) await sleep(300);
+    if (i + 5 < normalized.length) await sleep(300);
   }
 
   return normalized;

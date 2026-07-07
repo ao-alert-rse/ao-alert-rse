@@ -151,6 +151,27 @@ function extractPrixDonnees(donnees) {
   return amounts.length > 0 ? Math.max(...amounts) : null;
 }
 
+// Les avis eForms (au-dessus du seuil UE) sont publiés une seule fois puis mirorés sur BOAMP
+// ET sur TED : le champ ContractFolderID identifie le dossier de marché et reste identique
+// des deux côtés — bien plus fiable qu'un rapprochement par titre pour dédupliquer ces cas.
+function extractContractFolderId(donnees) {
+  if (!donnees) return null;
+  let d;
+  try { d = typeof donnees === 'string' ? JSON.parse(donnees) : donnees; } catch { return null; }
+  let found = null;
+  function walk(obj) {
+    if (found || !obj || typeof obj !== 'object') return;
+    for (const [k, v] of Object.entries(obj)) {
+      if (found) return;
+      if (/ContractFolderID$/.test(k) && typeof v === 'string') { found = v; return; }
+      if (Array.isArray(v)) v.forEach(walk);
+      else if (typeof v === 'object') walk(v);
+    }
+  }
+  walk(d);
+  return found;
+}
+
 function normalizeRecord(rec, sourceOverride) {
   const f = rec.fields;
   const dateClôture = f.datelimitereponse
@@ -166,6 +187,7 @@ function normalizeRecord(rec, sourceOverride) {
   const prix = prixRaw && prixRaw <= 50_000_000 ? prixRaw : null;
   return {
     idweb: f.idweb || '',
+    contractFolderId: extractContractFolderId(f.donnees),
     titre,
     description,
     dateClôture,

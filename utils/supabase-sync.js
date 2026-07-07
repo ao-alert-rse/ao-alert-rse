@@ -1,9 +1,8 @@
 // Synchronise les AOs scrapées vers Supabase après chaque scan
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
-const { hash } = require('./hasher');
 const { scoreRSETEEDetailed, getThemeTags } = require('./scorer');
-const { normStr, normTitreForKey } = require('./filtrer');
+const { computeAOKey } = require('./filtrer');
 
 let _client = null;
 
@@ -32,7 +31,7 @@ async function syncAOsToSupabase(aos) {
     const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
     const tags = getThemeTags(breakdown);
     return {
-      key: `${normStr(ao.source)}-${hash(normTitreForKey(ao.titre))}`,
+      key: computeAOKey(ao),
       titre: ao.titre,
       source: ao.source || null,
       score: ao.score || null,
