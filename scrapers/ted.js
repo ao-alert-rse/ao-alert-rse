@@ -20,6 +20,20 @@ const TITLE_KW = [
   'neutralite carbone', 'decarbonation',
   // Post loi PACTE
   'entreprise a mission',
+  // Cadres/labels/normes
+  'ISO 26000', 'double materialite', 'gouvernance durable', 'certification RSE',
+  'EcoVadis', 'notation ESG', 'ESRS',
+  // Carbone — compléments
+  // ("plan climat" exclu : matche systématiquement "Plan Climat Air Energie Territorial",
+  // document d'urbanisme cité dans quasi toutes les révisions de SCoT/PLU, hors sujet ;
+  // "empreinte carbone" exclu : critère d'attribution fréquent sur des marchés de
+  // fournitures — biscuits, fruits, gardiennage... — pas des missions de conseil)
+  'SBTi', 'scope 3', 'accompagnement climat',
+  // Achats responsables / éthique
+  // ("due diligence" exclu : ambigu avec la due diligence financière/M&A hors RSE)
+  'fournisseurs responsables', 'droits humains', 'Sapin II',
+  // Autres
+  'communication responsable', 'analyse du cycle de vie',
 ];
 
 const FIELDS = [

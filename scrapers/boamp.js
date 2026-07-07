@@ -39,7 +39,21 @@ const KEYWORDS_BOAMP = [
   'entreprise à mission',
   // Formation générique RSE/ESG/CSRD
   'formation RSE', 'formation ESG', 'formation CSRD', 'formation développement durable',
-  'fresque du climat', 'sensibilisation RSE',
+  'fresque du climat', 'sensibilisation RSE', 'formation climat',
+  // Cadres/labels/normes (souvent le seul signal RSE dans un titre BOAMP générique)
+  'ISO 26000', 'double matérialité', 'gouvernance durable', 'certification RSE',
+  'EcoVadis', 'notation ESG', 'ESRS',
+  // Carbone — compléments à bilan carbone/GES
+  // ("plan climat" exclu : matche systématiquement "Plan Climat Air Energie Territorial",
+  // document d'urbanisme cité dans quasi toutes les révisions de SCoT/PLU, hors sujet ;
+  // "empreinte carbone" exclu : critère d'attribution fréquent sur des marchés de
+  // fournitures — biscuits, fruits, gardiennage... — pas des missions de conseil)
+  'SBTi', 'scope 3', 'accompagnement climat',
+  // Achats responsables / éthique — compléments
+  // ("due diligence" exclu : ambigu avec la due diligence financière/M&A hors RSE)
+  'fournisseurs responsables', 'droits humains', 'Sapin II',
+  // Autres
+  'communication responsable', 'analyse du cycle de vie',
 ];
 
 // Noms validés dans BOAMP (testés avec nhits > 0)

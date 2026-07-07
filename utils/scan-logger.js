@@ -18,7 +18,8 @@ function logScan({ totalRecus, totalValides, nouvelles, toutesAOs, sourceCounts 
     enCours: toutesAOs.length,
     sourceCounts: sourceCounts || {},
   });
-  // Garder les 52 dernières entrées (1 an de scans hebdo)
+  // Garder les 52 dernières entrées (~7 semaines de scans quotidiens — largement assez pour
+  // la fenêtre de 5 scans utilisée par la détection de pannes dans source-health.js)
   if (log.length > 52) log.splice(0, log.length - 52);
   fs.writeFileSync(LOG_PATH, JSON.stringify(log, null, 2), 'utf8');
   return log;

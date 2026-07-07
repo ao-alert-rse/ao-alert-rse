@@ -70,5 +70,33 @@
       }
     ],
     "enCours": 24
+  },
+  {
+    "date": "2026-07-07T15:29:51.583Z",
+    "totalRecus": 527,
+    "totalValides": 27,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "LOT 1 - Compensation des Scope 1 et 2 ainsi que des émissions liées aux missions des salariés [+1 autres lots]",
+        "score": 35,
+        "source": "Aéroports de Paris"
+      }
+    ],
+    "enCours": 25,
+    "sourceCounts": {
+      "ATLAS": 5,
+      "2i": 1,
+      "OCAPIAT": 7,
+      "OPCO EP": 6,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 2,
+      "Constructys": 2,
+      "OPCO Mobilités": 5,
+      "Maximilien/IDF": 21,
+      "PLACE/national": 35,
+      "e-marchespublics.com": 132
+    }
   }
 ]
