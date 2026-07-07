@@ -42,9 +42,22 @@ function parseDate(txt) {
   return `${m[3]}-${String(mo).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
 }
 
+async function fetchWithRetry(url, opts, retries = 3, delayMs = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const r = await fetch(url, { ...opts, timeout: 15000 });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r;
+    } catch (e) {
+      if (i < retries - 1) await new Promise(res => setTimeout(res, delayMs * (i + 1)));
+      else throw e;
+    }
+  }
+}
+
 async function searchKeyword(kw) {
   const url = `${BASE}/?page=Entreprise.EntrepriseAdvancedSearch&searchAnnCons&keyWord=${encodeURIComponent(kw)}`;
-  const r = await fetch(url, { headers: HEADERS, timeout: 15000 });
+  const r = await fetchWithRetry(url, { headers: HEADERS });
   const $ = cheerio.load(await r.text());
   const items = [];
 

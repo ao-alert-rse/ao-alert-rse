@@ -15,9 +15,24 @@ function parseDate(txt) {
   return `${m[3]}-${String(mo).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
 }
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 async function scrapeOpcoMobilites() {
-  const r = await fetch(URL, { headers: { 'User-Agent': 'AO-Scanner/1.0' }, timeout: 15000 });
-  const $ = cheerio.load(await r.text());
+  let html;
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const r = await fetch(URL, { headers: { 'User-Agent': 'AO-Scanner/1.0' }, timeout: 15000 });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      html = await r.text();
+      break;
+    } catch (err) {
+      console.error(`  ❌ OPCOMobilités tentative ${attempt + 1}/3 : ${err.message}`);
+      if (attempt < 2) await sleep(delay);
+    }
+  }
+  if (!html) return [];
+
+  const $ = cheerio.load(html);
   const aos = [];
 
   $('details.accordion__details').each((_, el) => {

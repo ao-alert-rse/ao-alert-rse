@@ -5,19 +5,25 @@ const { localToday } = require('../utils/date');
 
 const URL = 'https://www.uniformation.fr/partenaire-prestataire/appels-doffre';
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 async function scrapeUniformation() {
   let html;
-  try {
-    const res = await fetch(URL, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' },
-      timeout: 15000,
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    html = await res.text();
-  } catch (err) {
-    console.error(`  ❌ Uniformation : ${err.message}`);
-    return [];
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const res = await fetch(URL, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' },
+        timeout: 15000,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      html = await res.text();
+      break;
+    } catch (err) {
+      console.error(`  ❌ Uniformation tentative ${attempt + 1}/3 : ${err.message}`);
+      if (attempt < 2) await sleep(delay);
+    }
   }
+  if (!html) return [];
 
   const $ = cheerio.load(html);
   const aos = [];

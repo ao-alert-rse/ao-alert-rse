@@ -11,19 +11,25 @@ function parseDate(text) {
   return `${m[3]}-${m[2]}-${m[1]}`;
 }
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 async function scrapeAKTO() {
   let html;
-  try {
-    const res = await fetch(URL, {
-      headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
-      timeout: 15000,
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    html = await res.text();
-  } catch (err) {
-    console.error(`  ❌ AKTO : ${err.message}`);
-    return [];
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const res = await fetch(URL, {
+        headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
+        timeout: 15000,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      html = await res.text();
+      break;
+    } catch (err) {
+      console.error(`  ❌ AKTO tentative ${attempt + 1}/3 : ${err.message}`);
+      if (attempt < 2) await sleep(delay);
+    }
   }
+  if (!html) return [];
 
   const $ = cheerio.load(html);
   const aos = [];
