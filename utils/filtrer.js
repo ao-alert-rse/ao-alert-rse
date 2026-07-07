@@ -52,4 +52,12 @@ function dedupCrossSource(aos) {
   });
 }
 
-module.exports = { normStr, normTitre, filtrerAOs, dedupCrossSource };
+// Titre normalisé pour la clé d'upsert Supabase : les marchés à lots multiples voient leur
+// `objet` BOAMP changer légèrement d'un scan à l'autre (lots ajoutés/réordonnés), donc on ne
+// garde que la partie stable avant le premier séparateur de lot pour que la clé ne bouge pas.
+function normTitreForKey(t) {
+  const s = normStr(t).replace(/\s+/g, ' ').trim();
+  return s.split(/\s*\|\s*|\s*\[\+\d+ autres lots\]/)[0].trim().slice(0, 100);
+}
+
+module.exports = { normStr, normTitre, normTitreForKey, filtrerAOs, dedupCrossSource };

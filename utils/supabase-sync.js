@@ -3,6 +3,7 @@ require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 const { hash } = require('./hasher');
 const { scoreRSETEEDetailed, getThemeTags } = require('./scorer');
+const { normStr, normTitreForKey } = require('./filtrer');
 
 let _client = null;
 
@@ -25,7 +26,7 @@ async function syncAOsToSupabase(aos) {
     const { breakdown } = scoreRSETEEDetailed(ao.titre, ao.description || '');
     const tags = getThemeTags(breakdown);
     return {
-      key: `${ao.source}-${hash(ao.titre)}`,
+      key: `${normStr(ao.source)}-${hash(normTitreForKey(ao.titre))}`,
       titre: ao.titre,
       source: ao.source || null,
       score: ao.score || null,
