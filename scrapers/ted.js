@@ -121,10 +121,14 @@ function frArray(obj) {
 function buildTitreMultiLot(titreLots, descLots) {
   if (titreLots.length <= 1) return titreLots[0] || '';
 
+  // Départage déterministe par titre en cas d'égalité de score : l'ordre des lots renvoyé
+  // par l'API TED n'est pas garanti stable d'un appel à l'autre, donc trier uniquement par
+  // score (tri stable de JS) peut faire gagner un lot différent selon l'ordre reçu, ce qui
+  // change le titre tronqué et casse la clé d'upsert Supabase d'un scan à l'autre.
   const scored = titreLots.map((titre, i) => ({
     titre,
     score: scoreRSETEE(titre, descLots[i] || ''),
-  })).sort((a, b) => b.score - a.score);
+  })).sort((a, b) => b.score - a.score || a.titre.localeCompare(b.titre));
 
   const best = scored[0].score > 0 ? scored[0] : { titre: titreLots[0] };
   const titre = best.titre.length > 100 ? best.titre.slice(0, 97) + '…' : best.titre;
