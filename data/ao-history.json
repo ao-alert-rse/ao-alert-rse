@@ -579,5 +579,33 @@
     "scoreRSETEE": 64,
     "dateVue": "2026-07-08T09:12:51.219Z",
     "dateClôture": "2026-09-01"
+  },
+  "Région Île-de-France-ab4bdcf7": {
+    "titre": "Accords-cadres mono-attributaire à bons de commande portant sur des missions d'assistant à maître d'ouvrage pour la valorisation du réemploi des matériaux et de l'économie circulaire dans les opéra...",
+    "source": "Région Île-de-France",
+    "scoreRSETEE": 55,
+    "dateVue": "2026-07-08T14:09:01.625Z",
+    "dateClôture": "2026-08-25"
+  },
+  "REGION CENTRE VAL DE LOIRE-1db637fc": {
+    "titre": "ASSISTANCE A MAITRISE D'OUVRAGE OBSERVATOIRE REGIONAL DECHETS ET ECONOMIE CIRCULAIRE EN RÉGION CENTRE-VAL DE LOIRE  2026",
+    "source": "REGION CENTRE VAL DE LOIRE",
+    "scoreRSETEE": 80,
+    "dateVue": "2026-07-08T14:09:01.625Z",
+    "dateClôture": "2026-09-30"
+  },
+  "Communauté d'agglomération Pays Basque-91169162": {
+    "titre": "Maîtrise d'oeuvre pour l'adaptation  et la réhabilitation des anciens bâtiments Alki en pôle d'économie circulaire à Itxassou",
+    "source": "Communauté d'agglomération Pays Basque",
+    "scoreRSETEE": 35,
+    "dateVue": "2026-07-08T14:09:01.625Z",
+    "dateClôture": "2026-08-19"
+  },
+  "SYNDICAT DU BOIS DE L'AUMONE-89890e0a": {
+    "titre": "TRAVAUX - AGRANDISSEMENT DE LA DECHETTERIE DE RIOM ET TRANSFORMATION EN POLE DE VALORISATION, RECYCLERIE ET ESPACE ECONOMIE CIRCULAIRE",
+    "source": "SYNDICAT DU BOIS DE L'AUMONE",
+    "scoreRSETEE": 35,
+    "dateVue": "2026-07-08T14:09:01.625Z",
+    "dateClôture": "2026-09-13"
   }
 }

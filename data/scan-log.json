@@ -185,5 +185,48 @@
       "PLACE/national": 53,
       "e-marchespublics.com": 155
     }
+  },
+  {
+    "date": "2026-07-08T14:09:01.643Z",
+    "totalRecus": 799,
+    "totalValides": 29,
+    "nouvelles": 4,
+    "nouvellesTitres": [
+      {
+        "titre": "Accords-cadres mono-attributaire à bons de commande portant sur des missions d'assistant à maître d'ouvrage pour la valorisation du réemploi des matériaux et de l'économie circulaire dans les opéra...",
+        "score": 55,
+        "source": "Région Île-de-France"
+      },
+      {
+        "titre": "ASSISTANCE A MAITRISE D'OUVRAGE OBSERVATOIRE REGIONAL DECHETS ET ECONOMIE CIRCULAIRE EN RÉGION CENTRE-VAL DE LOIRE  2026",
+        "score": 80,
+        "source": "REGION CENTRE VAL DE LOIRE"
+      },
+      {
+        "titre": "Maîtrise d'oeuvre pour l'adaptation  et la réhabilitation des anciens bâtiments Alki en pôle d'économie circulaire à Itxassou",
+        "score": 35,
+        "source": "Communauté d'agglomération Pays Basque"
+      },
+      {
+        "titre": "TRAVAUX - AGRANDISSEMENT DE LA DECHETTERIE DE RIOM ET TRANSFORMATION EN POLE DE VALORISATION, RECYCLERIE ET ESPACE ECONOMIE CIRCULAIRE",
+        "score": 35,
+        "source": "SYNDICAT DU BOIS DE L'AUMONE"
+      }
+    ],
+    "enCours": 27,
+    "sourceCounts": {
+      "ATLAS": 5,
+      "2i": 1,
+      "OCAPIAT": 7,
+      "OPCO EP": 6,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 3,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 46,
+      "PLACE/national": 53,
+      "e-marchespublics.com": 155
+    }
   }
 ]
