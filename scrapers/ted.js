@@ -40,8 +40,10 @@ const FIELDS = [
   'title-lot',
   'description-lot',
   'deadline-receipt-tender-date-lot',
+  'deadline-receipt-request-date-lot',
   'deadline-date-lot',
   'deadline-date-part',
+  'notice-type',
   'organisation-name-buyer',
   'buyer-name',
   'publication-number',
@@ -49,6 +51,10 @@ const FIELDS = [
   'links',
   'estimated-value-lot',
 ];
+
+// Avis d'attribution/résultat (le marché est déjà attribué) : pas de date limite à afficher,
+// et c'est normal — ce n'est pas un échec d'extraction, l'AO est simplement déjà fermée.
+const AWARD_NOTICE_PREFIXES = ['can-', 'cn-desg-result'];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -217,13 +223,16 @@ function normalizeNotice(n) {
 
   const rawDate =
     (n['deadline-receipt-tender-date-lot'] || [])[0] ||
+    (n['deadline-receipt-request-date-lot'] || [])[0] ||
     (n['deadline-date-lot'] || [])[0] ||
     (n['deadline-date-part'] || [])[0] ||
     '';
   const dateClôture = rawDate ? rawDate.slice(0, 10) : '';
+  const noticeType = Array.isArray(n['notice-type']) ? (n['notice-type'][0] || '') : (n['notice-type'] || '');
+  const isAwardNotice = AWARD_NOTICE_PREFIXES.some(p => noticeType.startsWith(p));
   const statut = dateClôture
     ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
-    : 'Ouvert';
+    : (isAwardNotice ? 'Fermé' : 'Ouvert');
 
   const url = `https://ted.europa.eu/fr/notice/-/detail/${pubNum}`;
 
