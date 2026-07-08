@@ -1162,8 +1162,10 @@ function filtered() {
     const statut = decisions[a.id]?.statut || null;
     if (activeView === 'pending' && statut !== null) return false;
     if (activeView !== 'pending' && statut !== activeView) return false;
-    // Masquer les AOs expirés sans décision
-    if (!statut && a.date_cloture && a.date_cloture < today) return false;
+    // Masquer les AOs expirées sans décision, et les NO GO expirés (pas d'intérêt à garder
+    // un refus visible une fois l'AO close — contrairement à Perdu/Remporté qui ne peuvent
+    // par nature être décidés qu'après la clôture).
+    if ((!statut || statut === 'no_go') && a.date_cloture && a.date_cloture < today) return false;
     if (a.score < scoreMin) return false;
     if (search && !(a.titre||'').toLowerCase().includes(search) && !(a.source||'').toLowerCase().includes(search)) return false;
     if (activeTags.size && !(a.tags||[]).some(t => activeTags.has(t))) return false;
@@ -1180,6 +1182,11 @@ function updateTabCounts() {
       // Même règle que filtered() : une AO sans décision et déjà close ne compte pas comme "à décider".
       if (a.date_cloture && a.date_cloture < today) return;
       counts.pending++;
+    }
+    else if (s === 'no_go') {
+      // Idem : un NO GO déjà clos n'est plus "d'actualité", on ne le compte plus dans l'onglet.
+      if (a.date_cloture && a.date_cloture < today) return;
+      counts.no_go++;
     }
     else if (counts[s] !== undefined) counts[s]++;
   });
