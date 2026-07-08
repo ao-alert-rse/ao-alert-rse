@@ -133,6 +133,35 @@ async function queryBOAMP(nomacheteur, source) {
   return data.records.map(rec => normalizeRecord(rec, source));
 }
 
+// Revérifie une AO déjà en base dont la date de clôture n'a jamais pu être déterminée au
+// premier scan — sans filtre de date cette fois (contrairement à queryBOAMP/queryBOAMPKeywords),
+// pour retrouver l'avis même s'il n'est plus actif et récupérer sa vraie date via le même
+// repli datefindiffusion que normalizeRecord() utilise déjà.
+async function refetchBoampByIdweb(idweb) {
+  const params = new URLSearchParams({
+    dataset: 'boamp',
+    q: `idweb:"${idweb}"`,
+    rows: '1',
+    output: 'json',
+  });
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const res = await fetch(`${API_BASE}?${params}`, {
+        headers: { 'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr' },
+        timeout: 15000,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const rec = (data.records || [])[0];
+      if (!rec) return null;
+      return normalizeRecord(rec, null);
+    } catch (err) {
+      if (attempt < 2) await sleep(delay);
+    }
+  }
+  return null;
+}
+
 // Extrait le montant depuis le blob JSON du champ "donnees".
 // Gère deux formats coexistants dans BOAMP :
 //   - eForms (post-2023) : objets {"@currencyID":"EUR","#text":"440000"}
@@ -282,4 +311,4 @@ async function scrapeBOAMP() {
   return results;
 }
 
-module.exports = { scrapeBOAMP, queryBOAMPKeywords };
+module.exports = { scrapeBOAMP, queryBOAMPKeywords, refetchBoampByIdweb };

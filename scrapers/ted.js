@@ -44,6 +44,7 @@ const FIELDS = [
   'deadline-date-lot',
   'deadline-date-part',
   'notice-type',
+  'publication-date',
   'organisation-name-buyer',
   'buyer-name',
   'publication-number',
@@ -123,6 +124,76 @@ async function fetchTEDXmlDetails(pubNum) {
     }
   }
   return { prix: null, contractFolderId: null };
+}
+
+// Calcule la date de clôture + le statut à partir des champs bruts renvoyés par l'API TED.
+// Partagé entre normalizeNotice() (scan initial, scope ACTIVE) et refetchTedDeadline()
+// (revérification d'une AO déjà en base, scope ALL) pour ne pas dupliquer cette logique.
+function computeDeadlineEtStatut(n) {
+  const rawDate =
+    (n['deadline-receipt-tender-date-lot'] || [])[0] ||
+    (n['deadline-receipt-request-date-lot'] || [])[0] ||
+    (n['deadline-date-lot'] || [])[0] ||
+    (n['deadline-date-part'] || [])[0] ||
+    '';
+  let dateClôture = rawDate ? rawDate.slice(0, 10) : '';
+  const noticeType = Array.isArray(n['notice-type']) ? (n['notice-type'][0] || '') : (n['notice-type'] || '');
+  const isAwardNotice = AWARD_NOTICE_PREFIXES.some(p => noticeType.startsWith(p));
+  const statut = dateClôture
+    ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
+    : (isAwardNotice ? 'Fermé' : 'Ouvert');
+  // Un avis d'attribution n'a par nature aucune date limite de candidature — la date de
+  // publication de l'avis sert de repère "clos depuis" pour que l'AO se masque correctement
+  // au lieu de rester "Ouvert" faute de date exploitable.
+  if (!dateClôture && isAwardNotice) {
+    const pubDate = Array.isArray(n['publication-date']) ? n['publication-date'][0] : n['publication-date'];
+    if (pubDate) dateClôture = pubDate.slice(0, 10);
+  }
+  return { dateClôture, statut };
+}
+
+// Revérifie une AO déjà en base dont la date de clôture n'a jamais pu être déterminée au
+// premier scan (scope ACTIVE uniquement) — sans ça, une AO comme un avis d'attribution publié
+// après une refonte de champ reste "Ouvert" en base pour toujours, personne ne la revoit jamais
+// puisqu'elle ne matche plus les requêtes de scan actives. scope: 'ALL' retrouve l'avis même
+// s'il n'est plus actif.
+async function refetchTedDeadline(pubNum) {
+  const fields = [
+    'notice-type',
+    'publication-date',
+    'deadline-receipt-tender-date-lot',
+    'deadline-receipt-request-date-lot',
+    'deadline-date-lot',
+    'deadline-date-part',
+  ];
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'User-Agent': 'AO-Scanner/1.0; contact: b.baroni@nam-kouji.fr',
+        },
+        body: JSON.stringify({
+          query: `publication-number = "${pubNum}"`,
+          fields,
+          page: 1,
+          limit: 1,
+          scope: 'ALL',
+        }),
+        timeout: 15000,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const notice = (data.notices || [])[0];
+      if (!notice) return null;
+      return computeDeadlineEtStatut(notice);
+    } catch (err) {
+      if (attempt < 2) await sleep(delay);
+    }
+  }
+  return null;
 }
 
 // Extrait le texte français (ou premier disponible) d'un champ multilingue TED
@@ -221,18 +292,7 @@ function normalizeNotice(n) {
         .slice(0, 400)
     : cleanLotDesc(descLots[0]).slice(0, 400);
 
-  const rawDate =
-    (n['deadline-receipt-tender-date-lot'] || [])[0] ||
-    (n['deadline-receipt-request-date-lot'] || [])[0] ||
-    (n['deadline-date-lot'] || [])[0] ||
-    (n['deadline-date-part'] || [])[0] ||
-    '';
-  const dateClôture = rawDate ? rawDate.slice(0, 10) : '';
-  const noticeType = Array.isArray(n['notice-type']) ? (n['notice-type'][0] || '') : (n['notice-type'] || '');
-  const isAwardNotice = AWARD_NOTICE_PREFIXES.some(p => noticeType.startsWith(p));
-  const statut = dateClôture
-    ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
-    : (isAwardNotice ? 'Fermé' : 'Ouvert');
+  const { dateClôture, statut } = computeDeadlineEtStatut(n);
 
   const url = `https://ted.europa.eu/fr/notice/-/detail/${pubNum}`;
 
@@ -330,4 +390,4 @@ async function scrapeTED() {
   return normalized;
 }
 
-module.exports = { scrapeTED };
+module.exports = { scrapeTED, refetchTedDeadline };

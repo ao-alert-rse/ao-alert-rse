@@ -20,6 +20,7 @@ const { generateHTMLReport } = require('./utils/reporter');
 const { syncAOsToSupabase } = require('./utils/supabase-sync');
 const { detecterScrapersEnPanne } = require('./utils/source-health');
 const { reconcilierDoublons } = require('./utils/dedup-reconcile');
+const { rafraichirDatesCloture } = require('./utils/refresh-cloture');
 
 function fmt(date) {
   if (!date) return 'N/A';
@@ -185,6 +186,7 @@ async function main() {
 
   await syncAOsToSupabase(toutesAOs);
   await reconcilierDoublons();
+  await rafraichirDatesCloture();
 
   if (toutesAOs.length === 0) {
     await sendEmailAnomalie();
