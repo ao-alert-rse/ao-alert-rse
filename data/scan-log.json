@@ -98,5 +98,48 @@
       "PLACE/national": 35,
       "e-marchespublics.com": 132
     }
+  },
+  {
+    "date": "2026-07-08T09:12:51.274Z",
+    "totalRecus": 596,
+    "totalValides": 32,
+    "nouvelles": 4,
+    "nouvellesTitres": [
+      {
+        "titre": "Prestations d'Analyse de dossiers administratifs et d’Audit Qualité, Santé, Sécurité et Développement Durable des fournisseurs de prestations de travaux et de services",
+        "score": 75,
+        "source": "Enedis SA"
+      },
+      {
+        "titre": "Assistance à maitrise d’ouvrage pour l’élaboration du Plan Climat Air Energie Territorial de Nanterre (2027-2033)",
+        "score": 100,
+        "source": "LA MAIRIE DE NANTERRE"
+      },
+      {
+        "titre": "Marché de travaux pour la rénovation du bâtiment A et démolition du bâtiment F pour la rénovation globale et l’extension du Lycée",
+        "score": 28,
+        "source": "Conseil Régional d'Ile-de-France"
+      },
+      {
+        "titre": "Système intégré de gestion de la formation externe ADEME",
+        "score": 64,
+        "source": "Autres organismes"
+      }
+    ],
+    "enCours": 29,
+    "sourceCounts": {
+      "ATLAS": 5,
+      "2i": 1,
+      "OCAPIAT": 7,
+      "OPCO EP": 6,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 3,
+      "Constructys": 2,
+      "OPCO Mobilités": 5,
+      "Maximilien/IDF": 47,
+      "PLACE/national": 53,
+      "e-marchespublics.com": 153
+    }
   }
 ]

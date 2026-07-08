@@ -551,5 +551,33 @@
     "scoreRSETEE": 35,
     "dateVue": "2026-07-07T15:29:51.522Z",
     "dateClôture": ""
+  },
+  "Enedis SA-ecd32ac5": {
+    "titre": "Prestations d'Analyse de dossiers administratifs et d’Audit Qualité, Santé, Sécurité et Développement Durable des fournisseurs de prestations de travaux et de services",
+    "source": "Enedis SA",
+    "scoreRSETEE": 75,
+    "dateVue": "2026-07-08T09:12:51.218Z",
+    "dateClôture": ""
+  },
+  "LA MAIRIE DE NANTERRE-e07ec224": {
+    "titre": "Assistance à maitrise d’ouvrage pour l’élaboration du Plan Climat Air Energie Territorial de Nanterre (2027-2033)",
+    "source": "LA MAIRIE DE NANTERRE",
+    "scoreRSETEE": 100,
+    "dateVue": "2026-07-08T09:12:51.219Z",
+    "dateClôture": "2026-07-31"
+  },
+  "Conseil Régional d'Ile-de-France-f824ae9f": {
+    "titre": "Marché de travaux pour la rénovation du bâtiment A et démolition du bâtiment F pour la rénovation globale et l’extension du Lycée",
+    "source": "Conseil Régional d'Ile-de-France",
+    "scoreRSETEE": 28,
+    "dateVue": "2026-07-08T09:12:51.219Z",
+    "dateClôture": "2026-07-16"
+  },
+  "Autres organismes-ce71e5b7": {
+    "titre": "Système intégré de gestion de la formation externe ADEME",
+    "source": "Autres organismes",
+    "scoreRSETEE": 64,
+    "dateVue": "2026-07-08T09:12:51.219Z",
+    "dateClôture": "2026-09-01"
   }
 }

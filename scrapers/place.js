@@ -17,6 +17,10 @@ const KEYWORDS = [
   'QVCT',
   'CSRD',
   'décarbonation',
+  // Chaque mot-clé coûte une requête ici (pas de combinaison OR comme sur BOAMP/TED), et ce
+  // site répond plus lentement que Maximilien/e-marchespublics (~4s/mot-clé) — liste courte,
+  // seulement les termes les plus spécifiques, pour rester loin du budget de 90s.
+  'accompagnement RSE', 'devoir de vigilance', 'achats responsables', 'égalité professionnelle',
 ];
 
 async function fetchWithRetry(url, opts, retries = 3, delayMs = 2000) {

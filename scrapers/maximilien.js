@@ -15,6 +15,10 @@ const KEYWORDS = [
   'décarbonation',
   'bilan carbone',
   'bilan GES',
+  // Chaque mot-clé coûte une requête ici (pas de combinaison OR comme sur BOAMP/TED) —
+  // liste volontairement plus courte, termes multi-mots uniquement (cf. commentaire ci-dessus).
+  'accompagnement RSE', 'diagnostic RSE', 'devoir de vigilance',
+  'achats responsables', 'économie circulaire', 'égalité professionnelle',
 ];
 
 function getMois(s) {

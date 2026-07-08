@@ -17,6 +17,8 @@ const KEYWORDS = [
   'démarche QVCT', 'accompagnement QVCT', 'égalité professionnelle',
   'devoir de vigilance', 'reporting CSRD', 'accompagnement CSRD',
   'achats responsables', 'économie circulaire',
+  // Cadres/labels/normes — mêmes termes ajoutés à BOAMP/TED (validés sans faux positif)
+  'ISO 26000', 'EcoVadis', 'certification RSE', 'gouvernance durable', 'droits humains',
 ];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
