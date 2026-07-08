@@ -99,11 +99,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
  * Le champ `datelimitereponse` est direct : pas de parsing HTML.
  */
 async function queryBOAMP(nomacheteur, source) {
-  // Filtre : seulement les AOs dont la date limite est aujourd'hui ou dans le futur
+  // Filtre : seulement les AOs dont la date limite est aujourd'hui ou dans le futur.
+  // datelimitereponse n'est pas toujours renseigné par BOAMP (constaté sur des avis pourtant
+  // bien actifs) — datefindiffusion sert de repli dans normalizeRecord(), donc il faut aussi
+  // l'inclure ici, sinon ces AOs ne remontent jamais du tout (filtrées avant même d'être vues).
   const today = localToday();
   const params = new URLSearchParams({
     dataset: 'boamp',
-    q: `nomacheteur:"${nomacheteur}" AND datelimitereponse>=${today}`,
+    q: `nomacheteur:"${nomacheteur}" AND (datelimitereponse>=${today} OR datefindiffusion>=${today})`,
     rows: '100',
     sort: 'datelimitereponse',
     output: 'json',
@@ -220,7 +223,9 @@ function normalizeRecord(rec, sourceOverride) {
 async function queryBOAMPKeywords(maxPages = 3) {
   const today = localToday();
   const kwQuery = KEYWORDS_BOAMP.map(k => `objet:"${k}"`).join(' OR ');
-  const q = `(${kwQuery}) AND datelimitereponse>=${today}`;
+  // Voir le commentaire dans queryBOAMP() : datefindiffusion en repli, sinon ces AOs
+  // n'apparaissent jamais dans les résultats malgré une date limite bien réelle.
+  const q = `(${kwQuery}) AND (datelimitereponse>=${today} OR datefindiffusion>=${today})`;
 
   const allRecords = [];
 
