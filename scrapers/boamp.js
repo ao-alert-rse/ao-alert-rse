@@ -220,9 +220,13 @@ function extractContractFolderId(donnees) {
 
 function normalizeRecord(rec, sourceOverride) {
   const f = rec.fields;
-  const dateClôture = f.datelimitereponse
-    ? f.datelimitereponse.slice(0, 10)
-    : (f.datefindiffusion || '');
+  // datefindiffusion ("date de fin de diffusion") n'est PAS la date limite de réponse — c'est
+  // juste la date à laquelle l'avis arrête d'être affiché sur BOAMP, sans rapport garanti avec
+  // la vraie deadline. Vérifié en direct sur un avis "cn-social" (services sociaux/spécifiques) :
+  // aucune date limite structurée n'existe côté BOAMP/TED pour ce régime, la procédure réelle est
+  // gérée sur la plateforme externe du profil acheteur (ex. achatpublic.com). L'utiliser comme
+  // repli affichait une date fausse plutôt qu'une date inconnue — mieux vaut ne rien afficher.
+  const dateClôture = f.datelimitereponse ? f.datelimitereponse.slice(0, 10) : '';
   const statut = dateClôture
     ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
     : 'Ouvert';
