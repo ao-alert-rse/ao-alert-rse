@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 const BASE_URL = 'https://www.ocapiat.fr';
 const LIST_URL = `${BASE_URL}/procedures-de-marches-publics-ami/`;
@@ -39,23 +40,20 @@ async function fetchPage(url) {
   }
 }
 
-async function scrapeOCAPIATDetail(url) {
-  const html = await fetchPage(url);
-  const $ = cheerio.load(html);
-
-  const titre = $('h1, h2.entry-title, .project-title').first().text().trim();
-  const corps = $('main, .entry-content, article').first();
-  const texte = corps.text();
-
-  const matchCloture = texte.match(/cl[oô]ture[^:]*?:\s*([^\n,]+\d{4})/i)
-    || texte.match(/date\s+limite[^:]*?:\s*([^\n,]+\d{4})/i)
-    || texte.match(/(\d{1,2}\s+\w+\s+\d{4})/);
-  const dateClôture = matchCloture ? parseDate(matchCloture[1]) : '';
-
-  const description = texte.replace(/\s+/g, ' ').trim().slice(0, 400);
-  const score = scoreRSETEE(titre, description);
-
-  return { titre, dateClôture, description, score, url, statut: 'Ouvert', source: 'OCAPIAT', idweb: '', prix: null };
+// La page liste ne contient aucune date (le bloc parent du lien n'en affiche jamais) — la date
+// limite de réponse n'existe que sur la page détail de chaque AO, dans un bloc Divi structuré
+// (thème WordPress "Divi") : <h3>Date limite de réponse</h3> suivi de sa valeur juste après,
+// ex. "11 septembre 2026 à 12:00". Confirmé en direct le 09/07/2026 sur les 7 AOs actives.
+function extractDateLimiteDetail($) {
+  let dateClôture = '';
+  $('.et_pb_blurb_container').each((_, el) => {
+    if (dateClôture) return;
+    const label = $(el).find('h3').first().text().trim();
+    if (!/date\s+limite/i.test(label)) return;
+    const valeur = $(el).find('.et_pb_blurb_description').first().text().trim();
+    dateClôture = parseDate(valeur);
+  });
+  return dateClôture;
 }
 
 async function scrapeOCAPIAT() {
@@ -81,15 +79,28 @@ async function scrapeOCAPIAT() {
       || $(el).closest('article, li, div').find('h2, h3, h4').first().text().trim();
     if (!titre || titre.length < 5) return;
 
-    // Date dans le bloc parent
-    const bloc = $(el).closest('article, li, .project-item, div').text();
-    const dateClôture = parseDate(bloc);
-
     const score = scoreRSETEE(titre, '');
     if (!aos.find(a => a.url === url)) {
-      aos.push({ titre, dateClôture, description: '', score, url, statut: 'Ouvert', source: 'OCAPIAT', idweb: '', prix: null });
+      aos.push({ titre, dateClôture: '', description: '', score, url, statut: 'Ouvert', source: 'OCAPIAT', idweb: '', prix: null });
     }
   });
+
+  // La date n'est disponible que sur la page détail — un fetch par AO, en petits lots pour
+  // rester correct envers le serveur (mêmes volumes que TED/BOAMP, page très légère ~90ms).
+  for (let i = 0; i < aos.length; i += 5) {
+    const batch = aos.slice(i, i + 5);
+    await Promise.all(batch.map(async ao => {
+      try {
+        const detailHtml = await fetchPage(ao.url);
+        const dateClôture = extractDateLimiteDetail(cheerio.load(detailHtml));
+        ao.dateClôture = dateClôture;
+        ao.statut = dateClôture ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé') : 'Ouvert';
+      } catch (err) {
+        console.error(`  ❌ OCAPIAT/détail (${ao.url}) : ${err.message}`);
+      }
+    }));
+    if (i + 5 < aos.length) await sleep(300);
+  }
 
   return aos;
 }

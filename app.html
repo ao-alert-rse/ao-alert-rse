@@ -1013,8 +1013,15 @@ const fmtEuro = v => v > 0
 let chartMonthly = null, chartStatut = null;
 
 function buildKPIs() {
-  // Montant pipeline (go + en_cours + repondu)
-  const pipeline = aos.filter(a => ['go','en_cours','repondu'].includes(decisions[a.id]?.statut));
+  // Montant pipeline (go + en_cours + repondu). Un GO dont la date de clôture est dépassée
+  // n'est plus "en pipeline" (même règle que l'onglet GO) — en_cours/repondu restent comptés
+  // même après clôture, la soumission ayant déjà eu lieu.
+  const todayKpi = isoToday();
+  const pipeline = aos.filter(a => {
+    const s = decisions[a.id]?.statut;
+    if (s === 'go') return !a.date_cloture || a.date_cloture >= todayKpi;
+    return s === 'en_cours' || s === 'repondu';
+  });
   const montant  = pipeline.reduce((s, a) => s + (a.prix || 0), 0);
   document.getElementById('kpi-montant').textContent     = fmtEuro(montant) || '—';
   document.getElementById('kpi-montant-sub').textContent = `${pipeline.length} AO${pipeline.length > 1 ? 's' : ''} en pipeline`;

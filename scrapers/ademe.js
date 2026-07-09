@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
+const { localToday } = require('../utils/date');
 
 const URL = 'https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue';
 const BASE = 'https://agirpourlatransition.ademe.fr';
@@ -63,7 +64,7 @@ async function scrapeADEME() {
       description,
       dateClôture,
       url,
-      statut: 'Ouvert',
+      statut: dateClôture ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé') : 'Ouvert',
       source: 'ADEME',
       score,
       prix: null,
