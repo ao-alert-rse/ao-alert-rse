@@ -1083,13 +1083,14 @@ function buildCharts() {
   });
 
   // ── Doughnut : répartition par statut ──────────────────
+  // Mêmes chiffres que les compteurs d'onglets (computeStatusCounts) — sinon le camembert
+  // compte des AOs déjà masquées ailleurs (GO/NO GO/à décider closes) et ne correspond plus
+  // à rien de visible dans l'appli.
   const STATUTS = ['pending','go','en_cours','repondu','remporte','perdu','no_go'];
   const SLABELS = ['À décider','GO','En cours','Répondus','Remportés','Perdus','NO GO'];
   const COLORS  = ['#d1d5db','#6ee7b7','#93c5fd','#c4b5fd','#fcd34d','#9ca3af','#fca5a5'];
-  const sData   = STATUTS.map(s =>
-    s === 'pending' ? aos.filter(a => !decisions[a.id]).length
-                    : aos.filter(a => decisions[a.id]?.statut === s).length
-  );
+  const statusCounts = computeStatusCounts();
+  const sData   = STATUTS.map(s => statusCounts[s]);
   if (chartStatut) chartStatut.destroy();
   chartStatut = new Chart(document.getElementById('chart-statut'), {
     type: 'doughnut',
@@ -1180,23 +1181,30 @@ function filtered() {
   });
 }
 
-function updateTabCounts() {
+// Compte les AOs par statut de décision, avec la même règle que filtered() : une AO sans
+// décision (ou en GO/NO GO) déjà close n'est plus "d'actualité" et ne compte plus. Utilisé à
+// la fois par les compteurs d'onglets et le camembert — un seul endroit à faire évoluer pour
+// que les deux restent cohérents entre eux.
+function computeStatusCounts() {
   const today = isoToday();
   const counts = { pending: 0, go: 0, no_go: 0, en_cours: 0, repondu: 0, remporte: 0, perdu: 0 };
   aos.forEach(a => {
     const s = decisions[a.id]?.statut;
     if (!s) {
-      // Même règle que filtered() : une AO sans décision et déjà close ne compte pas comme "à décider".
       if (a.date_cloture && a.date_cloture < today) return;
       counts.pending++;
     }
     else if (s === 'no_go' || s === 'go') {
-      // Idem : un GO ou un NO GO déjà clos n'est plus "d'actualité", on ne le compte plus dans l'onglet.
       if (a.date_cloture && a.date_cloture < today) return;
       counts[s]++;
     }
     else if (counts[s] !== undefined) counts[s]++;
   });
+  return counts;
+}
+
+function updateTabCounts() {
+  const counts = computeStatusCounts();
   document.getElementById('count-pending').textContent  = counts.pending;
   document.getElementById('count-go').textContent       = counts.go;
   document.getElementById('count-no_go').textContent    = counts.no_go;
