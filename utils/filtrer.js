@@ -57,13 +57,26 @@ function dedupParTitre(aos) {
 // une casse d'acheteur et un titre qui peuvent diverger dès les premiers caractères (BOAMP
 // abrège parfois là où TED détaille) — invisible pour dedupParTitre. Le ContractFolderID reste
 // identique des deux côtés, donc on fusionne d'abord sur cet identifiant quand il existe.
+// TED prioritaire sur BOAMP quand les deux couvrent le même avis (même ContractFolderID) :
+// BOAMP ne renseigne jamais de description (toujours '' dans boamp.js), le prix vient d'un
+// champ moins fiable, et TED a une meilleure couverture de date de clôture (voir scrapers/ted.js)
+// — le score seul ne suffit pas à départager de façon prévisible.
+function estTED(ao) { return !!ao.url && ao.url.includes('ted.europa.eu'); }
+
 function dedupCrossSource(aos) {
   const parCF = new Map();
   const sansCF = [];
   for (const ao of aos) {
     if (!ao.contractFolderId) { sansCF.push(ao); continue; }
     const existant = parCF.get(ao.contractFolderId);
-    if (!existant || ao.score > existant.score) parCF.set(ao.contractFolderId, ao);
+    if (!existant) { parCF.set(ao.contractFolderId, ao); continue; }
+    const aoTED = estTED(ao), existantTED = estTED(existant);
+    if (aoTED !== existantTED) {
+      if (aoTED) parCF.set(ao.contractFolderId, ao);
+      // sinon existant (déjà TED) reste en place
+    } else if (ao.score > existant.score) {
+      parCF.set(ao.contractFolderId, ao);
+    }
   }
   return dedupParTitre([...parCF.values(), ...sansCF]);
 }
