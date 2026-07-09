@@ -2,7 +2,12 @@ name: AO Alert — Scan hebdomadaire RSE/TEE
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # tous les jours 08h00 CEST (été) / 07h00 CET (hiver)
+    # Prévu à 01h00 UTC (03h00 CEST été / 02h00 CET hiver) : GitHub Actions retarde
+    # régulièrement les workflows planifiés de 5 à 11h (observé sur 6 jours consécutifs,
+    # 03-08/07/2026) — avancé pour que le déclenchement réel retombe plutôt vers 6h-12h UTC
+    # (8h-14h Paris) au lieu de 11h-17h UTC. Pas une garantie d'heure fixe, juste une
+    # compensation empirique de la dérive observée.
+    - cron: '0 1 * * *'
   workflow_dispatch:        # déclenchement manuel depuis GitHub UI
 
 jobs:

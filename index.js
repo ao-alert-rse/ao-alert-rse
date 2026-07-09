@@ -190,8 +190,15 @@ async function main() {
 
   if (toutesAOs.length === 0) {
     await sendEmailAnomalie();
-  } else {
+  } else if (new Date().getUTCDay() === 1) {
+    // Mail récap hebdomadaire, uniquement le lundi — le scan lui reste quotidien pour que
+    // l'app garde des données fraîches tous les jours. Les alertes d'anomalie (ci-dessus et
+    // sendEmailSourceAnomalie) restent immédiates, ce sont des alertes opérationnelles, pas
+    // le récap. getUTCDay() est fiable ici car le scan se déclenche entre 1h et ~12h UTC —
+    // jamais assez proche de minuit Paris pour un décalage de jour entre UTC et Europe/Paris.
     await sendEmailRecap(nouvelles, enCours);
+  } else {
+    console.log('📧 Mail récap ignoré : envoyé uniquement le lundi.');
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
