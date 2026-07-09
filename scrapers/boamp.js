@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const cheerio = require('cheerio');
 const { scoreRSETEE } = require('../utils/scorer');
 const { localToday } = require('../utils/date');
 
@@ -101,8 +102,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 async function queryBOAMP(nomacheteur, source) {
   // Filtre : seulement les AOs dont la date limite est aujourd'hui ou dans le futur.
   // datelimitereponse n'est pas toujours renseigné par BOAMP (constaté sur des avis pourtant
-  // bien actifs) — datefindiffusion sert de repli dans normalizeRecord(), donc il faut aussi
-  // l'inclure ici, sinon ces AOs ne remontent jamais du tout (filtrées avant même d'être vues).
+  // bien actifs, ex. régime "services sociaux/spécifiques") — datefindiffusion (date de fin de
+  // diffusion, PAS une deadline) élargit juste le filtre de découverte, la vraie date de ces
+  // AOs est ensuite recherchée par normalizeRecord()/enrichirDatesExternes(), pas devinée ici.
   const today = localToday();
   const params = new URLSearchParams({
     dataset: 'boamp',
@@ -130,13 +132,13 @@ async function queryBOAMP(nomacheteur, source) {
 
   if (!data || !data.records) return [];
 
-  return data.records.map(rec => normalizeRecord(rec, source));
+  return enrichirDatesExternes(data.records.map(rec => normalizeRecord(rec, source)));
 }
 
 // Revérifie une AO déjà en base dont la date de clôture n'a jamais pu être déterminée au
 // premier scan — sans filtre de date cette fois (contrairement à queryBOAMP/queryBOAMPKeywords),
-// pour retrouver l'avis même s'il n'est plus actif et récupérer sa vraie date via le même
-// repli datefindiffusion que normalizeRecord() utilise déjà.
+// pour retrouver l'avis même s'il n'est plus actif. Suit aussi le lien vers la plateforme
+// externe (achatpublic.com) si l'avis n'a aucune date structurée côté BOAMP.
 async function refetchBoampByIdweb(idweb) {
   const params = new URLSearchParams({
     dataset: 'boamp',
@@ -154,7 +156,13 @@ async function refetchBoampByIdweb(idweb) {
       const data = await res.json();
       const rec = (data.records || [])[0];
       if (!rec) return null;
-      return normalizeRecord(rec, null);
+      const ao = normalizeRecord(rec, null);
+      if (ao._externalDocUri) {
+        const dateClôture = await fetchAchatpublicDeadline(ao._externalDocUri);
+        if (dateClôture) { ao.dateClôture = dateClôture; ao.statut = dateClôture >= localToday() ? 'Ouvert' : 'Fermé'; }
+      }
+      delete ao._externalDocUri;
+      return ao;
     } catch (err) {
       if (attempt < 2) await sleep(delay);
     }
@@ -218,18 +226,79 @@ function extractContractFolderId(donnees) {
   return found;
 }
 
+// Certains avis n'exposent aucune date limite structurée côté BOAMP/TED (ex. régime "services
+// sociaux et autres services spécifiques") mais renvoient vers la plateforme externe du profil
+// acheteur, où la vraie date limite existe bel et bien (ex. achatpublic.com). Le lien est déjà
+// présent dans le blob eForms — inutile de deviner, il suffit d'aller le chercher.
+function extractExternalDocUri(donnees) {
+  if (!donnees) return null;
+  let d;
+  try { d = typeof donnees === 'string' ? JSON.parse(donnees) : donnees; } catch { return null; }
+  let found = null;
+  function walk(obj) {
+    if (found || !obj || typeof obj !== 'object') return;
+    for (const [k, v] of Object.entries(obj)) {
+      if (found) return;
+      if (k === 'cbc:URI' && typeof v === 'string') { found = v; return; }
+      if (Array.isArray(v)) v.forEach(walk);
+      else if (typeof v === 'object') walk(v);
+    }
+  }
+  walk(d);
+  return found;
+}
+
+const MOIS_FR = {
+  janvier: '01', février: '02', mars: '03', avril: '04', mai: '05', juin: '06',
+  juillet: '07', août: '08', septembre: '09', octobre: '10', novembre: '11', décembre: '12',
+};
+
+// Structure confirmée en direct le 09/07/2026 : bloc .sdmCardConsult__blocTime contenant le
+// jour, "Mois AAAA" et l'heure. Scopé à achatpublic.com uniquement — on ne devine pas la
+// structure d'autres plateformes de profil acheteur non vérifiées.
+async function fetchAchatpublicDeadline(uri) {
+  let hostname;
+  try { hostname = new URL(uri).hostname; } catch { return ''; }
+  if (!hostname.includes('achatpublic.com')) return '';
+
+  for (let attempt = 0, delay = 1000; attempt < 3; attempt++, delay *= 2) {
+    try {
+      const res = await fetch(uri, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' },
+        timeout: 15000,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = await res.text();
+      const $ = cheerio.load(html);
+      const bloc = $('.sdmCardConsult__blocTime').first();
+      const day = bloc.find('.sdmCardConsult__numberTime').text().trim();
+      const monthYear = bloc.find('.sdmCardConsult__ddyyyy').text().trim().toLowerCase();
+      const m = monthYear.match(/(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})/);
+      if (!day || !m) return '';
+      return `${m[2]}-${MOIS_FR[m[1]]}-${day.padStart(2, '0')}`;
+    } catch (err) {
+      if (attempt < 2) await sleep(delay);
+    }
+  }
+  return '';
+}
+
 function normalizeRecord(rec, sourceOverride) {
   const f = rec.fields;
   // datefindiffusion ("date de fin de diffusion") n'est PAS la date limite de réponse — c'est
   // juste la date à laquelle l'avis arrête d'être affiché sur BOAMP, sans rapport garanti avec
-  // la vraie deadline. Vérifié en direct sur un avis "cn-social" (services sociaux/spécifiques) :
-  // aucune date limite structurée n'existe côté BOAMP/TED pour ce régime, la procédure réelle est
-  // gérée sur la plateforme externe du profil acheteur (ex. achatpublic.com). L'utiliser comme
-  // repli affichait une date fausse plutôt qu'une date inconnue — mieux vaut ne rien afficher.
-  const dateClôture = f.datelimitereponse ? f.datelimitereponse.slice(0, 10) : '';
+  // la vraie deadline (voir fetchAchatpublicDeadline ci-dessus pour la vraie source dans ce cas).
+  let dateClôture = f.datelimitereponse ? f.datelimitereponse.slice(0, 10) : '';
+
+  // "Résultat de marché" (nature ATTRIBUTION) = le marché est déjà attribué, il n'y a par
+  // nature plus aucune date limite à chercher — équivalent BOAMP des avis d'attribution TED
+  // (notice-type "can-*"). dateparution sert de repère "clos depuis" à défaut de mieux.
+  const estAttribution = f.nature === 'ATTRIBUTION';
+  if (!dateClôture && estAttribution && f.dateparution) dateClôture = f.dateparution;
+
   const statut = dateClôture
     ? (dateClôture >= localToday() ? 'Ouvert' : 'Fermé')
-    : 'Ouvert';
+    : (estAttribution ? 'Fermé' : 'Ouvert');
   const titre = f.objet || '';
   const description = '';
   const score = scoreRSETEE(titre, description);
@@ -246,7 +315,30 @@ function normalizeRecord(rec, sourceOverride) {
     source: sourceOverride || f.nomacheteur || 'BOAMP',
     score,
     prix,
+    // Repère temporaire pour l'enrichissement post-traitement (enrichirDatesExternes) —
+    // jamais exposé au reste du pipeline, supprimé avant le retour final.
+    _externalDocUri: (!dateClôture && !estAttribution) ? extractExternalDocUri(f.donnees) : null,
   };
+}
+
+// Deuxième passe : pour les avis encore sans date après normalizeRecord() mais avec un lien
+// vers achatpublic.com repéré, va chercher la vraie date limite sur la plateforme externe.
+// Par lots de 5, comme l'enrichissement XML de TED, pour rester correct envers le serveur.
+async function enrichirDatesExternes(aos) {
+  const aTraiter = aos.filter(a => a._externalDocUri);
+  for (let i = 0; i < aTraiter.length; i += 5) {
+    const batch = aTraiter.slice(i, i + 5);
+    await Promise.all(batch.map(async ao => {
+      const dateClôture = await fetchAchatpublicDeadline(ao._externalDocUri);
+      if (dateClôture) {
+        ao.dateClôture = dateClôture;
+        ao.statut = dateClôture >= localToday() ? 'Ouvert' : 'Fermé';
+      }
+    }));
+    if (i + 5 < aTraiter.length) await sleep(300);
+  }
+  aos.forEach(a => { delete a._externalDocUri; });
+  return aos;
 }
 
 /**
@@ -295,7 +387,7 @@ async function queryBOAMPKeywords(maxPages = 3) {
     if (allRecords.length >= data.nhits) break;
   }
 
-  return allRecords.map(rec => normalizeRecord(rec, null));
+  return enrichirDatesExternes(allRecords.map(rec => normalizeRecord(rec, null)));
 }
 
 /**
