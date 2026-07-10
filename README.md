@@ -16,20 +16,27 @@ l'assistant de développement en ligne de commande d'Anthropic. Si vous reprenez
 expertise technique poussée, voici comment vous appuyer dessus efficacement plutôt que de partir
 de zéro.
 
-**Importer ce projet — option A, Claude Code Desktop (recommandé, la plupart des gens)**
+**Importer ce projet — option A, Claude Code Desktop (le plus simple, sans ligne de commande)**
 1. Télécharger et installer l'application Claude Code Desktop (Mac/Windows) depuis
    https://claude.com/claude-code, puis se connecter avec un compte Anthropic.
-2. Récupérer une copie locale du repo : le plus simple est d'installer
-   [GitHub Desktop](https://desktop.github.com/) (interface graphique, pas de ligne de commande),
-   se connecter avec un compte GitHub ayant accès au repo, puis **File > Clone repository** et
-   choisir `ao-alert-rse/ao-alert-rse`.
-3. Dans l'application Claude Code Desktop, ouvrir ce dossier cloné comme projet (option du type
-   *Open Project* / *Add Project* dans l'écran d'accueil — l'intitulé exact peut varier selon la
-   version de l'app).
-4. Copier `.env.example` en `.env` et le remplir (voir
-   [Installation](#installation--développement-local)) si vous voulez que Claude puisse lancer un
-   scan ou prévisualiser l'app en local — un simple copier-coller/renommer de fichier, faisable
-   depuis l'explorateur de fichiers.
+2. Télécharger une copie du projet, sans rien installer d'autre : aller sur
+   https://github.com/ao-alert-rse/ao-alert-rse, cliquer sur le bouton vert **Code**, puis
+   **Download ZIP**. Dézipper le dossier obtenu là où vous voulez sur votre ordinateur (clic droit
+   sur le fichier `.zip` > *Extraire tout*).
+   *Aucun compte GitHub à connecter à Claude pour cette étape — c'est un simple téléchargement.
+   Relier GitHub ne devient utile que plus tard, si vous voulez que Claude renvoie ses
+   modifications sur GitHub directement (git push) ; le moment venu, demandez-lui de vous guider
+   pas à pas, il vous dira exactement quoi faire.*
+3. Ouvrir Claude Code Desktop, et depuis l'écran d'accueil ouvrir le dossier dézippé à l'étape 2
+   comme projet.
+4. Facultatif, seulement si vous voulez que Claude puisse réellement lancer un scan ou
+   prévisualiser l'application en local (pas nécessaire pour discuter du code ou faire des
+   modifications simples) : dans le dossier du projet, dupliquer le fichier `.env.example`,
+   renommer la copie en `.env`, l'ouvrir avec le Bloc-notes et remplir les 4 valeurs :
+   - `SUPABASE_URL` et `SUPABASE_SERVICE_KEY` : voir
+     [où les trouver](#où-trouver-les-clés-api) dans le Guide Supabase ci-dessous.
+   - `GMAIL_USER` et `GMAIL_APP_PASSWORD` : à demander à la personne qui vous transmet l'accès au
+     compte Google du projet.
 5. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
    `README.md` en entier avant de faire quoi que ce soit — ils contiennent tout le contexte
    nécessaire (architecture, règles de travail du repo, historique des bugs déjà corrigés).
