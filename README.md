@@ -371,11 +371,11 @@ en gardant le nom lisible original dans la colonne `nom` de `documents`.
 
 ### Realtime
 
-Activé sur les tables `aos` et `decisions` (Database > Replication, ou Table Editor > icône
-Realtime sur la table) — permet à l'app de se rafraîchir automatiquement quand quelqu'un d'autre
-modifie une décision, sans recharger la page.
+Activé sur les tables `aos` et `decisions` (Database > Publications > `supabase_realtime` >
+gérer les tables incluses) — permet à l'app de se rafraîchir automatiquement quand quelqu'un
+d'autre modifie une décision, sans recharger la page.
 
-![Configuration Realtime sur une table](docs/img/supabase-realtime-config.png)
+![Publications Realtime — tables incluses](docs/img/supabase-realtime-config.png)
 
 ### Requêtes SQL utiles pour du dépannage
 
@@ -405,6 +405,10 @@ group by 1;
   relancée manuellement depuis le dashboard.
 - Quotas de stockage/bande passante du plan gratuit : pas encore atteints à l'échelle actuelle du
   projet (quelques dizaines d'AOs), à surveiller si le volume grossit significativement.
+- **Aucune sauvegarde automatique** n'est configurée (fonctionnalité payante chez Supabase) — en
+  cas de perte de données, la seule reconstruction possible est de rejouer les scripts SQL de
+  `supabase/` sur un nouveau projet, sans garantie de retrouver les décisions/documents déjà
+  saisis par l'équipe. À considérer si le volume de données saisies manuellement grossit.
 
 ## Installation / développement local
 
