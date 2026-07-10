@@ -525,6 +525,15 @@ npx serve . --listen 3000
 
 ## Limitations connues et chantiers en cours
 
+**Principaux risques à surveiller dans les mois à venir**, par ordre de gravité : (1) des dates
+ou montants encore trompeurs sur des sources jamais auditées avec la rigueur appliquée à
+BOAMP/TED cette année (voir [Scoring](#scoring-rsetéerh)) — un contrôle ponctuel reste plus sûr
+qu'une confiance aveugle sur une donnée qui a l'air correcte ; (2) un scraper qui casse
+silencieusement après une refonte de site (détecté par email, mais qui reste cassé tant que
+personne ne corrige le sélecteur) ; (3) l'absence de sauvegarde automatique Supabase en cas de
+perte de données ; (4) le contenu juridique des DC1/DC2/ATTRI1 toujours pas relu par une personne
+du métier avant un usage réel en réponse à un AO.
+
 - Sous-domaine `aos.nam-kouji.fr` prévu, en attente d'accès DNS.
 - Relecture juridique du contenu des documents DC1/DC2/ATTRI1 par une personne du métier,
   toujours en attente.
