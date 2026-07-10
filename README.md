@@ -16,17 +16,31 @@ l'assistant de développement en ligne de commande d'Anthropic. Si vous reprenez
 expertise technique poussée, voici comment vous appuyer dessus efficacement plutôt que de partir
 de zéro.
 
-**Importer ce projet dans Claude Code :**
+**Importer ce projet — option A, Claude Code Desktop (recommandé, la plupart des gens)**
+1. Télécharger et installer l'application Claude Code Desktop (Mac/Windows) depuis
+   https://claude.com/claude-code, puis se connecter avec un compte Anthropic.
+2. Récupérer une copie locale du repo : le plus simple est d'installer
+   [GitHub Desktop](https://desktop.github.com/) (interface graphique, pas de ligne de commande),
+   se connecter avec un compte GitHub ayant accès au repo, puis **File > Clone repository** et
+   choisir `ao-alert-rse/ao-alert-rse`.
+3. Dans l'application Claude Code Desktop, ouvrir ce dossier cloné comme projet (option du type
+   *Open Project* / *Add Project* dans l'écran d'accueil — l'intitulé exact peut varier selon la
+   version de l'app).
+4. Copier `.env.example` en `.env` et le remplir (voir
+   [Installation](#installation--développement-local)) si vous voulez que Claude puisse lancer un
+   scan ou prévisualiser l'app en local — un simple copier-coller/renommer de fichier, faisable
+   depuis l'explorateur de fichiers.
+5. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
+   `README.md` en entier avant de faire quoi que ce soit — ils contiennent tout le contexte
+   nécessaire (architecture, règles de travail du repo, historique des bugs déjà corrigés).
+
+**Importer ce projet — option B, Claude Code en terminal (pour les plus à l'aise avec la ligne de commande)**
 1. Cloner ce repo sur la machine où Claude Code est installé :
    `git clone https://github.com/ao-alert-rse/ao-alert-rse.git`
 2. Ouvrir un terminal **dans le dossier cloné** (`cd ao-alert-rse`), puis lancer `claude` — Claude
    Code utilise automatiquement le dossier courant comme projet, rien d'autre à configurer.
-3. Copier `.env.example` en `.env` et le remplir (voir
-   [Installation](#installation--développement-local)) si vous voulez que Claude puisse lancer un
-   scan ou prévisualiser l'app en local.
-4. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
-   `README.md` en entier avant de faire quoi que ce soit — ils contiennent tout le contexte
-   nécessaire (architecture, règles de travail du repo, historique des bugs déjà corrigés).
+3. Mêmes étapes 4-5 que l'option A ci-dessus (`.env`, puis demander à Claude de lire `CLAUDE.md`
+   et ce README).
 
 **Donner le bon contexte à chaque session :** Claude ne se souvient pas automatiquement d'une
 session à l'autre. Au début de chaque nouvelle session sur un sujet important, expliquez
