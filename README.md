@@ -16,10 +16,15 @@ l'assistant de développement en ligne de commande d'Anthropic. Si vous reprenez
 expertise technique poussée, voici comment vous appuyer dessus efficacement plutôt que de partir
 de zéro.
 
-**Démarrer :**
-1. Installer Claude Code (nécessite un compte Anthropic) : https://docs.claude.com/claude-code.
-2. Ouvrir un terminal à la racine de ce repo (après un `git clone`), lancer la commande `claude`.
-3. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
+**Importer ce projet dans Claude Code :**
+1. Cloner ce repo sur la machine où Claude Code est installé :
+   `git clone https://github.com/ao-alert-rse/ao-alert-rse.git`
+2. Ouvrir un terminal **dans le dossier cloné** (`cd ao-alert-rse`), puis lancer `claude` — Claude
+   Code utilise automatiquement le dossier courant comme projet, rien d'autre à configurer.
+3. Copier `.env.example` en `.env` et le remplir (voir
+   [Installation](#installation--développement-local)) si vous voulez que Claude puisse lancer un
+   scan ou prévisualiser l'app en local.
+4. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
    `README.md` en entier avant de faire quoi que ce soit — ils contiennent tout le contexte
    nécessaire (architecture, règles de travail du repo, historique des bugs déjà corrigés).
 
