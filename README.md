@@ -20,7 +20,7 @@ note les AOs pertinentes, puis les publie dans un tableau de bord web et un emai
 - [Génération des documents de candidature](#génération-des-documents-de-candidature)
 - [Architecture technique](#architecture-technique)
 - [Structure du repo](#structure-du-repo)
-- [Base de données Supabase](#base-de-données-supabase)
+- [Guide Supabase — administrer le projet](#guide-supabase--administrer-le-projet)
 - [Installation / développement local](#installation--développement-local)
 - [Déploiement](#déploiement)
 - [Limitations connues et chantiers en cours](#limitations-connues-et-chantiers-en-cours)
@@ -45,7 +45,8 @@ AO Alert automatise ce travail :
 3. **Déduplique** les AOs qui apparaissent sur plusieurs sources à la fois (un même avis publié
    à la fois sur BOAMP et TED, par exemple).
 4. **Synchronise** le résultat vers une base Supabase, consommée par une application web.
-5. **Notifie** l'équipe par email (AOs à score ≥ 35) et publie un rapport HTML statique.
+5. **Notifie** l'équipe par email tous les lundis (AOs à score ≥ 35) et publie un rapport HTML
+   statique à chaque scan.
 6. Permet ensuite à l'équipe de **décider** (GO / NO GO / En cours / Répondu / Remporté / Perdu),
    suivre une **checklist** de procédure, et **générer automatiquement** les documents de
    candidature (DC1, DC2, ATTRI1) pré-remplis.
@@ -54,7 +55,7 @@ AO Alert automatise ce travail :
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  GitHub Actions — cron quotidien (06h00 UTC)                 │
+│  GitHub Actions — cron quotidien (01h00 UTC)                 │
 │  .github/workflows/ao-scan.yml                                │
 └───────────────────────────┬───────────────────────────────────┘
                             │  node index.js
@@ -83,7 +84,7 @@ AO Alert automatise ce travail :
         ▼                       ▼                       ▼
 ┌───────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
 │ rapport.html   │   │ Sync Supabase        │   │ Email récapitulatif │
-│ (reporter.js)  │   │ (supabase-sync.js)   │   │ (mailer.js, ≥ 35)   │
+│ (reporter.js)  │   │ (supabase-sync.js)   │   │ (mailer.js, lundi)  │
 └───────────────┘   └──────────┬──────────┘   └─────────────────────┘
                                 ▼
                   ┌─────────────────────────────┐
@@ -137,7 +138,7 @@ DataDome). Voir l'historique des commits pour le détail de l'investigation.
 
 Seuils utilisés en aval :
 - **Application** : score ≥ 20 pour être synchronisé vers Supabase (`utils/supabase-sync.js`).
-- **Email quotidien** : score ≥ 35 pour être notifié (`utils/mailer.js`).
+- **Email récap (chaque lundi)** : score ≥ 35 pour être notifié (`utils/mailer.js`).
 
 **Limite connue** : un mot-clé thème fort seul peut suffire à dépasser le seuil sans qu'aucun
 verbe d'action ne soit présent, ce qui laisse passer occasionnellement de faux positifs (ex. un
@@ -215,8 +216,12 @@ d'engagement, ex-DC3) :
   v4 pour les graphiques, [@supabase/supabase-js](https://github.com/supabase/supabase-js) v2
   côté client.
 - **Hébergement** : GitHub Pages, déploiement automatique à chaque push sur `main`.
-- **Emails** : Gmail SMTP via [nodemailer](https://nodemailer.com/).
-- **Automatisation** : GitHub Actions, cron quotidien (`0 6 * * *`, ~08h00 CEST l'été).
+- **Emails** : Gmail SMTP via [nodemailer](https://nodemailer.com/). Le scan tourne tous les
+  jours, mais le mail récap ne part que le lundi (`index.js`, `new Date().getUTCDay() === 1`) —
+  les alertes de panne (0 AO, source cassée) restent quotidiennes.
+- **Automatisation** : GitHub Actions, cron quotidien (`0 1 * * *`, avancé pour compenser une
+  dérive de déclenchement observée sur GitHub Actions de 5 à 11h — voir commentaire dans
+  `ao-scan.yml`). L'heure réelle de déclenchement n'est donc pas garantie précisément.
 
 ## Structure du repo
 
@@ -250,20 +255,156 @@ d'engagement, ex-DC3) :
 └── .github/workflows/ao-scan.yml   # Cron quotidien GitHub Actions
 ```
 
-## Base de données Supabase
+## Guide Supabase — administrer le projet
 
-Tables principales (voir `supabase/schema.sql` pour le détail complet) :
+Cette section est écrite pour quelqu'un qui n'a jamais touché à Supabase mais doit reprendre le
+projet — accès, schéma, utilisateurs, dépannage courant. Les emplacements d'images ci-dessous
+sont volontairement laissés en attente de captures d'écran réelles (`docs/img/`).
 
-| Table | Rôle |
-|---|---|
-| `aos` | AOs synchronisées : titre, source, score, description, url, date de clôture, prix estimatif, tags, `contract_folder_id` (dédup cross-source) |
-| `decisions` | Historique des décisions par AO (go / no_go / en_cours / repondu / remporte / perdu), horodaté et attribué |
-| `documents` | Documents DCE uploadés ou générés, par AO |
-| `checklist` | Étapes de procédure cochées, par AO |
-| `gendocs_drafts` | Brouillon des champs de génération DC1/DC2/ATTRI1, par AO |
+### Vue d'ensemble
 
-Row Level Security activée sur toutes les tables : lecture/écriture pour les utilisateurs
-authentifiés uniquement. Le scan quotidien utilise la clé `service_role`, qui bypasse RLS.
+Un seul projet Supabase (Postgres + Auth + Storage + Realtime, plan gratuit), partagé entre :
+- le **scan automatique** (`index.js`, exécuté par GitHub Actions), qui écrit avec la clé
+  `service_role` (accès total, RLS ignoré) ;
+- l'**application web** (`app.html`), qui lit/écrit avec la clé `anon` + une session utilisateur
+  authentifiée (RLS appliqué).
+
+### Accéder au projet
+
+1. Se connecter sur [supabase.com/dashboard](https://supabase.com/dashboard) avec un compte
+   membre de l'organisation Nam & Kouji — demander une invitation à un admin existant si besoin
+   (actuellement Benjamin Baroni, b.baroni@nam-kouji.fr).
+2. Sélectionner le projet de ce repo dans la liste. Son URL exacte (`SUPABASE_URL`) est dans le
+   fichier `.env` local (jamais commité) ou dans Project Settings > API une fois connecté.
+
+![Dashboard Supabase — vue d'ensemble du projet](docs/img/supabase-dashboard-overview.png)
+
+### Où trouver les clés API
+
+Project Settings (icône ⚙️) > API :
+
+| Clé | Variable d'env | Usage |
+|---|---|---|
+| `Project URL` | `SUPABASE_URL` | URL de base de l'API |
+| `anon` `public` | `SUPABASE_ANON_KEY` | Utilisée par `app.html` côté navigateur — protégée par RLS, sans danger si exposée publiquement |
+| `service_role` | `SUPABASE_SERVICE_KEY` | ⚠️ Accès total, **bypasse RLS** — jamais côté navigateur, uniquement dans `.env` local et les secrets GitHub Actions |
+
+![Emplacement des clés API dans Project Settings](docs/img/supabase-api-keys.png)
+
+Ces clés vivent à deux endroits dans ce projet :
+- **En local** : fichier `.env` (copié depuis `.env.example`), ignoré par git.
+- **En production** : secrets du repo GitHub — Settings > Secrets and variables > Actions.
+  `.github/workflows/ao-scan.yml` attend `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `GMAIL_USER`,
+  `GMAIL_APP_PASSWORD`.
+
+![Secrets GitHub Actions du repo](docs/img/github-actions-secrets.png)
+
+### Tables et schéma
+
+| Table | Rôle | Fichier SQL d'origine |
+|---|---|---|
+| `aos` | AOs synchronisées : titre, source, score, description, url, date de clôture, prix estimatif, tags, `contract_folder_id` | `schema.sql` |
+| `decisions` | Historique des décisions par AO (go / no_go / en_cours / repondu / remporte / perdu), horodaté et attribué | `schema.sql` |
+| `documents` | Documents DCE uploadés ou générés, par AO | `schema.sql` |
+| `gendocs_drafts` | Brouillon des champs de génération DC1/DC2/ATTRI1, par AO | `migration_gendocs_drafts.sql` |
+| `checklist` | Étapes de procédure cochées, par AO | ⚠️ créée directement dans le dashboard, jamais versionnée en SQL — voir [Limitations](#limitations-connues-et-chantiers-en-cours) |
+
+Toutes ces migrations sont **déjà appliquées** sur le projet de production. Elles ne servent que
+si vous devez recréer le projet de zéro (mode opératoire ci-dessous), ou pour comprendre le
+schéma sans avoir accès au dashboard.
+
+**Comment appliquer une migration SQL** (seul mode opératoire sur ce projet — pas de CLI Supabase
+configurée, pas de migrations automatiques) :
+
+1. Dashboard > SQL Editor > New query.
+2. Coller le contenu du fichier `.sql` concerné (dans l'ordre : `schema.sql`, `rls.sql`,
+   `storage.sql`, puis chaque `migration_*.sql` par ordre chronologique de nom).
+3. Run.
+
+![SQL Editor avec une migration collée](docs/img/supabase-sql-editor.png)
+
+### Authentification et gestion des utilisateurs
+
+Auth email/password, pas d'inscription libre — les comptes sont créés à la main par un admin
+dans le dashboard. C'est un choix assumé (garder le contrôle sur qui a accès), pas une
+limitation technique : rien n'empêcherait de scripter la création de comptes via l'API admin
+Supabase si l'équipe préférait ce mode de fonctionnement.
+
+**Créer un accès pour un nouveau membre de l'équipe :**
+
+1. Dashboard > Authentication > Users > Add user > Create new user.
+2. Renseigner l'email et un mot de passe temporaire (ou envoyer une invitation par email selon
+   les options disponibles dans votre version du dashboard).
+3. Éditer l'utilisateur créé > User Metadata (`raw_user_meta_data`) > ajouter
+   `{"display_name": "Prénom Nom"}` — c'est ce champ que `app.html` affiche sur les décisions et
+   les avatars ; sans lui, l'app retombe sur l'email brut.
+
+![Création d'un utilisateur dans Authentication > Users](docs/img/supabase-auth-new-user.png)
+
+**Réinitialiser un mot de passe oublié :** Authentication > Users > sélectionner l'utilisateur >
+option d'envoi d'un email de récupération (le libellé exact dépend de la version du dashboard).
+
+Utilisateurs actuels : Benjamin Baroni (admin), Lucas Toledo, John Adrien.
+
+### Row Level Security (RLS)
+
+Toutes les tables ont RLS activé (`supabase/rls.sql`) selon un modèle simple : **tout
+utilisateur authentifié peut tout lire et écrire**, pas de cloisonnement par utilisateur —
+l'équipe travaille sur les mêmes données. La clé `service_role` (scan automatique uniquement)
+bypasse RLS entièrement.
+
+Si une lecture/écriture échoue silencieusement dans l'app malgré des données présentes en base,
+vérifier en premier qu'une policy RLS existe pour cette table + cette opération : Authentication
+> Policies, ou Table Editor > icône bouclier sur la table concernée.
+
+![Policies RLS d'une table](docs/img/supabase-rls-policies.png)
+
+### Storage (documents)
+
+Bucket `dce` (Storage > dce) : stocke les documents uploadés manuellement et ceux générés
+automatiquement (DC1/DC2/ATTRI1). Référencés dans la table `documents` (colonne `storage_key`).
+Configuration initiale dans `supabase/storage.sql`.
+
+Piège déjà rencontré : Supabase Storage rejette les clés de stockage contenant accents ou
+espaces — `app.html` (fonction `slugifyForStorage()`) nettoie le nom de fichier avant upload tout
+en gardant le nom lisible original dans la colonne `nom` de `documents`.
+
+### Realtime
+
+Activé sur les tables `aos` et `decisions` (Database > Replication, ou Table Editor > icône
+Realtime sur la table) — permet à l'app de se rafraîchir automatiquement quand quelqu'un d'autre
+modifie une décision, sans recharger la page.
+
+![Configuration Realtime sur une table](docs/img/supabase-realtime-config.png)
+
+### Requêtes SQL utiles pour du dépannage
+
+Depuis SQL Editor :
+
+```sql
+-- AOs sans date de clôture connue (surveillées par utils/refresh-cloture.js)
+select id, source, titre, date_cloture from aos where date_cloture is null;
+
+-- Historique des décisions d'une AO précise
+select * from decisions where ao_id = '<uuid>' order by created_at desc;
+
+-- Répartition par statut de décision (la plus récente par AO)
+select coalesce(d.statut, 'pending') as statut, count(*)
+from aos a
+left join lateral (
+  select statut from decisions where ao_id = a.id order by created_at desc limit 1
+) d on true
+group by 1;
+```
+
+### Limites du plan gratuit à surveiller
+
+- Supabase met en pause un projet après **7 jours sans aucune activité** — le scan quotidien
+  écrit en base tous les jours, ce qui évite normalement ce cas. Si le scan s'arrête plus d'une
+  semaine (panne GitHub Actions prolongée), la base peut se mettre en pause et devoir être
+  relancée manuellement depuis le dashboard.
+- Quotas de stockage/bande passante du plan gratuit : pas encore atteints à l'échelle actuelle du
+  projet (quelques dizaines d'AOs), à surveiller si le volume grossit significativement.
 
 ## Installation / développement local
 
@@ -310,9 +451,14 @@ npx serve . --listen 3000
 - Fragilité connue du scorer (voir [Scoring](#scoring-rsetéerh)) : un mot-clé thème fort seul
   peut suffire à dépasser le seuil, sans garde-fou sur le type de marché (travaux/fournitures vs.
   conseil).
-- Certains scrapers "site direct" (2i, OCAPIAT, Uniformation, ADEME) peuvent encore présenter des
-  angles morts sur l'extraction de la date de clôture, contrairement à BOAMP/TED déjà couverts
-  par le filet de sécurité `refresh-cloture.js`.
+- `scrapers/2i.js` : aucune date de clôture n'est exposée par la source (ni l'API REST, ni la
+  page HTML), vérifié en direct — pas une extraction manquante, une limitation réelle du site.
+- `scrapers/uniformation.js` : le sélecteur de date (suite à la refonte Drupal du site) n'a
+  jamais pu être vérifié sur une vraie offre publiée, faute d'AO active au moment du fix — à
+  revalider dès qu'Uniformation republie une offre.
+- Contrairement à BOAMP/TED, ces deux scrapers ne sont pas couverts par le filet de sécurité
+  `refresh-cloture.js` (limité aux AOs identifiables par idweb BOAMP / numéro de publication
+  TED).
 - Pas de couverture BOAMP fiable pour OCAPIAT et OPCO EP — surveillés uniquement via leur site
   propre.
 
