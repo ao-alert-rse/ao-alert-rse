@@ -9,8 +9,58 @@ note les AOs pertinentes, puis les publie dans un tableau de bord web et un emai
 
 ---
 
+## Reprendre ce projet avec Claude Code
+
+Ce projet a été développé et maintenu avec [Claude Code](https://claude.com/claude-code),
+l'assistant de développement en ligne de commande d'Anthropic. Si vous reprenez ce projet sans
+expertise technique poussée, voici comment vous appuyer dessus efficacement plutôt que de partir
+de zéro.
+
+**Démarrer :**
+1. Installer Claude Code (nécessite un compte Anthropic) : https://docs.claude.com/claude-code.
+2. Ouvrir un terminal à la racine de ce repo (après un `git clone`), lancer la commande `claude`.
+3. Dès la toute première session, demander explicitement à Claude de lire `CLAUDE.md` et ce
+   `README.md` en entier avant de faire quoi que ce soit — ils contiennent tout le contexte
+   nécessaire (architecture, règles de travail du repo, historique des bugs déjà corrigés).
+
+**Donner le bon contexte à chaque session :** Claude ne se souvient pas automatiquement d'une
+session à l'autre. Au début de chaque nouvelle session sur un sujet important, expliquez
+brièvement ce que vous voulez faire, et si besoin pointez vers la section du README concernée
+(ex. « regarde la section Guide Supabase avant de toucher aux utilisateurs »).
+
+**Exemples de demandes courantes à lui donner :**
+- *« Vérifie que le scan automatique tourne bien tous les jours »* — Claude peut consulter
+  l'historique des runs GitHub Actions et diagnostiquer un éventuel blocage.
+- *« Le scraper de [source] ne remonte plus rien, regarde ce qui a changé sur le site »* —
+  diagnostic puis correctif, sur le modèle de ce qui a déjà été fait plusieurs fois (voir
+  l'historique des commits).
+- *« Ajoute une nouvelle source de veille : [url du site] »* — Claude peut créer un nouveau
+  fichier dans `scrapers/` sur le modèle des scrapers existants.
+- *« Une AO affiche une date/un montant qui semble faux »* — signal à prendre au sérieux et à
+  faire vérifier en direct contre la source plutôt que de laisser filer (voir la fragilité
+  documentée dans [Limitations connues](#limitations-connues-et-chantiers-en-cours)).
+
+**Accès à fournir pour qu'il puisse réellement agir :**
+- Ce repo cloné en local.
+- Le fichier `.env` rempli si des tests de scan en local sont nécessaires (voir
+  [Installation](#installation--développement-local)).
+- Pas d'accès Supabase à donner directement à Claude pour la gestion des comptes utilisateurs —
+  ça reste un geste humain volontaire (voir
+  [Authentification et gestion des utilisateurs](#authentification-et-gestion-des-utilisateurs)).
+
+**Règles de travail déjà en place à respecter (détaillées dans `CLAUDE.md`) :**
+- Toujours `git fetch && git status` avant de commencer — le scan automatique peut avoir poussé
+  sur `main` entre-temps.
+- Ne jamais laisser traîner de modifications locales sur les fichiers générés par le scan
+  (`data/ao-history.json`, `data/scan-log.json`, `rapport.html`) — les committer ou les annuler
+  tout de suite.
+- Ne committer que ce qui a été explicitement validé dans la session en cours.
+
+---
+
 ## Sommaire
 
+- [Reprendre ce projet avec Claude Code](#reprendre-ce-projet-avec-claude-code)
 - [Vue d'ensemble](#vue-densemble)
 - [Fonctionnement du scan quotidien](#fonctionnement-du-scan-quotidien)
 - [Sources surveillées](#sources-surveillées)
