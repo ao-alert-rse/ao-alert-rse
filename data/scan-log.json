@@ -294,5 +294,38 @@
       "PLACE/national": 55,
       "e-marchespublics.com": 155
     }
+  },
+  {
+    "date": "2026-07-13T12:19:40.517Z",
+    "totalRecus": 836,
+    "totalValides": 22,
+    "nouvelles": 2,
+    "nouvellesTitres": [
+      {
+        "titre": "Innovation technologique et transition écologique et énergétique [+3 autres lots]",
+        "score": 43,
+        "source": "Région Hauts-de-France"
+      },
+      {
+        "titre": "Marché public global de performance (MPGP) énergétique relatif aux bâtiments et installations techniques du Centre Hospitalier de",
+        "score": 49,
+        "source": "Etablissements de Santé et Médico-sociaux"
+      }
+    ],
+    "enCours": 20,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 6,
+      "OPCO EP": 9,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 3,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 51,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 155
+    }
   }
 ]

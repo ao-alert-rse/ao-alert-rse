@@ -607,5 +607,19 @@
     "scoreRSETEE": 35,
     "dateVue": "2026-07-08T14:09:01.625Z",
     "dateClôture": "2026-09-13"
+  },
+  "Région Hauts-de-France-730da973": {
+    "titre": "Innovation technologique et transition écologique et énergétique [+3 autres lots]",
+    "source": "Région Hauts-de-France",
+    "scoreRSETEE": 43,
+    "dateVue": "2026-07-13T12:19:40.500Z",
+    "dateClôture": "2026-09-10"
+  },
+  "Etablissements de Santé et Médico-sociaux-2511a375": {
+    "titre": "Marché public global de performance (MPGP) énergétique relatif aux bâtiments et installations techniques du Centre Hospitalier de",
+    "source": "Etablissements de Santé et Médico-sociaux",
+    "scoreRSETEE": 49,
+    "dateVue": "2026-07-13T12:19:40.500Z",
+    "dateClôture": "2026-09-11"
   }
 }
