@@ -327,5 +327,33 @@
       "PLACE/national": 57,
       "e-marchespublics.com": 155
     }
+  },
+  {
+    "date": "2026-07-14T07:30:17.789Z",
+    "totalRecus": 834,
+    "totalValides": 22,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Mission d’actualisation de la trajectoire de neutralité carbone du territoire parisien",
+        "score": 85,
+        "source": "Ville de Paris"
+      }
+    ],
+    "enCours": 20,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 0,
+      "OPCO EP": 9,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 3,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 52,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 157
+    }
   }
 ]
