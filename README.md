@@ -184,20 +184,65 @@ dédié est envoyé (`utils/source-health.js` + `utils/mailer.js`).
 
 ## Sources surveillées
 
-| Source | Type | Détail |
-|---|---|---|
-| **BOAMP — acheteurs ciblés** | API JSON (OpenDataSoft) | Requête par nom d'acheteur (OPCOs, régions, ADEME, Caisse des dépôts...) |
-| **BOAMP — mots-clés** | API JSON (OpenDataSoft) | Recherche par ~60 mots-clés RSE/TEE/RH dans tout le champ `objet`, tout acheteur confondu |
-| **TED/FR** | API JSON (TED v3) | Avis européens publiés en France, recherche par mots-clés dans le titre de lot |
-| **OPCO ATLAS, 2i, OCAPIAT, OPCO EP, Uniformation, AKTO, Constructys, OPCO Mobilités** | Scraping HTML | Sites propres de chaque OPCO (pas de couverture BOAMP fiable pour tous) |
-| **ADEME** | Scraping HTML | Site direct |
-| **PLACE (marchés publics de l'État)** | Scraping HTML | Recherche par mot-clé, une requête par mot-clé |
-| **Maximilien (Île-de-France)** | Scraping HTML | Recherche par mot-clé |
-| **e-marchespublics.com** | Scraping HTML + endpoint JSON de pagination | Ajouté 07/07/2026 — chevauchement partiel avec BOAMP/TED mais couvre des AOs propres au site (petites communes) |
+| Source | URL | Type | Détail |
+|---|---|---|---|
+| **BOAMP — acheteurs ciblés** | [boamp.fr](https://www.boamp.fr) (API : [boamp-datadila.opendatasoft.com](https://boamp-datadila.opendatasoft.com)) | API JSON (OpenDataSoft) | Requête par nom d'acheteur (OPCOs, régions, ADEME, Caisse des dépôts...) |
+| **BOAMP — mots-clés** | idem | API JSON (OpenDataSoft) | Recherche par ~60 mots-clés RSE/TEE/RH dans tout le champ `objet`, tout acheteur confondu |
+| **TED/FR** | [ted.europa.eu](https://ted.europa.eu) (API : `api.ted.europa.eu/v3`) | API JSON | Avis européens publiés en France, recherche par mots-clés dans le titre de lot |
+| **OPCO ATLAS** | [opco-atlas.fr](https://www.opco-atlas.fr/appels-offres.html) | Scraping HTML | |
+| **2i** | [opco2i.fr](https://www.opco2i.fr) (API REST WordPress) | API JSON | |
+| **OCAPIAT** | [ocapiat.fr](https://www.ocapiat.fr/procedures-de-marches-publics-ami/) | Scraping HTML (liste + détail) | |
+| **OPCO EP** | [marches-publics.info](https://www.marches-publics.info/avis/) | Scraping HTML | |
+| **Uniformation** | [uniformation.fr](https://www.uniformation.fr/partenaire-prestataire/appels-doffre) | Scraping HTML | |
+| **AKTO** | [akto.fr](https://www.akto.fr/appels-d-offres/) | Scraping HTML | |
+| **Constructys** | [marches-publics.info](https://www.marches-publics.info/avis/) | Scraping HTML | Même plateforme qu'OPCO EP, filtrée différemment |
+| **OPCO Mobilités** | [opcomobilites.fr](https://www.opcomobilites.fr) | Scraping HTML | |
+| **ADEME** | [agirpourlatransition.ademe.fr](https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue) | Scraping HTML | |
+| **PLACE (marchés publics de l'État)** | [marches-publics.gouv.fr](https://www.marches-publics.gouv.fr) | Scraping HTML | Recherche par mot-clé, une requête par mot-clé |
+| **Maximilien (Île-de-France)** | [marches.maximilien.fr](https://marches.maximilien.fr) | Scraping HTML | Recherche par mot-clé |
+| **e-marchespublics.com** | [e-marchespublics.com](https://www.e-marchespublics.com) | Scraping HTML + endpoint JSON de pagination | Ajouté 07/07/2026 — chevauchement partiel avec BOAMP/TED mais couvre des AOs propres au site (petites communes) |
 
-Deux sources évaluées et écartées : **marchesonline.com** (protection anti-bot au niveau de
-l'empreinte réseau sur l'endpoint de recherche) et **francemarches.com** (protégé par
-DataDome). Voir l'historique des commits pour le détail de l'investigation.
+Deux sources évaluées et écartées : **marchesonline.com** et **francemarches.com** — détail des
+raisons dans les difficultés ci-dessous.
+
+### Difficultés rencontrées par source
+
+Certaines de ces sources ont demandé plusieurs passes avant d'être fiables. À connaître avant d'y
+retoucher, pour ne pas refaire le même travail d'investigation :
+
+- **marchesonline.com (écartée)** : site rendu côté serveur (pas de JS requis pour lire les
+  résultats), mais la recherche passe par un `POST` qui renvoie systématiquement une erreur 400
+  vide en requête HTTP simple (node-fetch), alors que la même action depuis un vrai navigateur
+  fonctionne parfaitement — probablement une empreinte réseau (TLS/fingerprint) exigée sur cet
+  endpoint précis. Un navigateur headless (Puppeteer/Playwright) fonctionnerait sans doute, mais
+  jugé disproportionné pour une seule source.
+- **francemarches.com (écartée)** : protégé par DataDome (anti-bot sérieux, fingerprinting +
+  challenges JS) — même une requête `curl` avec un user-agent de navigateur classique se fait
+  bloquer (403).
+- **Uniformation** : le site a changé de moteur (refonte Drupal) en cours de route, cassant le
+  sélecteur HTML existant sans avertissement — le scraper est revenu à 0 résultat silencieusement
+  pendant un temps indéterminé avant d'être repéré (voir `utils/source-health.js`, ajouté depuis
+  pour détecter ce cas). Le nouveau sélecteur n'a jamais pu être revalidé sur une vraie offre
+  publiée faute d'AO active au moment du fix.
+- **OCAPIAT** : la page liste n'affiche jamais de date de clôture ; la vraie date n'existe que sur
+  la page détail de chaque AO, dans un bloc du thème Divi (WordPress) sans rapport avec la
+  structure attendue au départ — a nécessité une requête supplémentaire par AO.
+- **2i** : confirmé en direct (API REST + page HTML) qu'aucune date de clôture n'est exposée nulle
+  part par le site — pas une extraction ratée, une vraie absence côté source.
+- **BOAMP** : deux pièges distincts. (1) Le champ `datefindiffusion` ressemble à une date limite
+  mais ne l'est pas ("date de fin de diffusion" — juste quand l'avis arrête d'être affiché) ;
+  l'avoir utilisé comme repli a affiché de fausses dates avant d'être corrigé. (2) Pour les avis
+  "cn-social" (services sociaux/spécifiques), aucune date n'est exposée par BOAMP/TED — la vraie
+  deadline vit sur la plateforme externe du profil acheteur (ex. achatpublic.com), retrouvable via
+  un lien déjà présent dans les données eForms.
+- **BOAMP/TED — doublons cross-source** : un même marché au-dessus du seuil UE est publié à la
+  fois sur BOAMP et TED, avec une casse et un titre qui peuvent diverger dès les premiers
+  caractères. Résolu par `ContractFolderID` (identifiant eForms identique des deux côtés), mais ça
+  a pris plusieurs passes avant d'être fiable à 100% — voir l'historique des commits pour le détail
+  (extraction réseau non fiable un jour sur deux, filet de sécurité ajouté en dernier recours).
+- **e-marchespublics.com** : la pagination au-delà de la première page nécessite de rejouer un
+  jeton CSRF et le cookie de session récupérés sur la première requête, vers un endpoint JSON
+  trouvé en inspectant leur bundle JavaScript — rien de documenté publiquement.
 
 ## Scoring RSE/TEE/RH
 
