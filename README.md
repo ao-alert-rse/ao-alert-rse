@@ -372,6 +372,7 @@ d'engagement, ex-DC3) :
 │   └── migration_*.sql             # Migrations appliquées manuellement dans Supabase
 ├── assets/templates/              # Templates DOCX (DC1, DC2, ATTRI1, mémoire technique)
 ├── scripts/                        # Scripts ponctuels (import d'historique, fix d'URLs)
+├── docs/img/                        # Captures d'écran référencées par le Guide Supabase
 ├── data/                            # Fichiers générés par le scan (historique, logs, emails.json)
 └── .github/workflows/ao-scan.yml   # Cron quotidien GitHub Actions
 ```
@@ -585,14 +586,10 @@ du métier avant un usage réel en réponse à un AO.
 - Fragilité connue du scorer (voir [Scoring](#scoring-rsetéerh)) : un mot-clé thème fort seul
   peut suffire à dépasser le seuil, sans garde-fou sur le type de marché (travaux/fournitures vs.
   conseil).
-- `scrapers/2i.js` : aucune date de clôture n'est exposée par la source (ni l'API REST, ni la
-  page HTML), vérifié en direct — pas une extraction manquante, une limitation réelle du site.
-- `scrapers/uniformation.js` : le sélecteur de date (suite à la refonte Drupal du site) n'a
-  jamais pu être vérifié sur une vraie offre publiée, faute d'AO active au moment du fix — à
-  revalider dès qu'Uniformation republie une offre.
-- Contrairement à BOAMP/TED, ces deux scrapers ne sont pas couverts par le filet de sécurité
-  `refresh-cloture.js` (limité aux AOs identifiables par idweb BOAMP / numéro de publication
-  TED).
+- `scrapers/2i.js` et `scrapers/uniformation.js` ont chacun un angle mort connu sur la date de
+  clôture (détail dans [Difficultés rencontrées par source](#difficultés-rencontrées-par-source))
+  et, contrairement à BOAMP/TED, ne sont pas couverts par le filet de sécurité
+  `refresh-cloture.js` (limité aux AOs identifiables par idweb BOAMP / numéro de publication TED).
 - Pas de couverture BOAMP fiable pour OCAPIAT et OPCO EP — surveillés uniquement via leur site
   propre.
 
