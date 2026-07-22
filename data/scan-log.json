@@ -533,5 +533,33 @@
       "PLACE/national": 56,
       "e-marchespublics.com": 154
     }
+  },
+  {
+    "date": "2026-07-22T10:07:55.729Z",
+    "totalRecus": 852,
+    "totalValides": 23,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "MARCHE DE SERVICES « MISSION DE CONSEIL EN ANALYSE DU CYCLE DE VIE RENOVATION ET PROJETS NEUFS HORS CHAMPS RE2020»",
+        "score": 80,
+        "source": "OPPIC"
+      }
+    ],
+    "enCours": 20,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 2,
+      "OCAPIAT": 5,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 52,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 154
+    }
   }
 ]
