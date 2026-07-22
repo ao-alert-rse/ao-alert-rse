@@ -282,11 +282,16 @@ l'autre (republication BOAMP avec des lots réordonnés, par exemple).
   natif de la plateforme (idweb BOAMP / numéro de publication TED extrait de l'URL), avec repli
   sur le titre normalisé si absent — volontairement **pas** basée sur un champ dont l'extraction
   dépend d'un appel réseau séparé pouvant échouer un jour sur deux.
-- **Filet de sécurité en aval** (`utils/dedup-reconcile.js`) : tourne après chaque sync,
-  regroupe automatiquement les lignes déjà en base partageant le même `ContractFolderID` et les
-  fusionne (réaffecte décisions/checklist/documents vers la ligne avec le plus de travail réel
-  dessus). Ne fusionne jamais automatiquement si plusieurs lignes ont déjà des données
-  utilisateur dessus — dans ce cas, log et traitement manuel.
+- **Filets de sécurité en aval** (`utils/dedup-reconcile.js`), tournent après chaque sync,
+  regroupent automatiquement les lignes déjà en base et les fusionnent (réaffecte
+  décisions/checklist/documents vers la ligne avec le plus de travail réel dessus). Ne fusionnent
+  jamais automatiquement si plusieurs lignes ont déjà des données utilisateur dessus — dans ce
+  cas, log et traitement manuel.
+  - `reconcilierDoublons()` : par `ContractFolderID` (paires BOAMP/TED).
+  - `reconcilierDoublonsParTitre()` : par titre normalisé, sur **toute la base** — nécessaire
+    pour les paires sans identifiant commun (ex. BOAMP + Maximilien, qui n'a pas de
+    ContractFolderID), que `dedupCrossSource()` ne peut pas voir puisqu'il ne compare que les
+    AOs d'un même scan en mémoire.
 
 ## Application web
 
