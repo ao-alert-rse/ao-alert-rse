@@ -19,7 +19,7 @@ const { filtrerAOs, dedupCrossSource } = require('./utils/filtrer');
 const { generateHTMLReport } = require('./utils/reporter');
 const { syncAOsToSupabase } = require('./utils/supabase-sync');
 const { detecterScrapersEnPanne } = require('./utils/source-health');
-const { reconcilierDoublons } = require('./utils/dedup-reconcile');
+const { reconcilierDoublons, reconcilierDoublonsParTitre } = require('./utils/dedup-reconcile');
 const { rafraichirDatesCloture } = require('./utils/refresh-cloture');
 
 function fmt(date) {
@@ -186,6 +186,7 @@ async function main() {
 
   await syncAOsToSupabase(toutesAOs);
   await reconcilierDoublons();
+  await reconcilierDoublonsParTitre();
   await rafraichirDatesCloture();
 
   if (toutesAOs.length === 0) {
