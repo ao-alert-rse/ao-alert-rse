@@ -663,5 +663,19 @@
     "scoreRSETEE": 80,
     "dateVue": "2026-07-22T10:07:55.715Z",
     "dateClôture": "2026-09-04"
+  },
+  "ETAB PUBLIC AMENAGEMENT EUROMEDITERRA-41cf31b4": {
+    "titre": "ASSISTANCE A MAITRISE D’OUVRAGE EN DEVELOPPEMENT DURABLE SUR L’ENSEMBLE DU PERIMETRE D’EUROMEDITERRANEE",
+    "source": "ETAB PUBLIC AMENAGEMENT EUROMEDITERRA",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-07-23T10:05:49.558Z",
+    "dateClôture": "2026-07-23"
+  },
+  "MAISON DE L'EMPLOI DE STRASBOURG-c1fc67cf": {
+    "titre": "Marché d'accompagnement des transformations de l'organisation du travail, de la qualité de vie et des conditions de travail (QVCT) et du maintien en emploi de 13 entreprises du Bas-Rhin",
+    "source": "MAISON DE L'EMPLOI DE STRASBOURG",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-07-23T10:05:49.558Z",
+    "dateClôture": "2026-08-24"
   }
 }
