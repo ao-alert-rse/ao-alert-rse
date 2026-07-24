@@ -594,5 +594,33 @@
       "PLACE/national": 56,
       "e-marchespublics.com": 156
     }
+  },
+  {
+    "date": "2026-07-24T09:41:28.885Z",
+    "totalRecus": 871,
+    "totalValides": 22,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Réalisation de prestations de formations en présentiel dans le but de professionnaliser les agents du CMVRH en charge de",
+        "score": 43,
+        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
+      }
+    ],
+    "enCours": 20,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 2,
+      "OCAPIAT": 5,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 53,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 158
+    }
   }
 ]
