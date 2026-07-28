@@ -688,5 +688,33 @@
       "PLACE/national": 56,
       "e-marchespublics.com": 157
     }
+  },
+  {
+    "date": "2026-07-28T10:16:53.391Z",
+    "totalRecus": 847,
+    "totalValides": 21,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "TRAVAUX - AGRANDISSEMENT DE LA DECHETTERIE DE RIOM ET TRANSFORMATION EN POLE DE VALORISATION, RECYCLERIE ET ESPACE ECONOMIE CIRCULAIRE\nRelance des lots 8a menuiseries extérieures bois et 8b occul",
+        "score": 35,
+        "source": "SYNDICAT DU BOIS DE L'AUMONE"
+      }
+    ],
+    "enCours": 19,
+    "sourceCounts": {
+      "ATLAS": 2,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 52,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 155
+    }
   }
 ]
