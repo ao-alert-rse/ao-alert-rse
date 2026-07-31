@@ -766,5 +766,33 @@
       "PLACE/national": 56,
       "e-marchespublics.com": 161
     }
+  },
+  {
+    "date": "2026-07-31T04:18:37.504Z",
+    "totalRecus": 883,
+    "totalValides": 20,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Prestations d'accompagnement des gestionnaires d’aires protégées dans le cadre du projet LIFE BIODIV-FRANCE – WP4",
+        "score": 40,
+        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
+      }
+    ],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 54,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 162
+    }
   }
 ]
