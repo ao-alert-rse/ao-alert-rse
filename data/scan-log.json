@@ -816,5 +816,33 @@
       "PLACE/national": 57,
       "e-marchespublics.com": 158
     }
+  },
+  {
+    "date": "2026-08-02T04:20:01.594Z",
+    "totalRecus": 859,
+    "totalValides": 19,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Marche relatif a la gestion et l'animation des zones de reemploi dans les ecocentres du siredom",
+        "score": 50,
+        "source": "Siredom"
+      }
+    ],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 49,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 158
+    }
   }
 ]
