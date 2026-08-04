@@ -844,5 +844,43 @@
       "PLACE/national": 57,
       "e-marchespublics.com": 158
     }
+  },
+  {
+    "date": "2026-08-04T03:59:12.621Z",
+    "totalRecus": 867,
+    "totalValides": 24,
+    "nouvelles": 3,
+    "nouvellesTitres": [
+      {
+        "titre": "ASSISTANCE A MAITRISE D'OUVRAGE : DEVELOPPEMENT DURABLE ET ENVIRONNEMENT",
+        "score": 81,
+        "source": "Etablissement Public d'Aménagement Alzette-Belval"
+      },
+      {
+        "titre": "Transition écologique et responsabilité sociétale dans le sport [+13 autres lots]",
+        "score": 40,
+        "source": "AFDAS PARIS 20"
+      },
+      {
+        "titre": "Mission d’assistance à maîtrise d’ouvrage (amo) pour le déploiement de la démarche bim au sein du service seti3, au sein des ministères de la transition écologique, de l’aménagement du territoire, des transports, de la ville et du logement",
+        "score": 80,
+        "source": "MTECT - SG"
+      }
+    ],
+    "enCours": 19,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 49,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 159
+    }
   }
 ]

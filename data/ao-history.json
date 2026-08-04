@@ -712,5 +712,26 @@
     "scoreRSETEE": 50,
     "dateVue": "2026-08-02T04:20:01.582Z",
     "dateClôture": "2026-09-04"
+  },
+  "Etablissement Public d'Aménagement Alzette-Belval-386d4c03": {
+    "titre": "ASSISTANCE A MAITRISE D'OUVRAGE : DEVELOPPEMENT DURABLE ET ENVIRONNEMENT",
+    "source": "Etablissement Public d'Aménagement Alzette-Belval",
+    "scoreRSETEE": 81,
+    "dateVue": "2026-08-04T03:59:12.605Z",
+    "dateClôture": "2026-09-24"
+  },
+  "AFDAS PARIS 20-5ffcfe16": {
+    "titre": "Transition écologique et responsabilité sociétale dans le sport [+13 autres lots]",
+    "source": "AFDAS PARIS 20",
+    "scoreRSETEE": 40,
+    "dateVue": "2026-08-04T03:59:12.606Z",
+    "dateClôture": "2026-09-21"
+  },
+  "MTECT - SG-4b26391c": {
+    "titre": "Mission d’assistance à maîtrise d’ouvrage (amo) pour le déploiement de la démarche bim au sein du service seti3, au sein des ministères de la transition écologique, de l’aménagement du territoire, des transports, de la ville et du logement",
+    "source": "MTECT - SG",
+    "scoreRSETEE": 80,
+    "dateVue": "2026-08-04T03:59:12.606Z",
+    "dateClôture": "2026-09-30"
   }
 }
