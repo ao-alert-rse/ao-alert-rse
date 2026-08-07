@@ -926,5 +926,27 @@
       "PLACE/national": 58,
       "e-marchespublics.com": 163
     }
+  },
+  {
+    "date": "2026-08-07T03:44:01.951Z",
+    "totalRecus": 893,
+    "totalValides": 20,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 52,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 163
+    }
   }
 ]
