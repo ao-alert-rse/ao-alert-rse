@@ -1058,5 +1058,33 @@
       "PLACE/national": 59,
       "e-marchespublics.com": 169
     }
+  },
+  {
+    "date": "2026-08-14T03:20:39.632Z",
+    "totalRecus": 916,
+    "totalValides": 20,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Actualisations de l’analyse des effets combinés (AAEC) du programme de décarbonation et de réindustrialisation de la zone industrialo-portuaire de Fos et du pourtour de l’étang de Berre",
+        "score": 50,
+        "source": "DREAL-PACA"
+      }
+    ],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 3,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 54,
+      "PLACE/national": 59,
+      "e-marchespublics.com": 168
+    }
   }
 ]
