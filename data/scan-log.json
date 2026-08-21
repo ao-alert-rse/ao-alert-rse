@@ -1218,5 +1218,33 @@
       "PLACE/national": 59,
       "e-marchespublics.com": 169
     }
+  },
+  {
+    "date": "2026-08-21T02:19:01.674Z",
+    "totalRecus": 956,
+    "totalValides": 21,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Accompagnement de la Ville de Paris pour l’animation et le déploiement du réseau des relais sobriété énergétique et adaptation",
+        "score": 100,
+        "source": "Ville de Paris"
+      }
+    ],
+    "enCours": 17,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 3,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 56,
+      "PLACE/national": 61,
+      "e-marchespublics.com": 169
+    }
   }
 ]
