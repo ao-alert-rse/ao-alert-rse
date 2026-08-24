@@ -1,29 +1,5 @@
 [
   {
-    "date": "2026-06-30T08:31:49.754Z",
-    "totalRecus": 392,
-    "totalValides": 21,
-    "nouvelles": 3,
-    "nouvellesTitres": [
-      {
-        "titre": "Évaluation des services écosystémiques de quatre aires marines protégées en Afrique du Sud et en France.",
-        "score": 48,
-        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
-      },
-      {
-        "titre": "Accompagnement et suivi des entreprises - Opération collective achats durables",
-        "score": 75,
-        "source": "Chambres de Commerce et d'Industrie (CCI)"
-      },
-      {
-        "titre": "[AFD] - Etude de faisabilité du financement de l’AFD en faveur du secteur agricole en 2027 - Projet d’appui à la transition",
-        "score": 41,
-        "source": "Ministère de l'Europe et des Affaires étrangères"
-      }
-    ],
-    "enCours": 19
-  },
-  {
     "date": "2026-06-30T08:42:00.296Z",
     "totalRecus": 392,
     "totalValides": 21,
@@ -1250,6 +1226,28 @@
   {
     "date": "2026-08-23T02:19:41.464Z",
     "totalRecus": 963,
+    "totalValides": 21,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 17,
+    "sourceCounts": {
+      "ATLAS": 6,
+      "2i": 1,
+      "OCAPIAT": 4,
+      "OPCO EP": 11,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 57,
+      "PLACE/national": 61,
+      "e-marchespublics.com": 170
+    }
+  },
+  {
+    "date": "2026-08-24T02:18:50.431Z",
+    "totalRecus": 967,
     "totalValides": 21,
     "nouvelles": 0,
     "nouvellesTitres": [],
