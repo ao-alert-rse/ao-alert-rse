@@ -1,13 +1,5 @@
 [
   {
-    "date": "2026-07-06T17:19:10.008Z",
-    "totalRecus": 402,
-    "totalValides": 27,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 25
-  },
-  {
     "date": "2026-07-07T13:57:12.075Z",
     "totalRecus": 516,
     "totalValides": 26,
@@ -1293,6 +1285,28 @@
       "Maximilien/IDF": 56,
       "PLACE/national": 61,
       "e-marchespublics.com": 172
+    }
+  },
+  {
+    "date": "2026-08-27T10:46:39.287Z",
+    "totalRecus": 965,
+    "totalValides": 20,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 13,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 0,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 58,
+      "PLACE/national": 60,
+      "e-marchespublics.com": 173
     }
   }
 ]
