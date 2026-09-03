@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-07-08T14:00:51.106Z",
-    "totalRecus": 592,
-    "totalValides": 22,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 20,
-    "sourceCounts": {
-      "ATLAS": 5,
-      "2i": 1,
-      "OCAPIAT": 7,
-      "OPCO EP": 6,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 46,
-      "PLACE/national": 53,
-      "e-marchespublics.com": 155
-    }
-  },
-  {
     "date": "2026-07-08T14:09:01.643Z",
     "totalRecus": 799,
     "totalValides": 29,
@@ -1282,6 +1260,28 @@
       "Constructys": 4,
       "OPCO Mobilités": 0,
       "Maximilien/IDF": 58,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 174
+    }
+  },
+  {
+    "date": "2026-09-03T05:22:18.278Z",
+    "totalRecus": 954,
+    "totalValides": 19,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 4,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 59,
       "PLACE/national": 58,
       "e-marchespublics.com": 174
     }
