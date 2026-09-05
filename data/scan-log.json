@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-07-10T11:38:35.468Z",
-    "totalRecus": 830,
-    "totalValides": 19,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 18,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 1,
-      "OCAPIAT": 7,
-      "OPCO EP": 8,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 52,
-      "PLACE/national": 54,
-      "e-marchespublics.com": 155
-    }
-  },
-  {
     "date": "2026-07-11T07:27:52.088Z",
     "totalRecus": 811,
     "totalValides": 19,
@@ -1269,6 +1247,34 @@
       "Maximilien/IDF": 59,
       "PLACE/national": 58,
       "e-marchespublics.com": 175
+    }
+  },
+  {
+    "date": "2026-09-05T05:05:54.579Z",
+    "totalRecus": 966,
+    "totalValides": 19,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Etude Marchés et emplois concourant à la transition énergétique pour les éditions 2027 2028 et 2029",
+        "score": 43,
+        "source": "Autres organismes"
+      }
+    ],
+    "enCours": 15,
+    "sourceCounts": {
+      "ATLAS": 8,
+      "2i": 2,
+      "OCAPIAT": 4,
+      "OPCO EP": 15,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 4,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 59,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 174
     }
   }
 ]
