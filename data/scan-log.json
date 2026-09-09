@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-14T07:30:17.789Z",
-    "totalRecus": 834,
-    "totalValides": 22,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Mission d’actualisation de la trajectoire de neutralité carbone du territoire parisien",
-        "score": 85,
-        "source": "Ville de Paris"
-      }
-    ],
-    "enCours": 20,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 0,
-      "OPCO EP": 9,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 52,
-      "PLACE/national": 57,
-      "e-marchespublics.com": 157
-    }
-  },
-  {
     "date": "2026-07-15T07:34:55.703Z",
     "totalRecus": 843,
     "totalValides": 23,
@@ -1264,6 +1236,39 @@
       "Maximilien/IDF": 60,
       "PLACE/national": 57,
       "e-marchespublics.com": 172
+    }
+  },
+  {
+    "date": "2026-09-09T05:35:01.432Z",
+    "totalRecus": 960,
+    "totalValides": 23,
+    "nouvelles": 2,
+    "nouvellesTitres": [
+      {
+        "titre": "Mission d'accompagnement institutionnel à la réduction du recours \naux mesures coercitives et à l'amélioration de la qualité des soins \net de la QVCT",
+        "score": 50,
+        "source": "GROUPE HOSPITALIER FONDATION VALLEE - PAUL GUIRAUD"
+      },
+      {
+        "titre": "Mission d'accompagnement dans le programme Territoire Engagé Transition écologique (Tete) - volet Climat-Air-Energie pour la Métropole de Lyon",
+        "score": 50,
+        "source": "Métropole de Lyon"
+      }
+    ],
+    "enCours": 17,
+    "sourceCounts": {
+      "ATLAS": 9,
+      "2i": 1,
+      "OCAPIAT": 4,
+      "OPCO EP": 15,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 4,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 60,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 173
     }
   }
 ]

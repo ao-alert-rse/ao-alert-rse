@@ -768,5 +768,19 @@
     "scoreRSETEE": 43,
     "dateVue": "2026-09-05T05:05:54.567Z",
     "dateClôture": "2026-10-09"
+  },
+  "GROUPE HOSPITALIER FONDATION VALLEE - PAUL GUIRAUD-746ef57e": {
+    "titre": "Mission d'accompagnement institutionnel à la réduction du recours \naux mesures coercitives et à l'amélioration de la qualité des soins \net de la QVCT",
+    "source": "GROUPE HOSPITALIER FONDATION VALLEE - PAUL GUIRAUD",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-09-09T05:35:01.419Z",
+    "dateClôture": "2026-10-07"
+  },
+  "Métropole de Lyon-854d10e1": {
+    "titre": "Mission d'accompagnement dans le programme Territoire Engagé Transition écologique (Tete) - volet Climat-Air-Energie pour la Métropole de Lyon",
+    "source": "Métropole de Lyon",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-09-09T05:35:01.419Z",
+    "dateClôture": "2026-10-12"
   }
 }
