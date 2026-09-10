@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-07-15T07:34:55.703Z",
-    "totalRecus": 843,
-    "totalValides": 23,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 21,
-    "sourceCounts": {
-      "ATLAS": 4,
-      "2i": 2,
-      "OCAPIAT": 6,
-      "OPCO EP": 9,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 53,
-      "PLACE/national": 57,
-      "e-marchespublics.com": 157
-    }
-  },
-  {
     "date": "2026-07-16T09:29:17.045Z",
     "totalRecus": 831,
     "totalValides": 22,
@@ -1267,6 +1245,34 @@
       "Constructys": 4,
       "OPCO Mobilités": 0,
       "Maximilien/IDF": 60,
+      "PLACE/national": 58,
+      "e-marchespublics.com": 173
+    }
+  },
+  {
+    "date": "2026-09-10T05:27:23.398Z",
+    "totalRecus": 955,
+    "totalValides": 24,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Formation des agents du Cned - Numérique responsable [+18 autres lots]",
+        "score": 65,
+        "source": "Centre National d'Enseignement à Distance (Cned)"
+      }
+    ],
+    "enCours": 18,
+    "sourceCounts": {
+      "ATLAS": 9,
+      "2i": 1,
+      "OCAPIAT": 4,
+      "OPCO EP": 14,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 5,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 58,
       "PLACE/national": 58,
       "e-marchespublics.com": 173
     }
