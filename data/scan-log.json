@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-07-17T09:19:52.353Z",
-    "totalRecus": 842,
-    "totalValides": 21,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 18,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 5,
-      "OPCO EP": 10,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 54,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 155
-    }
-  },
-  {
     "date": "2026-07-18T07:16:12.060Z",
     "totalRecus": 830,
     "totalValides": 21,
@@ -1268,6 +1246,34 @@
       "OPCO Mobilités": 0,
       "Maximilien/IDF": 58,
       "PLACE/national": 58,
+      "e-marchespublics.com": 171
+    }
+  },
+  {
+    "date": "2026-09-12T05:17:19.455Z",
+    "totalRecus": 930,
+    "totalValides": 23,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Déploiement, hébergement et maintenance d’un outil numérique territorial dédié au réemploi des matériaux de construction",
+        "score": 50,
+        "source": "Métropole du Grand Paris"
+      }
+    ],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 8,
+      "2i": 4,
+      "OCAPIAT": 3,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 5,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 56,
+      "PLACE/national": 57,
       "e-marchespublics.com": 171
     }
   }
