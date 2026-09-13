@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-18T07:16:12.060Z",
-    "totalRecus": 830,
-    "totalValides": 21,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Construction du pôle d'économie circulaire du Sitcom Côte sud des Landes à Saint Geours de Maremne (40)",
-        "score": 35,
-        "source": "Sitcom côte Sud des Landes"
-      }
-    ],
-    "enCours": 18,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 5,
-      "OPCO EP": 10,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 2,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 55,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 153
-    }
-  },
-  {
     "date": "2026-07-19T09:01:23.468Z",
     "totalRecus": 839,
     "totalValides": 22,
@@ -1261,6 +1233,28 @@
         "source": "Métropole du Grand Paris"
       }
     ],
+    "enCours": 16,
+    "sourceCounts": {
+      "ATLAS": 8,
+      "2i": 4,
+      "OCAPIAT": 3,
+      "OPCO EP": 12,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 5,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 56,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 171
+    }
+  },
+  {
+    "date": "2026-09-13T05:30:58.953Z",
+    "totalRecus": 931,
+    "totalValides": 23,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
     "enCours": 16,
     "sourceCounts": {
       "ATLAS": 8,
