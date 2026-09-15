@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-20T11:29:54.922Z",
-    "totalRecus": 850,
-    "totalValides": 21,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Prestations de prévention des risques psychosociaux",
-        "score": 35,
-        "source": "France Médias Monde SA"
-      }
-    ],
-    "enCours": 18,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 5,
-      "OPCO EP": 10,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 3,
-      "Constructys": 1,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 53,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 154
-    }
-  },
-  {
     "date": "2026-07-21T10:09:46.937Z",
     "totalRecus": 840,
     "totalValides": 23,
@@ -1269,6 +1241,28 @@
       "Maximilien/IDF": 56,
       "PLACE/national": 57,
       "e-marchespublics.com": 171
+    }
+  },
+  {
+    "date": "2026-09-15T05:37:08.000Z",
+    "totalRecus": 919,
+    "totalValides": 21,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 15,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 4,
+      "OCAPIAT": 3,
+      "OPCO EP": 11,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 5,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 57,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 168
     }
   }
 ]
