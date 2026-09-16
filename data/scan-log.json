@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-21T10:09:46.937Z",
-    "totalRecus": 840,
-    "totalValides": 23,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Certification « ambassadeur de transition écologique en entreprise » (atee) - organisation des évaluations et des actions de formation associées à la certification",
-        "score": 50,
-        "source": "OPCO ATLAS"
-      }
-    ],
-    "enCours": 19,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 0,
-      "OPCO EP": 12,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 51,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 154
-    }
-  },
-  {
     "date": "2026-07-22T10:07:55.729Z",
     "totalRecus": 852,
     "totalValides": 23,
@@ -1263,6 +1235,34 @@
       "Maximilien/IDF": 57,
       "PLACE/national": 57,
       "e-marchespublics.com": 168
+    }
+  },
+  {
+    "date": "2026-09-16T05:31:03.171Z",
+    "totalRecus": 907,
+    "totalValides": 21,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Mission d'accompagnement institutionnel à la réduction du recours aux mesures coercitives et à l'amélioration de la qualité des soins et de la QVCT",
+        "score": 50,
+        "source": "GROUPE HOSPITALIER FONDATION VALLEE - PAUL GUIRAUD"
+      }
+    ],
+    "enCours": 15,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 8,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 5,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 56,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 166
     }
   }
 ]
