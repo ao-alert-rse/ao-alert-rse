@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-22T10:07:55.729Z",
-    "totalRecus": 852,
-    "totalValides": 23,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "MARCHE DE SERVICES « MISSION DE CONSEIL EN ANALYSE DU CYCLE DE VIE RENOVATION ET PROJETS NEUFS HORS CHAMPS RE2020»",
-        "score": 80,
-        "source": "OPPIC"
-      }
-    ],
-    "enCours": 20,
-    "sourceCounts": {
-      "ATLAS": 4,
-      "2i": 2,
-      "OCAPIAT": 5,
-      "OPCO EP": 12,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 52,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 154
-    }
-  },
-  {
     "date": "2026-07-23T10:05:49.592Z",
     "totalRecus": 866,
     "totalValides": 24,
@@ -1263,6 +1235,34 @@
       "Maximilien/IDF": 56,
       "PLACE/national": 57,
       "e-marchespublics.com": 166
+    }
+  },
+  {
+    "date": "2026-09-18T05:24:50.631Z",
+    "totalRecus": 911,
+    "totalValides": 19,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "LOT 1 : Conception et impression du rapport de développement durable [+1 autres lots]",
+        "score": 50,
+        "source": "Syndicat de l'Orge"
+      }
+    ],
+    "enCours": 14,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 9,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 4,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 57,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 168
     }
   }
 ]
