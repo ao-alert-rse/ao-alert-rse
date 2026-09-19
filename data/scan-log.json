@@ -1,38 +1,5 @@
 [
   {
-    "date": "2026-07-23T10:05:49.592Z",
-    "totalRecus": 866,
-    "totalValides": 24,
-    "nouvelles": 2,
-    "nouvellesTitres": [
-      {
-        "titre": "ASSISTANCE A MAITRISE D’OUVRAGE EN DEVELOPPEMENT DURABLE SUR L’ENSEMBLE DU PERIMETRE D’EUROMEDITERRANEE",
-        "score": 50,
-        "source": "ETAB PUBLIC AMENAGEMENT EUROMEDITERRA"
-      },
-      {
-        "titre": "Marché d'accompagnement des transformations de l'organisation du travail, de la qualité de vie et des conditions de travail (QVCT) et du maintien en emploi de 13 entreprises du Bas-Rhin",
-        "score": 50,
-        "source": "MAISON DE L'EMPLOI DE STRASBOURG"
-      }
-    ],
-    "enCours": 21,
-    "sourceCounts": {
-      "ATLAS": 4,
-      "2i": 2,
-      "OCAPIAT": 5,
-      "OPCO EP": 12,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 52,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 156
-    }
-  },
-  {
     "date": "2026-07-24T09:41:28.885Z",
     "totalRecus": 871,
     "totalValides": 22,
@@ -1263,6 +1230,28 @@
       "Maximilien/IDF": 57,
       "PLACE/national": 56,
       "e-marchespublics.com": 168
+    }
+  },
+  {
+    "date": "2026-09-19T05:19:02.121Z",
+    "totalRecus": 901,
+    "totalValides": 17,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 13,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 8,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 3,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 57,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 167
     }
   }
 ]
