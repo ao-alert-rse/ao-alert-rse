@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-07-25T08:33:59.785Z",
-    "totalRecus": 856,
-    "totalValides": 20,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 18,
-    "sourceCounts": {
-      "ATLAS": 4,
-      "2i": 1,
-      "OCAPIAT": 5,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 53,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 156
-    }
-  },
-  {
     "date": "2026-07-26T09:28:38.490Z",
     "totalRecus": 851,
     "totalValides": 20,
@@ -1246,6 +1224,39 @@
       "Maximilien/IDF": 57,
       "PLACE/national": 57,
       "e-marchespublics.com": 167
+    }
+  },
+  {
+    "date": "2026-09-22T05:39:34.486Z",
+    "totalRecus": 873,
+    "totalValides": 19,
+    "nouvelles": 2,
+    "nouvellesTitres": [
+      {
+        "titre": "Révision du Plan Climat Eau Energie Territorial et réalisation d'un Bilan des Emissions de Gaz à Effet de Serre",
+        "score": 65,
+        "source": "CC BEAUJOLAIS PIERRES DOREES"
+      },
+      {
+        "titre": "Prévenir les risques psycho-sociaux (RPS) et la qualité de vie au travail (QVT) - Encadrant [+16 autres lots]",
+        "score": 40,
+        "source": "Uniformation"
+      }
+    ],
+    "enCours": 15,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 8,
+      "Uniformation": 0,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 54,
+      "PLACE/national": 57,
+      "e-marchespublics.com": 161
     }
   }
 ]
