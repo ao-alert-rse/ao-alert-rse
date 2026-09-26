@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-29T10:49:57.472Z",
-    "totalRecus": 863,
-    "totalValides": 22,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Déclaration sans suite du marché de Travaux de déconstruction, désamiantage et économie circulaire du bâtiment B - cité Gaston ROULAUD à Drancy (93700).",
-        "score": 35,
-        "source": "SEM Drancy Demain"
-      }
-    ],
-    "enCours": 19,
-    "sourceCounts": {
-      "ATLAS": 2,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 53,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 157
-    }
-  },
-  {
     "date": "2026-07-30T10:03:11.802Z",
     "totalRecus": 877,
     "totalValides": 21,
@@ -1257,6 +1229,28 @@
       "Maximilien/IDF": 53,
       "PLACE/national": 57,
       "e-marchespublics.com": 163
+    }
+  },
+  {
+    "date": "2026-09-26T05:42:47.752Z",
+    "totalRecus": 869,
+    "totalValides": 15,
+    "nouvelles": 0,
+    "nouvellesTitres": [],
+    "enCours": 13,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 7,
+      "Uniformation": 1,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 3,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 53,
+      "PLACE/national": 56,
+      "e-marchespublics.com": 161
     }
   }
 ]
