@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-07-31T04:18:37.504Z",
-    "totalRecus": 883,
-    "totalValides": 20,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Prestations d'accompagnement des gestionnaires d’aires protégées dans le cadre du projet LIFE BIODIV-FRANCE – WP4",
-        "score": 40,
-        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
-      }
-    ],
-    "enCours": 16,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 54,
-      "PLACE/national": 56,
-      "e-marchespublics.com": 162
-    }
-  },
-  {
     "date": "2026-08-01T04:16:56.496Z",
     "totalRecus": 855,
     "totalValides": 18,
@@ -1251,6 +1223,34 @@
       "Maximilien/IDF": 53,
       "PLACE/national": 56,
       "e-marchespublics.com": 161
+    }
+  },
+  {
+    "date": "2026-09-29T06:25:19.443Z",
+    "totalRecus": 852,
+    "totalValides": 16,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Education à l'environnement - Conception et réalisation d'animations pour les écoles autour de quatre piliers : le grand cycle de l'eau, la gestion de la forêt, l'économie circulaire (déchets) et les",
+        "score": 65,
+        "source": "THONON AGGLOMERATION"
+      }
+    ],
+    "enCours": 14,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 4,
+      "OCAPIAT": 5,
+      "OPCO EP": 7,
+      "Uniformation": 1,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 1,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 50,
+      "PLACE/national": 55,
+      "e-marchespublics.com": 154
     }
   }
 ]
