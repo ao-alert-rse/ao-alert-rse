@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-08-02T04:20:01.594Z",
-    "totalRecus": 859,
-    "totalValides": 19,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Marche relatif a la gestion et l'animation des zones de reemploi dans les ecocentres du siredom",
-        "score": 50,
-        "source": "Siredom"
-      }
-    ],
-    "enCours": 16,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 49,
-      "PLACE/national": 57,
-      "e-marchespublics.com": 158
-    }
-  },
-  {
     "date": "2026-08-04T03:59:12.621Z",
     "totalRecus": 867,
     "totalValides": 24,
@@ -1251,6 +1223,34 @@
       "Maximilien/IDF": 49,
       "PLACE/national": 54,
       "e-marchespublics.com": 152
+    }
+  },
+  {
+    "date": "2026-10-02T06:28:50.420Z",
+    "totalRecus": 822,
+    "totalValides": 16,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Relance Marché de Travaux de déconstruction, désamiantage et économie circulaire du bâtiment B - cité Gaston ROULAUD à Drancy (93700).",
+        "score": 35,
+        "source": "SEM Drancy Demain"
+      }
+    ],
+    "enCours": 13,
+    "sourceCounts": {
+      "ATLAS": 4,
+      "2i": 1,
+      "OCAPIAT": 5,
+      "OPCO EP": 8,
+      "Uniformation": 1,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 1,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 49,
+      "PLACE/national": 54,
+      "e-marchespublics.com": 157
     }
   }
 ]
