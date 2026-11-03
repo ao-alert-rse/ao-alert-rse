@@ -1,43 +1,5 @@
 [
   {
-    "date": "2026-08-04T03:59:12.621Z",
-    "totalRecus": 867,
-    "totalValides": 24,
-    "nouvelles": 3,
-    "nouvellesTitres": [
-      {
-        "titre": "ASSISTANCE A MAITRISE D'OUVRAGE : DEVELOPPEMENT DURABLE ET ENVIRONNEMENT",
-        "score": 81,
-        "source": "Etablissement Public d'Aménagement Alzette-Belval"
-      },
-      {
-        "titre": "Transition écologique et responsabilité sociétale dans le sport [+13 autres lots]",
-        "score": 40,
-        "source": "AFDAS PARIS 20"
-      },
-      {
-        "titre": "Mission d’assistance à maîtrise d’ouvrage (amo) pour le déploiement de la démarche bim au sein du service seti3, au sein des ministères de la transition écologique, de l’aménagement du territoire, des transports, de la ville et du logement",
-        "score": 80,
-        "source": "MTECT - SG"
-      }
-    ],
-    "enCours": 19,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 49,
-      "PLACE/national": 58,
-      "e-marchespublics.com": 159
-    }
-  },
-  {
     "date": "2026-08-05T03:54:49.536Z",
     "totalRecus": 885,
     "totalValides": 21,
@@ -1251,6 +1213,114 @@
       "Maximilien/IDF": 49,
       "PLACE/national": 54,
       "e-marchespublics.com": 157
+    }
+  },
+  {
+    "date": "2026-11-03T07:24:35.307Z",
+    "totalRecus": 813,
+    "totalValides": 20,
+    "nouvelles": 17,
+    "nouvellesTitres": [
+      {
+        "titre": "2026-90660_PRESTATION D’ANIMATION DU RÉSEAU PLAN CLIMAT DES COLLECTIVITÉS BRETONNES",
+        "score": 65,
+        "source": "Région Bretagne"
+      },
+      {
+        "titre": "26.AO.VD.061 - Exploitation du Pôle d'Excellence de l'Economie Circulaire et Solidaire (PEECS) Anatole",
+        "score": 35,
+        "source": "EST ENSEMBLE DAAJCP"
+      },
+      {
+        "titre": "Exploitation du Pôle d'Excellence de l'Economie Circulaire Solidaire (PEECS) Anatole",
+        "score": 35,
+        "source": "EPT Est Ensemble"
+      },
+      {
+        "titre": "Accord-cadre d'assistance à maîtrise d'ouvrage pour l'intégration opérationnelle des objectifs de développement durable dans les projets de l'EPAMSA",
+        "score": 65,
+        "source": "EPAMSA"
+      },
+      {
+        "titre": "Construction d'un pôle dédié au réemploi et à l'économie circulaire",
+        "score": 55,
+        "source": "Préval Haut-Doubs"
+      },
+      {
+        "titre": "Evaluation de la stratégie régionale biodiversité 2020-2027, et Appui pour l'animation à la concertation et la structuration de la future stratégie régionale biodiversité",
+        "score": 80,
+        "source": "Région Grand Est"
+      },
+      {
+        "titre": "ASSISTANCE A MAITRISE D’OUVRAGE POUR LE SUIVI DES ENJEUX ENVIRONNEMENTAUX ET DE DEVELOPPEMENT DURABLE (AMO DD) DANS LE CADRE DE LA CONSTRUCTION DU CENTRE PENITENTIAIRE DE NIMES (30)",
+        "score": 65,
+        "source": "AGENCE PUBLIQUE POUR L'IMMOBILIER DE LA JUSTICE (APIJ)"
+      },
+      {
+        "titre": "Mission d'accompagnement à la transition énergétique des entreprises",
+        "score": 50,
+        "source": "Saint-Nazaire Agglomération -  la Carene"
+      },
+      {
+        "titre": "Conception et animation de formations sur-mesure à destination des managers dans le domaine de l’… [+1 autres lots]",
+        "score": 100,
+        "source": "ASNR FONTENAY"
+      },
+      {
+        "titre": "Elaborer son rapport RSE dans son organisme [+35 autres lots]",
+        "score": 55,
+        "source": "Uniformation"
+      },
+      {
+        "titre": "Mission d'accompagnement au renouvellement du Plan de Mobilité Inter-Entreprises (PMIE) du MIN de Rungis et à l'élaboration de la",
+        "score": 100,
+        "source": "SEMMARIS"
+      },
+      {
+        "titre": "Restructuration de l'école élémentaire 8 rue des vertus (Paris 3ème)",
+        "score": 59,
+        "source": "Ville de Paris"
+      },
+      {
+        "titre": "Collecte sélective et traitement des déchet des services et établissements publics de l’Etat situés sur le département des",
+        "score": 33,
+        "source": "Ministère de l'Intérieur"
+      },
+      {
+        "titre": "ADAPTATION ET ANIMATION DE FORMATIONS SUR LE FINANCEMENT  DES PROJETS DE DECARBONATION DE L'INDUSTRIE",
+        "score": 58,
+        "source": "Autres organismes"
+      },
+      {
+        "titre": "Prestations de formations des managers",
+        "score": 49,
+        "source": "Ministère de la Transition Écologique, Ministère de la Cohésion des Territoires, Ministère de la Mer"
+      },
+      {
+        "titre": "Mission d'assistance à maîtrise d'ouvrage pour l'accompagnement de la collectivité dans le cadre du programme territoire engagé transition ecologique",
+        "score": 80,
+        "source": "CC des Portes De Meuse"
+      },
+      {
+        "titre": "Mission d'assistance à maîtrise d'ouvrage dans le cadre de la démarche \"territoire engagé transition ecologique\"",
+        "score": 65,
+        "source": "Communauté de Communes de Sélestat et Territoires"
+      }
+    ],
+    "enCours": 18,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 2,
+      "OCAPIAT": 3,
+      "OPCO EP": 2,
+      "Uniformation": 1,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 3,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 47,
+      "PLACE/national": 53,
+      "e-marchespublics.com": 164
     }
   }
 ]
