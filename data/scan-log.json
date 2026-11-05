@@ -1,27 +1,5 @@
 [
   {
-    "date": "2026-08-06T03:59:15.505Z",
-    "totalRecus": 887,
-    "totalValides": 20,
-    "nouvelles": 0,
-    "nouvellesTitres": [],
-    "enCours": 16,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 13,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 51,
-      "PLACE/national": 58,
-      "e-marchespublics.com": 163
-    }
-  },
-  {
     "date": "2026-08-07T03:44:01.951Z",
     "totalRecus": 893,
     "totalValides": 20,
@@ -1321,6 +1299,34 @@
       "Maximilien/IDF": 48,
       "PLACE/national": 53,
       "e-marchespublics.com": 162
+    }
+  },
+  {
+    "date": "2026-11-05T07:35:40.895Z",
+    "totalRecus": 814,
+    "totalValides": 22,
+    "nouvelles": 1,
+    "nouvellesTitres": [
+      {
+        "titre": "Transition écologique et responsabilité sociétale des organisations",
+        "score": 40,
+        "source": "EN3S"
+      }
+    ],
+    "enCours": 19,
+    "sourceCounts": {
+      "ATLAS": 7,
+      "2i": 2,
+      "OCAPIAT": 3,
+      "OPCO EP": 3,
+      "Uniformation": 2,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 51,
+      "PLACE/national": 53,
+      "e-marchespublics.com": 163
     }
   }
 ]
