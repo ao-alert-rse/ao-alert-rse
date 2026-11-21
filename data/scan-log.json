@@ -1,33 +1,5 @@
 [
   {
-    "date": "2026-08-14T03:20:39.632Z",
-    "totalRecus": 916,
-    "totalValides": 20,
-    "nouvelles": 1,
-    "nouvellesTitres": [
-      {
-        "titre": "Actualisations de l’analyse des effets combinés (AAEC) du programme de décarbonation et de réindustrialisation de la zone industrialo-portuaire de Fos et du pourtour de l’étang de Berre",
-        "score": 50,
-        "source": "DREAL-PACA"
-      }
-    ],
-    "enCours": 16,
-    "sourceCounts": {
-      "ATLAS": 3,
-      "2i": 2,
-      "OCAPIAT": 4,
-      "OPCO EP": 12,
-      "Uniformation": 0,
-      "AKTO": 9,
-      "ADEME": 0,
-      "Constructys": 0,
-      "OPCO Mobilités": 0,
-      "Maximilien/IDF": 54,
-      "PLACE/national": 59,
-      "e-marchespublics.com": 168
-    }
-  },
-  {
     "date": "2026-08-15T02:09:18.111Z",
     "totalRecus": 925,
     "totalValides": 20,
@@ -1333,6 +1305,39 @@
       "Maximilien/IDF": 51,
       "PLACE/national": 52,
       "e-marchespublics.com": 153
+    }
+  },
+  {
+    "date": "2026-11-21T07:52:43.442Z",
+    "totalRecus": 782,
+    "totalValides": 21,
+    "nouvelles": 2,
+    "nouvellesTitres": [
+      {
+        "titre": "Etude sur les nouveaux enjeux Climat et biodiversité : quels impacts pour les métiers de l'ingénierie",
+        "score": 50,
+        "source": "ATLAS"
+      },
+      {
+        "titre": "Concession du service public de production, transport et distribution de chaleur et de froid du secteur « Front de Seine »",
+        "score": 41,
+        "source": "GENERIA"
+      }
+    ],
+    "enCours": 17,
+    "sourceCounts": {
+      "ATLAS": 5,
+      "2i": 1,
+      "OCAPIAT": 4,
+      "OPCO EP": 4,
+      "Uniformation": 2,
+      "AKTO": 9,
+      "ADEME": 0,
+      "Constructys": 2,
+      "OPCO Mobilités": 0,
+      "Maximilien/IDF": 53,
+      "PLACE/national": 52,
+      "e-marchespublics.com": 154
     }
   }
 ]

@@ -978,5 +978,19 @@
     "scoreRSETEE": 41,
     "dateVue": "2026-11-07T06:44:43.924Z",
     "dateClôture": null
+  },
+  "ATLAS-5d6ceefe": {
+    "titre": "Etude sur les nouveaux enjeux Climat et biodiversité : quels impacts pour les métiers de l'ingénierie",
+    "source": "ATLAS",
+    "scoreRSETEE": 50,
+    "dateVue": "2026-11-21T07:52:43.430Z",
+    "dateClôture": "2026-12-21"
+  },
+  "GENERIA-db81f951": {
+    "titre": "Concession du service public de production, transport et distribution de chaleur et de froid du secteur « Front de Seine »",
+    "source": "GENERIA",
+    "scoreRSETEE": 41,
+    "dateVue": "2026-11-21T07:52:43.430Z",
+    "dateClôture": null
   }
 }
